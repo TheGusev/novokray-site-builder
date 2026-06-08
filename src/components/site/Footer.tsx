@@ -77,7 +77,7 @@ export function Footer() {
             <Link to="/contacts" className="hover:text-primary">Реквизиты</Link>
             <Link to="/privacy" className="hover:text-primary">Политика</Link>
             <Link to="/terms" className="hover:text-primary">Соглашение</Link>
-            <a href="/sitemap.xml" className="hover:text-primary">Карта сайта</a>
+            <Link to="/karta-sayta" className="hover:text-primary">Карта сайта</Link>
           </div>
         </div>
       </div>
