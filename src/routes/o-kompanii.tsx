@@ -39,8 +39,8 @@ function AboutPage() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "О компании" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.heroTeam} alt="Команда санитарной службы Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-30" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/75 to-primary/90" />
+        <img src={COMMON.heroTeam} alt="Команда санитарной службы Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative grid gap-8 py-12 md:py-20 lg:grid-cols-[1.2fr,1fr]">
           <div>
             <Reveal>

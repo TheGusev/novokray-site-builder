@@ -39,7 +39,7 @@ function PricePage() {
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Цены" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <img src={COMMON.equipment} alt="Прайс на санитарную обработку" className="absolute inset-0 h-full w-full object-cover opacity-20" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
           <h1 className="font-display text-3xl font-extrabold md:text-5xl">Цены санитарной службы — Новосибирск</h1>
           <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
