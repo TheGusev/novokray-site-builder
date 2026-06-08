@@ -14,6 +14,7 @@ import { TrustStrip } from "@/components/site/TrustStrip";
 import { FAQ } from "@/components/site/FAQ";
 import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
+import { WaveText } from "@/components/site/WaveText";
 import { CountUp } from "@/components/site/CountUp";
 
 const HOME_FAQ = [
@@ -127,12 +128,13 @@ function HomePage() {
               </div>
             </Reveal>
 
-            <AnimatedHeading
-              as="h1"
-              text="Санитарная служба №1 в Новосибирске"
-              highlight="№1"
-              className="mt-5 font-display text-[34px] font-extrabold leading-[1.05] text-balance md:text-5xl lg:text-6xl"
-            />
+            <h1 className="mt-5 font-display text-[34px] font-extrabold leading-[1.05] text-balance md:text-5xl lg:text-6xl">
+              <WaveText
+                text="Санитарная служба №1 в Новосибирске"
+                className="on-dark"
+                duration={4}
+              />
+            </h1>
 
             <Reveal delay={250} className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/85 md:text-lg">
               <p>
