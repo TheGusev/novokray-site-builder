@@ -181,17 +181,9 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
           <CompactSelect
             items={PESTS}
             value={pest}
-            onChange={(id) => setPest(id)}
+            onChange={(id) => { setPest(id); setStep(2); }}
             placeholder="Выберите вредителя или услугу"
           />
-          <button
-            type="button"
-            disabled={!pest}
-            onClick={() => setStep(2)}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Далее <ArrowRight className="h-4 w-4" />
-          </button>
         </div>
       )}
 
@@ -204,17 +196,9 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
           <CompactSelect
             items={OBJECTS}
             value={object}
-            onChange={(id) => setObject(id)}
+            onChange={(id) => { setObject(id); setStep(3); }}
             placeholder="Выберите объект"
           />
-          <button
-            type="button"
-            disabled={!object}
-            onClick={() => setStep(3)}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Далее <ArrowRight className="h-4 w-4" />
-          </button>
         </div>
       )}
 
