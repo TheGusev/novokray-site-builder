@@ -140,12 +140,12 @@ function HomePage() {
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <img src={COMMON.heroTeam} alt="Бригада санитарной службы Дез-Федерация в Новосибирске" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/35 via-black/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle at 15% 10%, oklch(0.62 0.18 230 / 0.5) 0%, transparent 55%), radial-gradient(circle at 85% 85%, oklch(0.62 0.24 30 / 0.35) 0%, transparent 55%)" }} />
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="container-x relative py-10 md:py-16 lg:py-20">
-          <div className="relative flex max-w-3xl flex-col rounded-2xl bg-black/45 p-5 ring-1 ring-white/10 backdrop-blur-md md:max-w-2xl md:bg-black/35 md:p-7 lg:max-w-3xl">
-            <div className="hero-anim hero-in-up" style={{ animationDelay: "0ms" }}>
+          <div className="flex max-w-3xl flex-col">
+            <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider backdrop-blur">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
@@ -153,50 +153,23 @@ function HomePage() {
                 </span>
                 Бригады свободны · выезд за 60 минут
               </div>
-            </div>
+            </Reveal>
 
-            <h1 className="mt-5 font-display text-[34px] font-extrabold leading-[1.05] text-balance text-white text-shadow-hero md:text-5xl lg:text-6xl">
-              <span className="block">
-                {"Санитарная служба".split(" ").map((w, i, arr) => (
-                  <span
-                    key={`l1-${i}`}
-                    className="hero-anim hero-in-left inline-block"
-                    style={{ animationDelay: `${200 + i * 70}ms` }}
-                  >
-                    {w}{i < arr.length - 1 ? "\u00A0" : ""}
-                  </span>
-                ))}
-              </span>
-              <span className="block">
-                {"№1 в Новосибирске".split(" ").map((w, i, arr) => (
-                  <span
-                    key={`l2-${i}`}
-                    className="hero-anim hero-in-right inline-block"
-                    style={{ animationDelay: `${550 + i * 80}ms` }}
-                  >
-                    {w}{i < arr.length - 1 ? "\u00A0" : ""}
-                  </span>
-                ))}
-              </span>
+            <h1 className="mt-5 font-display text-[34px] font-extrabold leading-[1.05] text-balance md:text-5xl lg:text-6xl">
+              <WaveText
+                text="Санитарная служба №1 в Новосибирске"
+                className="on-dark"
+                duration={4}
+              />
             </h1>
 
-            <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/95 text-shadow-hero md:text-lg">
-              {[
-                "Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов.",
-                "Работаем с 2014 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев.",
-                "Безопасные для детей и животных препараты.",
-              ].map((s, i) => (
-                <span
-                  key={i}
-                  className="hero-anim hero-in-up block"
-                  style={{ animationDelay: `${1050 + i * 220}ms` }}
-                >
-                  {s}
-                </span>
-              ))}
-            </p>
+            <Reveal delay={250} className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/85 md:text-lg">
+              <p>
+                Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов. Работаем с 2014 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев, безопасные для детей и животных препараты.
+              </p>
+            </Reveal>
 
-            <div className="hero-anim hero-in-up mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center" style={{ animationDelay: "1750ms" }}>
+            <Reveal delay={350} className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <a
                 href={SITE.phoneHref}
                 className="cta-shine inline-flex items-center justify-center gap-2 rounded-xl bg-cta-gradient px-5 py-4 font-bold text-accent-foreground shadow-cta transition hover:scale-[1.02]"
@@ -213,16 +186,16 @@ function HomePage() {
                   </button>
                 }
               />
-            </div>
+            </Reveal>
 
             <div className="mt-8 grid max-w-md grid-cols-3 gap-4 border-t border-white/15 pt-6 text-sm">
-              <div className="hero-anim hero-in-up" style={{ animationDelay: "2000ms" }}>
+              <Reveal delay={400}>
                 <div className="font-display text-2xl font-extrabold md:text-3xl">
                   <CountUp value={38000} suffix="+" />
                 </div>
                 <div className="text-[11px] uppercase tracking-wider text-white/70">обработок</div>
-              </div>
-              <div className="hero-anim hero-in-up" style={{ animationDelay: "2120ms" }}>
+              </Reveal>
+              <Reveal delay={500}>
                 <div className="flex items-baseline gap-1">
                   <span className="font-display text-2xl font-extrabold md:text-3xl">
                     <CountUp value={4.9} decimals={1} />
@@ -230,13 +203,13 @@ function HomePage() {
                   <Star className="h-4 w-4 fill-accent text-accent" />
                 </div>
                 <div className="text-[11px] uppercase tracking-wider text-white/70">{SITE.rating.count} отзывов</div>
-              </div>
-              <div className="hero-anim hero-in-up" style={{ animationDelay: "2240ms" }}>
+              </Reveal>
+              <Reveal delay={600}>
                 <div className="font-display text-2xl font-extrabold md:text-3xl">
                   <CountUp value={24} suffix=" мес" />
                 </div>
                 <div className="text-[11px] uppercase tracking-wider text-white/70">гарантия</div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </div>
