@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
+import { COMMON, GALLERY } from "@/data/images";
 import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
@@ -110,6 +111,8 @@ function HomePage() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
+        <img src={COMMON.heroTeam} alt="Бригада санитарной службы Дез-Федерация в Новосибирске" className="absolute inset-0 h-full w-full object-cover opacity-30" loading="eager" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/75 to-primary/90" />
         <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle at 15% 10%, oklch(0.62 0.18 230 / 0.5) 0%, transparent 55%), radial-gradient(circle at 85% 85%, oklch(0.62 0.24 30 / 0.35) 0%, transparent 55%)" }} />
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="container-x relative grid gap-10 py-10 md:py-16 lg:grid-cols-[1.15fr,1fr] lg:py-20">
@@ -300,6 +303,29 @@ function HomePage() {
                   <div className="mt-4 font-display text-lg font-bold">{st.t}</div>
                   <div className="mt-1 text-sm text-muted-foreground">{st.s}</div>
                 </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Photo gallery */}
+      <section className="bg-surface py-14 md:py-20">
+        <div className="container-x">
+          <Reveal>
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">Как это выглядит</div>
+            <AnimatedHeading
+              as="h2"
+              text="Реальные фото с объектов в Новосибирске"
+              highlight="Реальные"
+              className="mt-2 max-w-2xl font-display text-3xl font-bold md:text-4xl text-balance"
+            />
+          </Reveal>
+          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+            {GALLERY.map((g, i) => (
+              <Reveal key={i} delay={i * 70} variant="scale" className={`relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-[4/3]" : "aspect-square"} group`}>
+                <img src={g} alt={`Работы санитарной службы — кадр ${i + 1}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </Reveal>
             ))}
           </div>

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { COMMON } from "@/data/images";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
@@ -27,16 +28,36 @@ function CategoryPage() {
         { label: "Главная", to: "/" },
         { label: "Дезинфекция в Новосибирске" },
       ]} />
-      <section className="container-x pb-6">
-        <h1 className="font-display text-3xl font-extrabold md:text-5xl">Дезинфекция в Новосибирске</h1>
-        <p className="mt-4 max-w-3xl text-base text-muted-foreground md:text-lg">
-          Дезинфекция в Новосибирске под ключ — санитарная служба Дез-Федерация выполняет 13 видов обработки: уничтожение клопов, тараканов, грызунов, обработка от плесени, озонирование, сушка после потопов, фумигация и дезодорация. Выезд по городу за 60 минут, обслуживаем физлиц и юрлиц по всей Новосибирской области.
-        </p>
+      <section className="relative overflow-hidden bg-hero text-primary-foreground">
+        <img src={COMMON.heroSpray} alt="Дезинфекция в Новосибирске" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/90" />
+        <div className="container-x relative py-12 md:py-16">
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl">Дезинфекция в Новосибирске</h1>
+          <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
+            Дезинфекция в Новосибирске под ключ — санитарная служба Дез-Федерация выполняет 13 видов обработки: уничтожение клопов, тараканов, грызунов, обработка от плесени, озонирование, сушка после потопов, фумигация и дезодорация. Выезд по городу за 60 минут, обслуживаем физлиц и юрлиц по всей Новосибирской области.
+          </p>
+          <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-white/80">
+            Используем сертифицированные средства 4 класса опасности (малоопасные), без запаха после высыхания и безопасные для детей, аллергиков, домашних животных и аквариумов. На каждую обработку — договор, акт, гарантия по договору до 24 месяцев и бесплатная повторная обработка при возврате проблемы.
+          </p>
+        </div>
       </section>
 
-      <section className="container-x py-8">
+      <section className="container-x py-14">
+        <h2 className="font-display text-2xl font-bold md:text-3xl">13 направлений санитарной обработки</h2>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map((s) => (<ServiceCard key={s.slug} service={s} />))}
+        </div>
+      </section>
+
+      <section className="bg-surface py-14 md:py-20">
+        <div className="container-x">
+          <h2 className="font-display text-2xl font-bold md:text-3xl">Дезинфекция по районам Новосибирска</h2>
+          <p className="mt-3 max-w-3xl text-muted-foreground">Бригады выезжают во все 10 районов города. Время прибытия — до 60 минут, оплата после обработки.</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+            {["Центральный","Заельцовский","Калининский","Кировский","Ленинский","Октябрьский","Первомайский","Советский (Академгородок)","Дзержинский","Железнодорожный"].map((d) => (
+              <div key={d} className="rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold shadow-card">{d}</div>
+            ))}
+          </div>
         </div>
       </section>
 

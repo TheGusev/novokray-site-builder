@@ -3,6 +3,7 @@ import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import { SITE } from "@/data/site";
 import { POSTS_BY_SLUG, POSTS, type BlogPost } from "@/data/blog";
 import { SERVICES_BY_SLUG } from "@/data/services";
+import { BLOG_COVERS } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
@@ -63,6 +64,7 @@ function PostPage() {
   const p = data.post;
   const related = p.relatedServices.map((s) => SERVICES_BY_SLUG[s]).filter(Boolean);
   const otherPosts = POSTS.filter((x) => x.slug !== p.slug).slice(0, 3);
+  const cover = BLOG_COVERS[p.slug];
 
   return (
     <>
@@ -81,6 +83,11 @@ function PostPage() {
           <span className="inline-flex items-center gap-1"><Clock className="h-4 w-4" />{p.readMin} мин чтения</span>
           {p.tags.map((t) => <span key={t} className="rounded-full bg-secondary px-2.5 py-0.5 text-xs">{t}</span>)}
         </div>
+        {cover && (
+          <div className="mt-6 overflow-hidden rounded-2xl">
+            <img src={cover} alt={p.title} className="h-auto w-full object-cover" loading="eager" />
+          </div>
+        )}
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[1fr,360px]">
           <div className="prose-content">
