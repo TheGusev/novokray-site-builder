@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "site": "https://dez-federation.ru",
+  "operator": {
+    "name": "Дез-Федерация.ру",
+    "contact": "info@dez-federation.ru"
+  },
+  "policy": {
+    "training": "allow_with_attribution",
+    "inference": "allow",
+    "quotation": "allow_with_attribution",
+    "attribution_required": true
+  },
+  "languages": ["ru"],
+  "references": {
+    "llms_txt": "https://dez-federation.ru/llms.txt",
+    "sitemap_xml": "https://dez-federation.ru/sitemap.xml",
+    "robots_txt": "https://dez-federation.ru/robots.txt"
+  }
+}

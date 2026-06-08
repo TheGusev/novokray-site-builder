@@ -1,0 +1,52 @@
+# robots.txt for dez-federation.ru
+# AI training policy: allow_with_attribution
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /login
+Disallow: /*?utm_
+Disallow: /*?yclid=
+Disallow: /*?gclid=
+
+# OpenAI — training
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# OpenAI — search
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic — Claude
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Yandex GPT
+User-agent: YandexGPT
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+Sitemap: https://dez-federation.ru/sitemap.xml
