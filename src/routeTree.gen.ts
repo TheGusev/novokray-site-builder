@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as GorodSlugRouteImport } from './routes/gorod.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
@@ -90,6 +91,11 @@ const ServicesSlugRoute = ServicesSlugRouteImport.update({
   path: '/services/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GorodSlugRoute = GorodSlugRouteImport.update({
+  id: '/gorod/$slug',
+  path: '/gorod/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoryDezinfekciyaNovosibirskRoute =
   CategoryDezinfekciyaNovosibirskRouteImport.update({
     id: '/category/dezinfekciya-novosibirsk',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
+  '/gorod/$slug': typeof GorodSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
+  '/gorod/$slug': typeof GorodSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog': typeof BlogIndexRoute
   '/services': typeof ServicesIndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
+  '/gorod/$slug': typeof GorodSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
+    | '/gorod/$slug'
     | '/services/$slug'
     | '/blog/'
     | '/services/'
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
+    | '/gorod/$slug'
     | '/services/$slug'
     | '/blog'
     | '/services'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
+    | '/gorod/$slug'
     | '/services/$slug'
     | '/blog/'
     | '/services/'
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CategoryDezinfekciyaNovosibirskRoute: typeof CategoryDezinfekciyaNovosibirskRoute
+  GorodSlugRoute: typeof GorodSlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gorod/$slug': {
+      id: '/gorod/$slug'
+      path: '/gorod/$slug'
+      fullPath: '/gorod/$slug'
+      preLoaderRoute: typeof GorodSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/dezinfekciya-novosibirsk': {
       id: '/category/dezinfekciya-novosibirsk'
       path: '/category/dezinfekciya-novosibirsk'
@@ -349,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   BlogSlugRoute: BlogSlugRoute,
   CategoryDezinfekciyaNovosibirskRoute: CategoryDezinfekciyaNovosibirskRoute,
+  GorodSlugRoute: GorodSlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
@@ -356,3 +377,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
