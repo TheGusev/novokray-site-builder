@@ -30,6 +30,7 @@ export const Route = createFileRoute("/gorod/$slug")({
         { property: "og:description", content: description },
         { property: "og:url", content: `/gorod/${params.slug}` },
         { property: "og:type", content: "website" },
+        { property: "og:image", content: `${SITE.domain}/og/default.jpg` },
       ],
       links: [
         { rel: "canonical", href: `/gorod/${params.slug}` },
@@ -48,17 +49,16 @@ export const Route = createFileRoute("/gorod/$slug")({
               url: `${SITE.domain}/gorod/${params.slug}`,
               telephone: SITE.phone,
               email: SITE.email,
-              priceRange: "1500–25000 RUB",
+              priceRange: "1500-25000",
               areaServed: { "@type": "City", name: c.name, containedInPlace: { "@type": "AdministrativeArea", name: SITE.region } },
               address: { "@type": "PostalAddress", addressCountry: "RU", addressRegion: SITE.region, addressLocality: c.name },
               openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "07:00", closes: "23:00" }],
-              aggregateRating: { "@type": "AggregateRating", ratingValue: SITE.rating.value, reviewCount: SITE.rating.count, bestRating: "5", worstRating: "1" },
             },
             {
               "@type": "BreadcrumbList",
               itemListElement: [
                 { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
-                { "@type": "ListItem", position: 2, name: "Города области", item: `${SITE.domain}/gorod/${params.slug}` },
+                { "@type": "ListItem", position: 2, name: "Зона выезда", item: `${SITE.domain}/#region` },
                 { "@type": "ListItem", position: 3, name: c.name, item: `${SITE.domain}/gorod/${params.slug}` },
               ],
             },
