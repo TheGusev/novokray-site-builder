@@ -8,7 +8,7 @@ import {
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
 import { COMMON, GALLERY } from "@/data/images";
-import { LeadForm } from "@/components/site/LeadForm";
+import { LeadFormModal } from "@/components/site/LeadFormModal";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { FAQ } from "@/components/site/FAQ";
@@ -116,8 +116,8 @@ function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle at 15% 10%, oklch(0.62 0.18 230 / 0.5) 0%, transparent 55%), radial-gradient(circle at 85% 85%, oklch(0.62 0.24 30 / 0.35) 0%, transparent 55%)" }} />
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-        <div className="container-x relative grid gap-10 py-10 md:py-16 lg:grid-cols-[1.15fr,1fr] lg:py-20">
-          <div className="flex flex-col">
+        <div className="container-x relative py-10 md:py-16 lg:py-20">
+          <div className="flex max-w-3xl flex-col">
             <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider backdrop-blur">
                 <span className="relative flex h-2 w-2">
@@ -149,12 +149,16 @@ function HomePage() {
               >
                 <Phone className="h-5 w-5" /> Позвонить · бесплатный осмотр
               </a>
-              <a
-                href="#zayavka"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-4 font-semibold backdrop-blur hover:bg-white/20"
-              >
-                Расчёт за 5 сек <ArrowRight className="h-4 w-4" />
-              </a>
+              <LeadFormModal
+                trigger={
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-4 font-semibold backdrop-blur transition hover:bg-white/20"
+                  >
+                    Расчёт за 5 сек <ArrowRight className="h-4 w-4" />
+                  </button>
+                }
+              />
             </Reveal>
 
             <div className="mt-8 grid max-w-md grid-cols-3 gap-4 border-t border-white/15 pt-6 text-sm">
@@ -180,16 +184,6 @@ function HomePage() {
                 <div className="text-[11px] uppercase tracking-wider text-white/70">гарантия</div>
               </Reveal>
             </div>
-          </div>
-
-          <div id="zayavka" className="lg:pl-6">
-            <Reveal variant="scale" delay={150}>
-              <LeadForm
-                variant="hero"
-                title="Бесплатный расчёт за 5 сек"
-                subtitle="Перезвоним в течение 10 минут и зафиксируем цену до выезда."
-              />
-            </Reveal>
           </div>
         </div>
 
@@ -537,12 +531,12 @@ function HomePage() {
         </div>
       </section>
 
-      {/* CTA + LeadForm */}
+      {/* CTA */}
       <section className="container-x py-14 md:py-20">
-        <div className="relative grid items-center gap-10 overflow-hidden rounded-3xl bg-hero p-6 text-primary-foreground md:p-14 lg:grid-cols-2">
+        <div className="relative overflow-hidden rounded-3xl bg-hero p-6 text-primary-foreground md:p-14">
           <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
           <div className="absolute -left-10 bottom-0 h-72 w-72 rounded-full bg-primary-glow/30 blur-3xl" />
-          <div className="relative">
+          <div className="relative max-w-2xl">
             <AnimatedHeading
               as="h2"
               text="Закажите выезд бесплатно — оплата после обработки"
@@ -557,9 +551,24 @@ function HomePage() {
                 </Reveal>
               ))}
             </ul>
-          </div>
-          <div className="relative">
-            <LeadForm variant="hero" />
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <LeadFormModal
+                trigger={
+                  <button
+                    type="button"
+                    className="cta-shine inline-flex items-center justify-center gap-2 rounded-xl bg-cta-gradient px-6 py-4 font-bold text-accent-foreground shadow-cta transition hover:scale-[1.02]"
+                  >
+                    Получить расчёт за 5 сек <ArrowRight className="h-4 w-4" />
+                  </button>
+                }
+              />
+              <a
+                href={SITE.phoneHref}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-4 font-semibold backdrop-blur hover:bg-white/20"
+              >
+                <Phone className="h-5 w-5" /> {SITE.phone}
+              </a>
+            </div>
           </div>
         </div>
       </section>
