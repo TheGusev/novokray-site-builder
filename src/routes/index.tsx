@@ -309,6 +309,29 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Photo gallery */}
+      <section className="bg-surface py-14 md:py-20">
+        <div className="container-x">
+          <Reveal>
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">Как это выглядит</div>
+            <AnimatedHeading
+              as="h2"
+              text="Реальные фото с объектов в Новосибирске"
+              highlight="Реальные"
+              className="mt-2 max-w-2xl font-display text-3xl font-bold md:text-4xl text-balance"
+            />
+          </Reveal>
+          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+            {GALLERY.map((g, i) => (
+              <Reveal key={i} delay={i * 70} variant="scale" className={`relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-[4/3]" : "aspect-square"} group`}>
+                <img src={g} alt={`Работы санитарной службы — кадр ${i + 1}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* All services list */}
       <section className="bg-surface py-14 md:py-20">
         <div className="container-x">
