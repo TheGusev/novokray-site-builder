@@ -174,23 +174,58 @@
   to { transform: translateX(-50%); }
 }
 
-@keyframes wave-word-in {
-  0% { opacity: 0; transform: translateY(8px); filter: blur(4px); }
-  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+/* Premium word-by-word reveal — opacity only, no layout shift */
+@keyframes reveal-word {
+  from { opacity: 0.08; }
+  to   { opacity: 1; }
 }
-.wave-word-in {
-  animation-name: wave-word-in;
-  animation-duration: 420ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+.reveal-word {
+  opacity: 0.08;
+  animation-name: reveal-word;
+  animation-duration: 360ms;
+  animation-timing-function: ease-out;
   animation-fill-mode: forwards;
 }
+
+/* Color wave flowing across the whole paragraph (background-clip: text) */
+@keyframes paragraph-wave {
+  0%   { background-position: 220% 50%; }
+  100% { background-position: -120% 50%; }
+}
+.paragraph-wave {
+  background-image: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.92) 30%,
+    var(--color-primary-glow) 45%,
+    var(--color-accent) 55%,
+    rgba(255, 255, 255, 0.92) 70%,
+    rgba(255, 255, 255, 0.92) 100%
+  );
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: paragraph-wave 9s linear infinite;
+}
+
+/* Slow Ken Burns "room tour" for hero background */
+@keyframes hero-kenburns {
+  0%   { transform: scale(1.02) translate3d(0, 0, 0); }
+  100% { transform: scale(1.10) translate3d(-2%, -1.2%, 0); }
+}
+.hero-kenburns {
+  transform-origin: 60% 55%;
+  animation: hero-kenburns 38s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .wave-word-in {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-  }
+  .reveal-word { animation: none !important; opacity: 1 !important; }
+  .paragraph-wave { animation: none !important; }
+  .hero-kenburns { animation: none !important; transform: none !important; }
 }
 
 .animate-floaty { animation: floaty 4.5s ease-in-out infinite; }
