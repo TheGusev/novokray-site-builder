@@ -2,7 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SERVICES } from "@/data/services";
 import { POSTS } from "@/data/blog";
 import { SITE } from "@/data/site";
+import { CITIES } from "@/data/cities";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+
+const HUBS = [
+  { slug: "unichtozhenie-vrediteley", label: "Уничтожение вредителей" },
+  { slug: "sanitarnaya-obrabotka", label: "Санитарная обработка" },
+  { slug: "obrabotka-uchastkov", label: "Обработка участков" },
+  { slug: "spec-uslugi", label: "Спец. услуги" },
+];
 
 const MAIN_SECTIONS: { to: string; label: string; desc: string }[] = [
   { to: "/", label: "Главная", desc: "Санитарная служба №1 в Новосибирске" },
@@ -69,6 +77,14 @@ function SiteMapPage() {
 
           <section aria-labelledby="sm-services">
             <h2 id="sm-services" className="mb-4 font-display text-xl font-bold">Услуги ({SERVICES.length})</h2>
+            <div className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Категории</div>
+            <ul className="mb-4 grid grid-cols-2 gap-2">
+              {HUBS.map((h) => (
+                <li key={h.slug}>
+                  <Link to="/uslugi/$slug" params={{ slug: h.slug }} className="text-primary hover:underline">{h.label}</Link>
+                </li>
+              ))}
+            </ul>
             <ul className="space-y-2">
               {SERVICES.map((s) => (
                 <li key={s.slug} className="flex items-baseline justify-between gap-3 border-b border-border/60 py-2">
@@ -76,6 +92,20 @@ function SiteMapPage() {
                     {s.title}
                   </Link>
                   <span className="shrink-0 text-xs text-muted-foreground">от&nbsp;{s.priceFrom.toLocaleString("ru-RU")}&nbsp;₽</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section aria-labelledby="sm-cities" className="md:col-span-2">
+            <h2 id="sm-cities" className="mb-4 font-display text-xl font-bold">Города области ({CITIES.length})</h2>
+            <ul className="grid gap-2 md:grid-cols-2">
+              {CITIES.map((c) => (
+                <li key={c.slug} className="flex items-baseline justify-between gap-3 border-b border-border/60 py-2">
+                  <Link to="/gorod/$slug" params={{ slug: c.slug }} className="text-foreground hover:text-primary">
+                    Санитарная служба {c.prepositional}
+                  </Link>
+                  <span className="shrink-0 text-xs text-muted-foreground">{c.distanceKm} км</span>
                 </li>
               ))}
             </ul>

@@ -21,7 +21,9 @@ import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as UslugiSlugRouteImport } from './routes/uslugi.$slug'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as GorodSlugRouteImport } from './routes/gorod.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
@@ -85,9 +87,19 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UslugiSlugRoute = UslugiSlugRouteImport.update({
+  id: '/uslugi/$slug',
+  path: '/uslugi/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesSlugRoute = ServicesSlugRouteImport.update({
   id: '/services/$slug',
   path: '/services/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GorodSlugRoute = GorodSlugRouteImport.update({
+  id: '/gorod/$slug',
+  path: '/gorod/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoryDezinfekciyaNovosibirskRoute =
@@ -115,7 +127,9 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
+  '/gorod/$slug': typeof GorodSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
 }
@@ -132,7 +146,9 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
+  '/gorod/$slug': typeof GorodSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog': typeof BlogIndexRoute
   '/services': typeof ServicesIndexRoute
 }
@@ -150,7 +166,9 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
+  '/gorod/$slug': typeof GorodSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
 }
@@ -169,7 +187,9 @@ export interface FileRouteTypes {
     | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
+    | '/gorod/$slug'
     | '/services/$slug'
+    | '/uslugi/$slug'
     | '/blog/'
     | '/services/'
   fileRoutesByTo: FileRoutesByTo
@@ -186,7 +206,9 @@ export interface FileRouteTypes {
     | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
+    | '/gorod/$slug'
     | '/services/$slug'
+    | '/uslugi/$slug'
     | '/blog'
     | '/services'
   id:
@@ -203,7 +225,9 @@ export interface FileRouteTypes {
     | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
+    | '/gorod/$slug'
     | '/services/$slug'
+    | '/uslugi/$slug'
     | '/blog/'
     | '/services/'
   fileRoutesById: FileRoutesById
@@ -221,7 +245,9 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CategoryDezinfekciyaNovosibirskRoute: typeof CategoryDezinfekciyaNovosibirskRoute
+  GorodSlugRoute: typeof GorodSlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
+  UslugiSlugRoute: typeof UslugiSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
 }
@@ -312,11 +338,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/uslugi/$slug': {
+      id: '/uslugi/$slug'
+      path: '/uslugi/$slug'
+      fullPath: '/uslugi/$slug'
+      preLoaderRoute: typeof UslugiSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services/$slug': {
       id: '/services/$slug'
       path: '/services/$slug'
       fullPath: '/services/$slug'
       preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gorod/$slug': {
+      id: '/gorod/$slug'
+      path: '/gorod/$slug'
+      fullPath: '/gorod/$slug'
+      preLoaderRoute: typeof GorodSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/category/dezinfekciya-novosibirsk': {
@@ -349,7 +389,9 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   BlogSlugRoute: BlogSlugRoute,
   CategoryDezinfekciyaNovosibirskRoute: CategoryDezinfekciyaNovosibirskRoute,
+  GorodSlugRoute: GorodSlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,
+  UslugiSlugRoute: UslugiSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
 }

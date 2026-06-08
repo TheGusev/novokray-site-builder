@@ -14,16 +14,27 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/blog/")({
   validateSearch: zodValidator(searchSchema),
-  head: () => ({
-    meta: [
-      { title: `Блог санитарной службы Дез-Федерация — статьи о дезинфекции и вредителях` },
-      { name: "description", content: "Полезные статьи о клопах, тараканах, плесени, озонировании и санитарной обработке в Новосибирске. Советы экспертов с 12-летним опытом." },
-      { property: "og:title", content: "Блог Дез-Федерация — статьи и советы" },
-      { property: "og:description", content: "Полезные статьи о санитарной обработке от экспертов из Новосибирска." },
-      { property: "og:url", content: "/blog" },
-    ],
-    links: [{ rel: "canonical", href: "/blog" }],
-  }),
+  head: ({ match }) => {
+    const search = (match as unknown as { search?: { page?: number } })?.search;
+    const page = Math.max(1, search?.page ?? 1);
+    const totalPages = Math.max(1, Math.ceil(POSTS.length / POSTS_PER_PAGE));
+    const baseTitle = "Блог санитарной службы Дез-Федерация — статьи о дезинфекции и вредителях";
+    const title = page > 1 ? `${baseTitle} — страница ${page}` : baseTitle;
+    const canonical = page > 1 ? `/blog?page=${page}` : "/blog";
+    const links: Array<{ rel: string; href: string }> = [{ rel: "canonical", href: canonical }];
+    if (page > 1) links.push({ rel: "prev", href: page - 1 === 1 ? "/blog" : `/blog?page=${page - 1}` });
+    if (page < totalPages) links.push({ rel: "next", href: `/blog?page=${page + 1}` });
+    return {
+      meta: [
+        { title },
+        { name: "description", content: "Полезные статьи о клопах, тараканах, плесени, озонировании и санитарной обработке в Новосибирске. Советы экспертов с 12-летним опытом." },
+        { property: "og:title", content: "Блог Дез-Федерация — статьи и советы" },
+        { property: "og:description", content: "Полезные статьи о санитарной обработке от экспертов из Новосибирска." },
+        { property: "og:url", content: canonical },
+      ],
+      links,
+    };
+  },
   component: BlogIndex,
 });
 

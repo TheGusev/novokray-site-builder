@@ -33,6 +33,13 @@ const CATEGORY_LABEL: Record<string, string> = {
   spec: "Спец. услуги",
 };
 
+const CATEGORY_HUB_SLUG: Record<string, string> = {
+  vrediteli: "unichtozhenie-vrediteley",
+  sanitarnaya: "sanitarnaya-obrabotka",
+  uchastok: "obrabotka-uchastkov",
+  spec: "spec-uslugi",
+};
+
 export function Header() {
   const [open, setOpen] = useState(false);
   const [services, setServices] = useState(false);
@@ -75,9 +82,14 @@ export function Header() {
               <div className="grid gap-4 p-4 md:grid-cols-2">
                 {Object.entries(grouped).map(([cat, list]) => (
                   <div key={cat}>
-                    <div className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                      {CATEGORY_LABEL[cat] ?? cat}
-                    </div>
+                    <Link
+                      to="/uslugi/$slug"
+                      params={{ slug: CATEGORY_HUB_SLUG[cat] ?? "" }}
+                      onClick={() => setServices(false)}
+                      className="block px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground hover:text-primary"
+                    >
+                      {CATEGORY_LABEL[cat] ?? cat} →
+                    </Link>
                     <div className="grid">
                       {list.map((s) => (
                         <Link

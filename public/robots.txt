@@ -51,6 +51,9 @@ Allow: /
 
 Sitemap: https://dez-federation.ru/sitemap.xml
 
+# Yandex Clean-param — склейка UTM и рекламных меток
+Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid&fbclid /
+
 # AI/LLM discoverability
 # Полная справка для ИИ-ассистентов: https://dez-federation.ru/llms-full.txt
 # Краткая справка: https://dez-federation.ru/llms.txt

@@ -3,6 +3,9 @@ import type {} from "@tanstack/react-start";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
 import { POSTS } from "@/data/blog";
+import { CITIES } from "@/data/cities";
+
+const HUB_SLUGS = ["unichtozhenie-vrediteley", "sanitarnaya-obrabotka", "obrabotka-uchastkov", "spec-uslugi"];
 
 const BASE_URL = SITE.domain;
 
@@ -24,6 +27,16 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/faq", changefreq: "monthly", priority: "0.7", lastmod: today },
           { path: "/blog", changefreq: "weekly", priority: "0.8", lastmod: today },
           { path: "/karta-sayta", changefreq: "monthly", priority: "0.3", lastmod: today },
+          { path: "/privacy", changefreq: "yearly", priority: "0.2", lastmod: today },
+          { path: "/terms", changefreq: "yearly", priority: "0.2", lastmod: today },
+          ...HUB_SLUGS.map((slug) => ({
+            path: `/uslugi/${slug}`,
+            changefreq: "weekly", priority: "0.85", lastmod: today,
+          })),
+          ...CITIES.map((c) => ({
+            path: `/gorod/${c.slug}`,
+            changefreq: "weekly", priority: "0.85", lastmod: today,
+          })),
           ...SERVICES.map((s) => ({
             path: `/services/${s.slug}`,
             changefreq: "weekly", priority: "0.9", lastmod: today,

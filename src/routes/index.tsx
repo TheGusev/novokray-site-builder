@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
+import { CITIES } from "@/data/cities";
 import { COMMON, GALLERY } from "@/data/images";
 import { LeadFormModal } from "@/components/site/LeadFormModal";
 import { ServiceCard } from "@/components/site/ServiceCard";
@@ -600,6 +601,21 @@ function HomePage() {
       </section>
 
       <FAQ items={HOME_FAQ} />
+
+      <section className="bg-surface py-14">
+        <div className="container-x">
+          <h2 className="font-display text-2xl font-bold md:text-3xl">Работаем по всей Новосибирской области</h2>
+          <p className="mt-3 max-w-3xl text-muted-foreground">Выезжаем из Новосибирска ежедневно — бригады с оборудованием обслуживают города-спутники и районы области. Цены и гарантии — как в Новосибирске.</p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {CITIES.map((c) => (
+              <Link key={c.slug} to="/gorod/$slug" params={{ slug: c.slug }} className="group rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant">
+                <div className="font-display text-lg font-bold group-hover:text-primary">{c.name}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{c.distanceKm} км · ~{c.travelMin} мин</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
     </>
   );
 }
