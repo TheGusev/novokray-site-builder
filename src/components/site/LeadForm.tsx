@@ -3,16 +3,20 @@ import { toast } from "sonner";
 import {
   Send, Phone, Loader2, ChevronLeft, Check, Bug, Rat, SprayCan, Bird,
   Skull, Sprout, Droplets, Wind, Waves, Sparkles, Home, Building2,
-  Trees, Car, Store, Briefcase,
+  Trees, Car, Store, Briefcase, ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { SITE } from "@/data/site";
+import {
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+} from "@/components/ui/select";
 
 interface Props {
   defaultService?: string;
   variant?: "card" | "hero" | "inline";
   title?: string;
   subtitle?: string;
+  onSuccess?: () => void;
 }
 
 interface Tile { id: string; label: string; icon: LucideIcon }
@@ -63,23 +67,37 @@ function formatPhone(raw: string): string {
   return out;
 }
 
-function TileGrid({ items, onPick }: { items: Tile[]; onPick: (id: string) => void }) {
+function CompactSelect({
+  items, value, onChange, placeholder,
+}: {
+  items: Tile[]; value: string; onChange: (id: string) => void; placeholder: string;
+}) {
+  const current = items.find((i) => i.id === value);
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-      {items.map((t) => (
-        <button
-          type="button"
-          key={t.id}
-          onClick={() => onPick(t.id)}
-          className="group flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card px-2 py-3 text-center transition hover:-translate-y-0.5 hover:border-primary hover:bg-secondary active:scale-[0.98]"
-        >
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-primary transition group-hover:bg-cta-gradient group-hover:text-accent-foreground">
-            <t.icon className="h-4 w-4" />
+    <Select value={value || undefined} onValueChange={onChange}>
+      <SelectTrigger className="h-12 rounded-lg border-input bg-background text-sm font-semibold">
+        {current ? (
+          <span className="flex items-center gap-2">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-secondary text-primary">
+              <current.icon className="h-3.5 w-3.5" />
+            </span>
+            {current.label}
           </span>
-          <span className="text-xs font-semibold leading-tight text-foreground">{t.label}</span>
-        </button>
-      ))}
-    </div>
+        ) : (
+          <SelectValue placeholder={placeholder} />
+        )}
+      </SelectTrigger>
+      <SelectContent className="max-h-72">
+        {items.map((t) => (
+          <SelectItem key={t.id} value={t.id}>
+            <span className="flex items-center gap-2">
+              <t.icon className="h-4 w-4 text-primary" />
+              {t.label}
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -101,7 +119,7 @@ function Progress({ step }: { step: 1 | 2 | 3 }) {
   );
 }
 
-export function LeadForm({ defaultService = "", variant = "card", title, subtitle }: Props) {
+export function LeadForm({ defaultService = "", variant = "card", title, subtitle, onSuccess }: Props) {
   const initialPest = PESTS.find((p) => p.id === defaultService)?.id ?? "";
   const [step, setStep] = useState<1 | 2 | 3>(initialPest ? 2 : 1);
   const [pest, setPest] = useState<string>(initialPest);
@@ -125,6 +143,7 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
     setLoading(false);
     toast.success("Заявка принята! Перезвоним в течение 10 минут.");
     setStep(1); setPest(""); setObject(""); setName(""); setPhone(""); setAgree(false);
+    onSuccess?.();
   };
 
   const heroStyle = variant === "hero";
@@ -157,25 +176,45 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
 
       {/* STEP 1 */}
       {step === 1 && (
-        <div className="mt-3 animate-fade-in">
-          <div className="mb-3 font-display text-sm font-bold text-foreground">Что обрабатываем?</div>
-          <TileGrid
+        <div className="mt-4 grid gap-3 animate-fade-in">
+          <div className="font-display text-sm font-bold text-foreground">Что обрабатываем?</div>
+          <CompactSelect
             items={PESTS}
-            onPick={(id) => { setPest(id); setStep(2); }}
+            value={pest}
+            onChange={(id) => setPest(id)}
+            placeholder="Выберите вредителя или услугу"
           />
+          <button
+            type="button"
+            disabled={!pest}
+            onClick={() => setStep(2)}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Далее <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
       )}
 
       {/* STEP 2 */}
       {step === 2 && (
-        <div className="mt-3 animate-fade-in">
-          <div className="mb-3 font-display text-sm font-bold text-foreground">
+        <div className="mt-4 grid gap-3 animate-fade-in">
+          <div className="font-display text-sm font-bold text-foreground">
             Где обработать? <span className="text-muted-foreground">· {pest}</span>
           </div>
-          <TileGrid
+          <CompactSelect
             items={OBJECTS}
-            onPick={(id) => { setObject(id); setStep(3); }}
+            value={object}
+            onChange={(id) => setObject(id)}
+            placeholder="Выберите объект"
           />
+          <button
+            type="button"
+            disabled={!object}
+            onClick={() => setStep(3)}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Далее <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
       )}
 
