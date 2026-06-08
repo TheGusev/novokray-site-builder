@@ -7,6 +7,8 @@ import { FAQ } from "@/components/site/FAQ";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
+import { Reveal } from "@/components/site/Reveal";
+import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: ({ params }): { service: Service } => {
@@ -95,24 +97,30 @@ function ServicePage() {
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 80% 30%, oklch(0.7 0.20 38 / 0.3), transparent 60%)" }} />
-        <div className="container-x relative grid gap-10 py-14 lg:grid-cols-[1.25fr,1fr] lg:py-20">
+        <div className="container-x relative grid gap-8 py-10 md:py-14 lg:grid-cols-[1.25fr,1fr] lg:py-20">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold">
-              <Icon className="h-3.5 w-3.5" /> {SITE.city} и область
-            </div>
-            <h1 className="mt-5 font-display text-3xl font-extrabold leading-tight md:text-5xl">{s.h1}</h1>
-            <p className="mt-5 max-w-2xl text-base text-white/90 md:text-lg">{s.lead}</p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <a href={SITE.phoneHref} className="inline-flex items-center gap-2 rounded-lg bg-accent-gradient px-5 py-3 font-semibold text-accent-foreground shadow-accent">
-                <Phone className="h-4 w-4" /> Вызвать за {s.priceFrom.toLocaleString("ru-RU")} ₽
+            <Reveal>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur">
+                <Icon className="h-3.5 w-3.5" /> {SITE.city} и область
+              </div>
+            </Reveal>
+            <AnimatedHeading as="h1" text={s.h1} highlight="Новосибирске" className="mt-5 font-display text-[30px] font-extrabold leading-tight text-balance md:text-5xl" />
+            <Reveal delay={250}>
+              <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">{s.lead}</p>
+            </Reveal>
+            <Reveal delay={350} className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a href={SITE.phoneHref} className="cta-shine inline-flex items-center justify-center gap-2 rounded-xl bg-cta-gradient px-5 py-4 font-bold text-accent-foreground shadow-cta hover:scale-[1.02] transition">
+                <Phone className="h-5 w-5" /> Вызвать от {s.priceFrom.toLocaleString("ru-RU")} ₽
               </a>
-              <a href="#zayavka" className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-5 py-3 font-semibold backdrop-blur hover:bg-white/20">
+              <a href="#zayavka" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-4 font-semibold backdrop-blur hover:bg-white/20">
                 Получить расчёт <ArrowRight className="h-4 w-4" />
               </a>
-            </div>
+            </Reveal>
           </div>
           <div id="zayavka" className="lg:pl-6">
-            <LeadForm variant="hero" title="Заказать выезд" subtitle="Перезвоним в течение 10 минут и зафиксируем цену." defaultService={s.title} />
+            <Reveal variant="scale" delay={120}>
+              <LeadForm variant="hero" title="Заказать выезд" subtitle="Перезвоним в течение 10 минут и зафиксируем цену." defaultService={s.title} />
+            </Reveal>
           </div>
         </div>
       </section>
@@ -121,13 +129,13 @@ function ServicePage() {
 
       {/* Problems */}
       <section className="container-x py-16">
-        <h2 className="font-display text-3xl font-bold md:text-4xl">Когда нужна {s.title.toLowerCase()}</h2>
+        <AnimatedHeading as="h2" text={`Когда нужна ${s.title.toLowerCase()}`} className="font-display text-3xl font-bold md:text-4xl text-balance" />
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {s.problems.map((p, i) => (
-            <div key={i} className="flex gap-3 rounded-xl border border-border bg-card p-5 shadow-card">
+            <Reveal key={i} delay={i * 70} className="flex gap-3 rounded-xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-elegant">
               <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
               <span className="text-foreground/90">{p}</span>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -135,14 +143,14 @@ function ServicePage() {
       {/* Steps */}
       <section className="bg-surface py-16">
         <div className="container-x">
-          <h2 className="font-display text-3xl font-bold md:text-4xl">Как проходит обработка</h2>
+          <AnimatedHeading as="h2" text="Как проходит обработка" className="font-display text-3xl font-bold md:text-4xl" />
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {s.steps.map((st, i) => (
-              <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+              <Reveal key={i} delay={i * 100} className="rounded-2xl border border-border bg-card p-6 shadow-card">
                 <div className="font-display text-3xl font-extrabold text-primary/30">{String(i + 1).padStart(2, "0")}</div>
                 <div className="mt-1 font-display text-lg font-bold">{st.title}</div>
                 <div className="mt-2 text-sm text-muted-foreground">{st.text}</div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -153,13 +161,13 @@ function ServicePage() {
         <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary">
           <FlaskConical className="h-3.5 w-3.5" /> Препараты и технологии
         </div>
-        <h2 className="font-display text-3xl font-bold md:text-4xl">Профессиональное оборудование и сертифицированные препараты</h2>
+        <AnimatedHeading as="h2" text="Профессиональное оборудование и сертифицированные препараты" highlight="сертифицированные" className="font-display text-3xl font-bold md:text-4xl text-balance" />
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {s.tech.map((t, i) => (
-            <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+            <Reveal key={i} delay={i * 90} className="rounded-2xl border border-border bg-card p-6 shadow-card">
               <div className="font-display text-lg font-bold text-primary">{t.title}</div>
               <div className="mt-2 text-sm text-muted-foreground">{t.text}</div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>

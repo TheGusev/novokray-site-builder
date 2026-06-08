@@ -125,7 +125,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "robots", content: "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" },
       { name: "theme-color", content: "#0F4A7A" },
       { title: `${SITE.name} — Санитарная служба №1 в Новосибирске` },
-      { name: "description", content: `Дезинфекция, дератизация, обработка от клопов, тараканов, плесени, озонирование, сушка после потопов в Новосибирске. Выезд за 60 минут, гарантия по договору, лицензия Роспотребнадзора.` },
+      { name: "description", content: "Дезинфекция, дератизация, обработка от клопов, тараканов, плесени, озонирование и сушка после потопов в Новосибирске. Выезд за 60 минут, гарантия по договору, лицензия Роспотребнадзора." },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: SITE.name },
       { property: "og:locale", content: "ru_RU" },
@@ -165,7 +165,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col pb-16 md:pb-0">
+      <div className="flex min-h-screen flex-col overflow-x-hidden pb-16 md:pb-0">
         <Header />
         <main className="flex-1">
           <Outlet />
