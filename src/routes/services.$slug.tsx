@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
-import { SERVICES_BY_SLUG, SERVICES } from "@/data/services";
+import { SERVICES_BY_SLUG, type Service } from "@/data/services";
 import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -9,7 +9,7 @@ import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }) => {
+  loader: ({ params }): { service: Service } => {
     const service = SERVICES_BY_SLUG[params.slug];
     if (!service) throw notFound();
     return { service };

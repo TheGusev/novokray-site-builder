@@ -1,14 +1,14 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import { SITE } from "@/data/site";
-import { POSTS_BY_SLUG, POSTS } from "@/data/blog";
+import { POSTS_BY_SLUG, POSTS, type BlogPost } from "@/data/blog";
 import { SERVICES_BY_SLUG } from "@/data/services";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
 
 export const Route = createFileRoute("/blog/$slug")({
-  loader: ({ params }) => {
+  loader: ({ params }): { post: BlogPost } => {
     const post = POSTS_BY_SLUG[params.slug];
     if (!post) throw notFound();
     return { post };
