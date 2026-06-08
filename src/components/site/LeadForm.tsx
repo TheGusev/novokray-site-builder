@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 import {
   Send, Phone, Loader2, ChevronLeft, Check, Bug, Rat, SprayCan, Bird,
   Skull, Sprout, Droplets, Wind, Waves, Sparkles, Home, Building2,
@@ -284,9 +285,9 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
             />
             <span>
               Я согласен с{" "}
-              <a href="#" className="text-primary underline-offset-2 hover:underline">политикой обработки персональных данных</a>{" "}
+              <Link to="/privacy" target="_blank" className="text-primary underline-offset-2 hover:underline">политикой обработки персональных данных</Link>{" "}
               и{" "}
-              <a href="#" className="text-primary underline-offset-2 hover:underline">пользовательским соглашением</a>.
+              <Link to="/terms" target="_blank" className="text-primary underline-offset-2 hover:underline">пользовательским соглашением</Link>.
             </span>
           </label>
 
