@@ -200,13 +200,13 @@
   will-change: opacity;
 }
 
-@keyframes hero-camera-dolly {
-  0% {
-    transform: scale(1) translate3d(0%, 0%, 0) rotate(0deg);
-  }
-  100% {
-    transform: scale(1.18) translate3d(3%, 1.5%, 0) rotate(-1.2deg);
-  }
+@keyframes hero-camera-dolly-desktop {
+  0%   { transform: scale(1) translate3d(0%, 0%, 0) rotate(0deg); }
+  100% { transform: scale(1.15) translate3d(2%, 1%, 0) rotate(-1deg); }
+}
+@keyframes hero-camera-dolly-mobile {
+  0%   { transform: scale(0.82) translate3d(0%, 0%, 0) rotate(0deg); }
+  100% { transform: scale(1.16) translate3d(4%, 2%, 0) rotate(-1.6deg); }
 }
 .hero-room-tour-frame {
   position: absolute;
@@ -215,17 +215,16 @@
 }
 .hero-room-tour-media {
   transform-origin: 68% 42%;
-  animation: hero-camera-dolly 9s cubic-bezier(0.22, 0.61, 0.36, 1) infinite alternate;
+  animation: hero-camera-dolly-desktop 6.5s cubic-bezier(0.16, 1, 0.3, 1) 420ms 1 both;
   will-change: transform;
 }
 @media (max-width: 640px) {
+  .hero-room-tour-frame {
+    inset: -22%;
+  }
   .hero-room-tour-media {
     transform-origin: 70% 44%;
-    animation: hero-camera-dolly 9s cubic-bezier(0.22, 0.61, 0.36, 1) infinite alternate;
-  }
-  @keyframes hero-camera-dolly {
-    0% { transform: scale(1) translate3d(0%, 0%, 0) rotate(0deg); }
-    100% { transform: scale(1.24) translate3d(4%, 2%, 0) rotate(-1.6deg); }
+    animation: hero-camera-dolly-mobile 6.5s cubic-bezier(0.16, 1, 0.3, 1) 420ms 1 both;
   }
 }
 
