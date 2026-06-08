@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PriceRouteImport } from './routes/price'
 import { Route as OKompaniiRouteImport } from './routes/o-kompanii'
+import { Route as KartaSaytaRouteImport } from './routes/karta-sayta'
 import { Route as GarantiiRouteImport } from './routes/garantii'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactsRouteImport } from './routes/contacts'
@@ -47,6 +48,11 @@ const PriceRoute = PriceRouteImport.update({
 const OKompaniiRoute = OKompaniiRouteImport.update({
   id: '/o-kompanii',
   path: '/o-kompanii',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KartaSaytaRoute = KartaSaytaRouteImport.update({
+  id: '/karta-sayta',
+  path: '/karta-sayta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GarantiiRoute = GarantiiRouteImport.update({
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/karta-sayta': typeof KartaSaytaRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/karta-sayta': typeof KartaSaytaRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/karta-sayta': typeof KartaSaytaRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/karta-sayta'
     | '/o-kompanii'
     | '/price'
     | '/privacy'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/karta-sayta'
     | '/o-kompanii'
     | '/price'
     | '/privacy'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/karta-sayta'
     | '/o-kompanii'
     | '/price'
     | '/privacy'
@@ -201,6 +213,7 @@ export interface RootRouteChildren {
   ContactsRoute: typeof ContactsRoute
   FaqRoute: typeof FaqRoute
   GarantiiRoute: typeof GarantiiRoute
+  KartaSaytaRoute: typeof KartaSaytaRoute
   OKompaniiRoute: typeof OKompaniiRoute
   PriceRoute: typeof PriceRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/o-kompanii'
       fullPath: '/o-kompanii'
       preLoaderRoute: typeof OKompaniiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/karta-sayta': {
+      id: '/karta-sayta'
+      path: '/karta-sayta'
+      fullPath: '/karta-sayta'
+      preLoaderRoute: typeof KartaSaytaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/garantii': {
@@ -321,6 +341,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactsRoute: ContactsRoute,
   FaqRoute: FaqRoute,
   GarantiiRoute: GarantiiRoute,
+  KartaSaytaRoute: KartaSaytaRoute,
   OKompaniiRoute: OKompaniiRoute,
   PriceRoute: PriceRoute,
   PrivacyRoute: PrivacyRoute,
