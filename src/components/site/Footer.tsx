@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Phone, Mail, MapPin, Clock, ShieldCheck, Star } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { CITIES } from "@/data/cities";
 import { Logo } from "@/components/site/Logo";
 
 export function Footer() {
@@ -52,6 +53,16 @@ export function Footer() {
             <li><Link to="/faq" className="text-muted-foreground hover:text-primary">Вопросы и ответы</Link></li>
             <li><Link to="/category/dezinfekciya-novosibirsk" className="text-muted-foreground hover:text-primary">Дезинфекция в Новосибирске</Link></li>
             <li><Link to="/contacts" className="text-muted-foreground hover:text-primary">Контакты</Link></li>
+          </ul>
+          <div className="mb-3 mt-6 font-display text-sm font-bold uppercase tracking-wider">Города области</div>
+          <ul className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+            {CITIES.map((c) => (
+              <li key={c.slug}>
+                <Link to="/gorod/$slug" params={{ slug: c.slug }} className="text-muted-foreground hover:text-primary">
+                  {c.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
