@@ -213,12 +213,12 @@
 .hero-room-tour-frame {
   position: absolute;
   inset: -10%;
-  animation: hero-room-tour-pan 42s ease-in-out infinite alternate;
+  animation: hero-room-tour-pan 16s ease-in-out infinite alternate;
   will-change: transform;
 }
 .hero-room-tour-media {
   transform-origin: 60% 54%;
-  animation: hero-room-tour-zoom 42s ease-in-out infinite alternate;
+  animation: hero-room-tour-zoom 16s ease-in-out infinite alternate;
   will-change: transform;
 }
 
@@ -271,10 +271,10 @@
   animation-name: wave-text-color-dark;
 }
 @keyframes wave-text-color-dark {
-  0%   { color: #ffffff; transform: translateY(0); }
-  35%  { color: oklch(0.85 0.16 35); transform: translateY(-3px); }
-  65%  { color: oklch(0.82 0.12 220); transform: translateY(-3px); }
-  100% { color: #ffffff; transform: translateY(0); }
+  0%   { color: #ffffff; }
+  35%  { color: oklch(0.85 0.16 35); }
+  65%  { color: oklch(0.82 0.12 220); }
+  100% { color: #ffffff; }
 }
 
 @media (prefers-reduced-motion: reduce) {
