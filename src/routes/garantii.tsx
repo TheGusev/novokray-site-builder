@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Reveal } from "@/components/site/Reveal";
 import { FAQ } from "@/components/site/FAQ";
+import { WaveText } from "@/components/site/WaveText";
 
 export const Route = createFileRoute("/garantii")({
   head: () => ({
@@ -65,9 +66,9 @@ function GuaranteesPage() {
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Гарантии" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <img src={COMMON.documents} alt="Лицензия и сертификаты Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
-          <h1 className="font-display text-3xl font-extrabold md:text-5xl">Гарантии и сертификаты</h1>
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Гарантии и сертификаты" duration={4} /></h1>
           <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
             Каждая обработка оформляется договором с прописанными сроками гарантии и условиями повторного выезда. Работаем по 152-ФЗ, имеем лицензию Роспотребнадзора и сертификаты на все используемые препараты. Если проблема вернётся — приезжаем повторно бесплатно, при невозможности устранения — возвращаем деньги.
           </p>

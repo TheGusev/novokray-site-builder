@@ -6,6 +6,7 @@ import { COMMON } from "@/data/images";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
+import { WaveText } from "@/components/site/WaveText";
 
 export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
   head: () => ({
@@ -30,9 +31,9 @@ function CategoryPage() {
       ]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <img src={COMMON.heroSpray} alt="Дезинфекция в Новосибирске" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
-          <h1 className="font-display text-3xl font-extrabold md:text-5xl">Дезинфекция в Новосибирске</h1>
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Дезинфекция в Новосибирске" duration={4} /></h1>
           <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
             Дезинфекция в Новосибирске под ключ — санитарная служба Дез-Федерация выполняет 13 видов обработки: уничтожение клопов, тараканов, грызунов, обработка от плесени, озонирование, сушка после потопов, фумигация и дезодорация. Выезд по городу за 60 минут, обслуживаем физлиц и юрлиц по всей Новосибирской области.
           </p>

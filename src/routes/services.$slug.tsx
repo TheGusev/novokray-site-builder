@@ -101,7 +101,7 @@ function ServicePage() {
         {hero && (
           <>
             <img src={hero} alt={s.h1} className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/70 to-primary/85" />
+            <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
           </>
         )}
         <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 80% 30%, oklch(0.7 0.20 38 / 0.3), transparent 60%)" }} />

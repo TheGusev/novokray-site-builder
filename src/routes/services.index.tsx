@@ -4,6 +4,7 @@ import { SERVICES } from "@/data/services";
 import { COMMON } from "@/data/images";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { WaveText } from "@/components/site/WaveText";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
@@ -42,9 +43,9 @@ function ServicesHub() {
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Услуги" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <img src={COMMON.equipment} alt="Услуги санитарной службы" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
-          <h1 className="font-display text-3xl font-extrabold md:text-5xl">Услуги санитарной службы в Новосибирске</h1>
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Услуги санитарной службы в Новосибирске" duration={4} /></h1>
           <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
             13 направлений санитарной обработки: от уничтожения клопов и тараканов до фумигации экспортных грузов. Выезд по Новосибирску за 60 минут, гарантия по договору до 24 месяцев, сертифицированные препараты 4 класса опасности — безопасные для людей и животных.
           </p>

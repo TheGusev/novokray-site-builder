@@ -13,7 +13,6 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { StickyMobileCTA } from "@/components/site/StickyMobileCTA";
 import { Toaster } from "@/components/ui/sonner";
 import { SITE } from "@/data/site";
 
@@ -165,13 +164,12 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col overflow-x-hidden pb-16 md:pb-0">
+      <div className="flex min-h-screen flex-col overflow-x-hidden">
         <Header />
         <main className="flex-1">
           <Outlet />
         </main>
         <Footer />
-        <StickyMobileCTA />
         <Toaster richColors position="top-right" />
       </div>
     </QueryClientProvider>

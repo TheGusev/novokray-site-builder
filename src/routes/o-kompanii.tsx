@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Reveal } from "@/components/site/Reveal";
 import { CountUp } from "@/components/site/CountUp";
+import { WaveText } from "@/components/site/WaveText";
 
 export const Route = createFileRoute("/o-kompanii")({
   head: () => ({
@@ -39,8 +40,8 @@ function AboutPage() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "О компании" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.heroTeam} alt="Команда санитарной службы Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-30" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/75 to-primary/90" />
+        <img src={COMMON.heroTeam} alt="Команда санитарной службы Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative grid gap-8 py-12 md:py-20 lg:grid-cols-[1.2fr,1fr]">
           <div>
             <Reveal>
@@ -48,7 +49,7 @@ function AboutPage() {
                 <Building2 className="h-3.5 w-3.5" /> На рынке с {SITE.founded} года
               </span>
             </Reveal>
-            <h1 className="mt-5 font-display text-3xl font-extrabold leading-tight md:text-5xl">О санитарной службе «Дез-Федерация»</h1>
+            <h1 className="mt-5 font-display text-3xl font-extrabold leading-tight md:text-5xl"><WaveText className="on-dark" text="О санитарной службе «Дез-Федерация»" duration={4} /></h1>
             <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">
               Мы — команда из 28 специалистов, работаем в Новосибирске и области с {SITE.founded} года. За 12 лет провели более 38 000 обработок: от однокомнатных квартир до промышленных складов, кафе, школ и экспортных грузов. Лицензия Роспотребнадзора, договоры с УК, ТСЖ, сетевыми ресторанами и образовательными учреждениями.
             </p>
