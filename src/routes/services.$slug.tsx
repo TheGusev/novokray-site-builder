@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES_BY_SLUG, type Service } from "@/data/services";
+import { SERVICE_IMAGES, COMMON } from "@/data/images";
 import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -85,6 +86,7 @@ function ServicePage() {
   const s = data.service;
   const Icon = s.icon;
   const related = s.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
+  const hero = SERVICE_IMAGES[s.slug];
 
   return (
     <>
@@ -96,6 +98,12 @@ function ServicePage() {
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
+        {hero && (
+          <>
+            <img src={hero} alt={s.h1} className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/70 to-primary/85" />
+          </>
+        )}
         <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 80% 30%, oklch(0.7 0.20 38 / 0.3), transparent 60%)" }} />
         <div className="container-x relative grid gap-8 py-10 md:py-14 lg:grid-cols-[1.25fr,1fr] lg:py-20">
           <div>
@@ -126,6 +134,25 @@ function ServicePage() {
       </section>
 
       <TrustStrip />
+
+      {/* Photo strip */}
+      {hero && (
+        <section className="container-x pt-12">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="relative overflow-hidden rounded-2xl md:col-span-2 aspect-[16/10]">
+              <img src={hero} alt={`${s.title} — фото работ`} loading="lazy" className="h-full w-full object-cover" />
+            </div>
+            <div className="grid gap-4">
+              <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
+                <img src={COMMON.equipment} alt="Профессиональное оборудование" loading="lazy" className="h-full w-full object-cover" />
+              </div>
+              <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
+                <img src={COMMON.documents} alt="Договор, акт и гарантия" loading="lazy" className="h-full w-full object-cover" />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Problems */}
       <section className="container-x py-16">
