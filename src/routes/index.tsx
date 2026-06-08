@@ -153,7 +153,7 @@ function HomePage() {
                 href="#zayavka"
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-4 font-semibold backdrop-blur hover:bg-white/20"
               >
-                Расчёт за 5 минут <ArrowRight className="h-4 w-4" />
+                Расчёт за 5 сек <ArrowRight className="h-4 w-4" />
               </a>
             </Reveal>
 
@@ -186,7 +186,7 @@ function HomePage() {
             <Reveal variant="scale" delay={150}>
               <LeadForm
                 variant="hero"
-                title="Бесплатный расчёт за 5 минут"
+                title="Бесплатный расчёт за 5 сек"
                 subtitle="Перезвоним в течение 10 минут и зафиксируем цену до выезда."
               />
             </Reveal>
