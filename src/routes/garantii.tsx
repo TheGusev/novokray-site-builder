@@ -18,6 +18,30 @@ export const Route = createFileRoute("/garantii")({
       { property: "og:url", content: "/garantii" },
     ],
     links: [{ rel: "canonical", href: "/garantii" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            name: `Гарантии и сертификаты ${SITE.name}`,
+            url: `${SITE.domain}/garantii`,
+            inLanguage: "ru-RU",
+            isPartOf: { "@id": `${SITE.domain}#website` },
+            about: { "@id": `${SITE.domain}#organization` },
+            speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable", "table"] },
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+              { "@type": "ListItem", position: 2, name: "Гарантии", item: SITE.domain + "/garantii" },
+            ],
+          },
+        ],
+      }),
+    }],
   }),
   component: GuaranteesPage,
 });

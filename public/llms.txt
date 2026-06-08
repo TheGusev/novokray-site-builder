@@ -34,4 +34,5 @@
 ## Ссылки
 - Карта сайта: https://dez-federation.ru/sitemap.xml
 - robots.txt: https://dez-federation.ru/robots.txt
-- AI policy: https://dez-federation.ru/.well-known/ai
+- AI policy: https://dez-federation.ru/.well-known/ai.txt
+- Полная справка для ИИ: https://dez-federation.ru/llms-full.txt

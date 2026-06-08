@@ -52,6 +52,7 @@ export const Route = createFileRoute("/faq")({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable", "[itemprop='acceptedAnswer']"] },
         mainEntity: ALL_FAQ.map((f) => ({
           "@type": "Question",
           name: f.q,

@@ -18,6 +18,46 @@ export const Route = createFileRoute("/price")({
       { property: "og:url", content: "/price" },
     ],
     links: [{ rel: "canonical", href: "/price" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "OfferCatalog",
+            name: `Прайс-лист санитарной службы ${SITE.name}`,
+            url: `${SITE.domain}/price`,
+            provider: { "@id": `${SITE.domain}#organization` },
+            itemListElement: SERVICES.map((s, i) => ({
+              "@type": "Offer",
+              position: i + 1,
+              name: s.title,
+              description: s.metaDescription,
+              price: s.priceFrom,
+              priceCurrency: "RUB",
+              availability: "https://schema.org/InStock",
+              url: `${SITE.domain}/services/${s.slug}`,
+              itemOffered: { "@type": "Service", name: s.h1 },
+            })),
+          },
+          {
+            "@type": "AggregateOffer",
+            offerCount: SERVICES.length,
+            lowPrice: Math.min(...SERVICES.map((s) => s.priceFrom)),
+            highPrice: 25000,
+            priceCurrency: "RUB",
+            url: `${SITE.domain}/price`,
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+              { "@type": "ListItem", position: 2, name: "Цены", item: SITE.domain + "/price" },
+            ],
+          },
+        ],
+      }),
+    }],
   }),
   component: PricePage,
 });
