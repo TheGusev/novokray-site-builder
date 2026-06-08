@@ -75,9 +75,9 @@ export function Footer() {
             <li className="flex gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />{SITE.hours}</li>
           </ul>
           <div className="mt-4 flex gap-2">
-            <a href={SITE.social.vk} className="rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">VK</a>
-            <a href={SITE.social.telegram} className="rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">Telegram</a>
-            <a href={SITE.whatsappHref} className="rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">WhatsApp</a>
+            <a href={SITE.social.vk} target="_blank" rel="noopener noreferrer" aria-label="ВКонтакте" className="rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">VK</a>
+            <a href={SITE.social.telegram} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">Telegram</a>
+            <a href={SITE.whatsappHref} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">WhatsApp</a>
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@ export function Footer() {
         <div className="container-x flex flex-col items-center justify-between gap-2 py-5 text-xs text-muted-foreground md:flex-row">
           <div>© {new Date().getFullYear()} Дез-Федерация.ру — Санитарная служба Новосибирска. Все права защищены.</div>
           <div className="flex gap-4">
-            <Link to="/contacts" className="hover:text-primary">Реквизиты</Link>
+            <Link to="/o-kompanii" className="hover:text-primary">Реквизиты</Link>
             <Link to="/privacy" className="hover:text-primary">Политика</Link>
             <Link to="/terms" className="hover:text-primary">Соглашение</Link>
             <Link to="/karta-sayta" className="hover:text-primary">Карта сайта</Link>

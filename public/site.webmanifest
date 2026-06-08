@@ -1,0 +1,16 @@
+{
+  "name": "Дез-Федерация.ру — Санитарная служба №1 в Новосибирске",
+  "short_name": "Дез-Федерация",
+  "description": "Дезинфекция, дезинсекция, дератизация в Новосибирске и области. Выезд за 60 минут.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0F4A7A",
+  "lang": "ru-RU",
+  "icons": [
+    { "src": "/favicon-32x32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

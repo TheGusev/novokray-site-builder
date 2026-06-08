@@ -47,6 +47,7 @@ export const Route = createFileRoute("/services/$slug")({
         { property: "og:description", content: s.metaDescription },
         { property: "og:url", content: `/services/${params.slug}` },
         { property: "og:type", content: "website" },
+        { property: "og:image", content: `${SITE.domain}${SERVICE_IMAGES[s.slug] ?? "/og/default.jpg"}` },
       ],
       links: [
         { rel: "canonical", href: `/services/${params.slug}` },

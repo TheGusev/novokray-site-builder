@@ -27,6 +27,7 @@ export const Route = createFileRoute("/blog/$slug")({
         { property: "og:url", content: `/blog/${params.slug}` },
         { property: "og:type", content: "article" },
         { property: "article:published_time", content: p.date },
+        { property: "og:image", content: `${SITE.domain}${BLOG_COVERS[p.slug] ?? "/og/default.jpg"}` },
       ],
       links: [{ rel: "canonical", href: `/blog/${params.slug}` }],
       scripts: [{
