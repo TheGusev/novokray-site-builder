@@ -18,6 +18,29 @@ export const Route = createFileRoute("/o-kompanii")({
       { property: "og:url", content: "/o-kompanii" },
     ],
     links: [{ rel: "canonical", href: "/o-kompanii" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "AboutPage",
+            name: `О компании ${SITE.name}`,
+            url: `${SITE.domain}/o-kompanii`,
+            inLanguage: "ru-RU",
+            mainEntity: { "@id": `${SITE.domain}#organization` },
+            speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+              { "@type": "ListItem", position: 2, name: "О компании", item: SITE.domain + "/o-kompanii" },
+            ],
+          },
+        ],
+      }),
+    }],
   }),
   component: AboutPage,
 });

@@ -10,6 +10,23 @@ import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
+import { TldrBlock } from "@/components/site/TldrBlock";
+
+const WARRANTY_BY_SLUG: Record<string, string> = {
+  "unichtozhenie-klopov": "до 12 месяцев",
+  "unichtozhenie-tarakanov": "до 12 месяцев",
+  "unichtozhenie-blokh": "до 6 месяцев",
+  "deratizaciya": "до 6 месяцев",
+  "obrabotka-ot-pleseni": "до 24 месяцев",
+  "obrabotka-uchastkov": "до 1,5 месяцев",
+  "ozonirovanie-pomescheniy": "до 6 месяцев",
+  "sushka-posle-zatopleniya": "30 дней",
+  "dezinfekciya": "до 6 месяцев",
+  "unichtozhenie-os": "за один выезд",
+  "unichtozhenie-borschevika": "на сезон",
+  "fumigaciya": "по договору",
+  "dezodoraciya": "до 6 месяцев",
+};
 
 export const Route = createFileRoute("/services/$slug")({
   loader: ({ params }): { service: Service } => {
@@ -20,6 +37,8 @@ export const Route = createFileRoute("/services/$slug")({
   head: ({ loaderData, params }) => {
     const s = loaderData?.service;
     if (!s) return { meta: [{ title: "Не найдено" }] };
+    const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
+    const heroImg = `${SITE.domain}/og/default.jpg`;
     return {
       meta: [
         { title: s.metaTitle },
@@ -46,15 +65,47 @@ export const Route = createFileRoute("/services/$slug")({
                 name: s.h1,
                 serviceType: s.title,
                 provider: { "@id": `${SITE.domain}#organization` },
-                areaServed: { "@type": "City", name: SITE.city },
+                areaServed: [
+                  { "@type": "City", name: SITE.city },
+                  { "@type": "AdministrativeArea", name: SITE.region },
+                ],
+                serviceOutput: "Уничтожение/обработка с договором, актом и гарантией " + warranty,
+                category: s.category,
                 description: s.metaDescription,
-                offers: {
-                  "@type": "Offer",
-                  price: s.priceFrom,
-                  priceCurrency: "RUB",
-                  availability: "https://schema.org/InStock",
-                  url: `${SITE.domain}/services/${params.slug}`,
+                hasOfferCatalog: {
+                  "@type": "OfferCatalog",
+                  name: `Прайс: ${s.title}`,
+                  itemListElement: s.prices.map((p, i) => ({
+                    "@type": "Offer",
+                    position: i + 1,
+                    name: p.label,
+                    priceSpecification: {
+                      "@type": "PriceSpecification",
+                      price: s.priceFrom,
+                      priceCurrency: "RUB",
+                      valueAddedTaxIncluded: true,
+                      description: p.price,
+                    },
+                    availability: "https://schema.org/InStock",
+                    url: `${SITE.domain}/services/${params.slug}`,
+                    warranty: { "@type": "WarrantyPromise", durationOfWarranty: { "@type": "QuantitativeValue", value: warranty } },
+                  })),
                 },
+              },
+              {
+                "@type": "HowTo",
+                name: `Как проходит ${s.title.toLowerCase()} — пошагово`,
+                description: s.lead,
+                totalTime: "PT2H",
+                estimatedCost: { "@type": "MonetaryAmount", currency: "RUB", value: s.priceFrom },
+                supply: s.tech.map((t) => ({ "@type": "HowToSupply", name: t.title })),
+                step: s.steps.map((st, i) => ({
+                  "@type": "HowToStep",
+                  position: i + 1,
+                  name: st.title,
+                  text: st.text,
+                  url: `${SITE.domain}/services/${params.slug}#step-${i + 1}`,
+                })),
               },
               {
                 "@type": "BreadcrumbList",
@@ -71,6 +122,7 @@ export const Route = createFileRoute("/services/$slug")({
                   name: f.q,
                   acceptedAnswer: { "@type": "Answer", text: f.a },
                 })),
+                speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
               },
             ],
           }),
@@ -87,6 +139,7 @@ function ServicePage() {
   const Icon = s.icon;
   const related = s.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
   const hero = SERVICE_IMAGES[s.slug];
+  const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
 
   return (
     <>
@@ -115,6 +168,20 @@ function ServicePage() {
             <AnimatedHeading as="h1" text={s.h1} highlight="Новосибирске" className="mt-5 font-display text-[30px] font-extrabold leading-tight text-balance md:text-5xl" />
             <Reveal delay={250}>
               <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">{s.lead}</p>
+            </Reveal>
+            <Reveal delay={300}>
+              <div className="mt-5 max-w-xl">
+                <TldrBlock
+                  items={[
+                    { label: "Цена", value: `от ${s.priceFrom.toLocaleString("ru-RU")} ₽` },
+                    { label: "Выезд", value: "60 минут по городу" },
+                    { label: "Гарантия", value: warranty },
+                    { label: "Безопасность", value: "4 класс, безопасно для детей и животных" },
+                    { label: "Документы", value: "Договор, акт, чек/счёт" },
+                    { label: "Оплата", value: "После обработки — наличные, карта, СБП" },
+                  ]}
+                />
+              </div>
             </Reveal>
             <Reveal delay={350} className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a href={SITE.phoneHref} className="cta-shine inline-flex items-center justify-center gap-2 rounded-xl bg-cta-gradient px-5 py-4 font-bold text-accent-foreground shadow-cta hover:scale-[1.02] transition">

@@ -17,6 +17,29 @@ export const Route = createFileRoute("/contacts")({
       { property: "og:url", content: "/contacts" },
     ],
     links: [{ rel: "canonical", href: "/contacts" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "ContactPage",
+            name: `Контакты ${SITE.name}`,
+            url: `${SITE.domain}/contacts`,
+            inLanguage: "ru-RU",
+            mainEntity: { "@id": `${SITE.domain}#organization` },
+            speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable", "address"] },
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+              { "@type": "ListItem", position: 2, name: "Контакты", item: SITE.domain + "/contacts" },
+            ],
+          },
+        ],
+      }),
+    }],
   }),
   component: ContactsPage,
 });

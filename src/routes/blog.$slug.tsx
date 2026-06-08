@@ -17,6 +17,7 @@ export const Route = createFileRoute("/blog/$slug")({
   head: ({ loaderData, params }) => {
     const p = loaderData?.post;
     if (!p) return { meta: [{ title: "Статья не найдена" }] };
+    const wordCount = p.body.split(/\s+/).filter(Boolean).length;
     return {
       meta: [
         { title: `${p.title} — Блог ${SITE.name}` },
@@ -38,10 +39,25 @@ export const Route = createFileRoute("/blog/$slug")({
               headline: p.title,
               description: p.excerpt,
               datePublished: p.date,
-              author: { "@type": "Organization", name: SITE.name },
-              publisher: { "@id": `${SITE.domain}#organization` },
+              dateModified: p.date,
+              author: {
+                "@type": "Person",
+                name: "Алексей Дроздов",
+                jobTitle: "Главный дезинфектор, Дез-Федерация",
+                worksFor: { "@id": `${SITE.domain}#organization` },
+              },
+              publisher: {
+                "@type": "Organization",
+                "@id": `${SITE.domain}#organization`,
+                name: SITE.name,
+                logo: { "@type": "ImageObject", url: `${SITE.domain}/logo.png` },
+              },
               mainEntityOfPage: `${SITE.domain}/blog/${params.slug}`,
+              articleSection: p.tags[0] ?? "Санитарная обработка",
+              keywords: p.tags.join(", "),
+              wordCount,
               inLanguage: "ru-RU",
+              speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
             },
             {
               "@type": "BreadcrumbList",
@@ -91,7 +107,7 @@ function PostPage() {
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[1fr,360px]">
           <div className="prose-content">
-            <div className="rounded-2xl border border-primary/20 bg-secondary/50 p-5 text-base font-medium text-foreground">
+            <div className="speakable rounded-2xl border border-primary/20 bg-secondary/50 p-5 text-base font-medium text-foreground">
               {p.excerpt}
             </div>
             {p.body.split("\n\n").map((par, i) => (

@@ -89,12 +89,38 @@ export const Route = createFileRoute("/")({
       type: "application/ld+json",
       children: JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: HOME_FAQ.map((f) => ({
-          "@type": "Question",
-          name: f.q,
-          acceptedAnswer: { "@type": "Answer", text: f.a },
-        })),
+        "@graph": [
+          {
+            "@type": "FAQPage",
+            speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
+            mainEntity: HOME_FAQ.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          },
+          {
+            "@type": "ItemList",
+            name: "Услуги санитарной службы Дез-Федерация",
+            itemListElement: SERVICES.map((s, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: `${SITE.domain}/services/${s.slug}`,
+              name: s.title,
+            })),
+          },
+          {
+            "@type": "LocalBusiness",
+            "@id": `${SITE.domain}#localbusiness`,
+            review: REVIEWS.slice(0, 5).map((r) => ({
+              "@type": "Review",
+              author: { "@type": "Person", name: r.n },
+              reviewBody: r.t,
+              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+              itemReviewed: { "@id": `${SITE.domain}#organization` },
+            })),
+          },
+        ],
       }),
     }],
   }),
