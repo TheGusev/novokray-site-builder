@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+
 interface Props {
   text: string;
   className?: string;
@@ -6,45 +8,92 @@ interface Props {
   sentencePause?: number;
 }
 
+interface WordToken {
+  id: string;
+  text: string;
+}
+
 export function WaveSentences({
   text,
   className = "",
   startDelay = 0,
-  wordStep = 85,
-  sentencePause = 600,
+  wordStep = 160,
+  sentencePause = 950,
 }: Props) {
-  const sentences = text
-    .split(/(?<=[.!?])\s+/)
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .map((s) => s.split(/\s+/));
+  const sentences = useMemo(
+    () =>
+      text
+        .split(/(?<=[.!?])\s+/)
+        .map((sentence) => sentence.trim())
+        .filter(Boolean),
+    [text],
+  );
 
-  let elapsed = startDelay;
+  const words = useMemo<WordToken[]>(
+    () =>
+      sentences.flatMap((sentence, sentenceIndex) =>
+        sentence
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((word, wordIndex) => ({
+            id: `${sentenceIndex}-${wordIndex}`,
+            text: word,
+          })),
+      ),
+    [sentences],
+  );
+
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  useEffect(() => {
+    if (!words.length) {
+      setVisibleCount(0);
+      return;
+    }
+
+    if (typeof window === "undefined") return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisibleCount(words.length);
+      return;
+    }
+
+    setVisibleCount(0);
+
+    let elapsed = startDelay;
+    let revealed = 0;
+    const timeouts: number[] = [];
+
+    sentences.forEach((sentence, sentenceIndex) => {
+      const sentenceWords = sentence.split(/\s+/).filter(Boolean);
+
+      sentenceWords.forEach(() => {
+        revealed += 1;
+        const nextVisibleCount = revealed;
+        timeouts.push(window.setTimeout(() => setVisibleCount(nextVisibleCount), elapsed));
+        elapsed += wordStep;
+      });
+
+      if (sentenceIndex < sentences.length - 1) {
+        elapsed += sentencePause;
+      }
+    });
+
+    return () => {
+      timeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
+    };
+  }, [sentencePause, sentences, startDelay, wordStep, words.length]);
+
+  const visibleWords = words.slice(0, visibleCount);
 
   return (
-    <p className={`paragraph-wave ${className}`} aria-label={text}>
+    <p className={`hero-sentence-reveal ${className}`} aria-label={text}>
       <span className="sr-only">{text}</span>
       <span aria-hidden>
-        {sentences.map((words, si) => (
-          <span key={si}>
-            {words.map((word, wi) => {
-              const delay = elapsed;
-              elapsed += wordStep;
-              const isLastWordOfSentence = wi === words.length - 1;
-              const isLastOverall = isLastWordOfSentence && si === sentences.length - 1;
-              if (isLastWordOfSentence && !isLastOverall) elapsed += sentencePause;
-              return (
-                <span key={wi}>
-                  <span
-                    className="reveal-word"
-                    style={{ animationDelay: `${delay}ms` }}
-                  >
-                    {word}
-                  </span>
-                  {!isLastOverall ? " " : null}
-                </span>
-              );
-            })}
+        {visibleWords.map((word, index) => (
+          <span key={word.id} className="reveal-word">
+            {index > 0 ? " " : null}
+            {word.text}
           </span>
         ))}
       </span>
