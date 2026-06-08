@@ -1,5 +1,5 @@
 import {
-  Bug, Cockroach, Spray, Droplets, Wind, Waves, ShieldCheck, Rat, Bird,
+  Bug, SprayCan, Droplets, Wind, Waves, Rat, Bird,
   Skull, Sprout, FlaskConical, Sparkles, type LucideIcon,
 } from "lucide-react";
 
