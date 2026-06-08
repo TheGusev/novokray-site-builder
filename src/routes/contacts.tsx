@@ -39,29 +39,35 @@ function ContactsPage() {
       <section className="container-x py-8">
         <div className="grid gap-8 lg:grid-cols-[1.2fr,1fr]">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Reveal as="a" href={SITE.phoneHref} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
-              <Phone className="mt-1 h-6 w-6 text-primary" />
-              <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Телефон</div>
-                <div className="font-display text-lg font-bold">{SITE.phone}</div>
-                <div className="text-xs text-muted-foreground">{SITE.hours}</div>
-              </div>
+            <Reveal>
+              <a href={SITE.phoneHref} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
+                <Phone className="mt-1 h-6 w-6 text-primary" />
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Телефон</div>
+                  <div className="font-display text-lg font-bold">{SITE.phone}</div>
+                  <div className="text-xs text-muted-foreground">{SITE.hours}</div>
+                </div>
+              </a>
             </Reveal>
-            <Reveal as="a" delay={80} href={SITE.whatsappHref} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
-              <MessageCircle className="mt-1 h-6 w-6 text-success" />
-              <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">WhatsApp / Telegram</div>
-                <div className="font-display text-lg font-bold">{SITE.whatsapp}</div>
-                <div className="text-xs text-muted-foreground">Отвечаем в течение 15 минут</div>
-              </div>
+            <Reveal delay={80}>
+              <a href={SITE.whatsappHref} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
+                <MessageCircle className="mt-1 h-6 w-6 text-success" />
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">WhatsApp / Telegram</div>
+                  <div className="font-display text-lg font-bold">{SITE.whatsapp}</div>
+                  <div className="text-xs text-muted-foreground">Отвечаем в течение 15 минут</div>
+                </div>
+              </a>
             </Reveal>
-            <Reveal as="a" delay={160} href={SITE.emailHref} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
-              <Mail className="mt-1 h-6 w-6 text-primary" />
-              <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Email</div>
-                <div className="font-display text-lg font-bold">{SITE.email}</div>
-                <div className="text-xs text-muted-foreground">Договоры, счета, документы</div>
-              </div>
+            <Reveal delay={160}>
+              <a href={SITE.emailHref} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
+                <Mail className="mt-1 h-6 w-6 text-primary" />
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Email</div>
+                  <div className="font-display text-lg font-bold">{SITE.email}</div>
+                  <div className="text-xs text-muted-foreground">Договоры, счета, документы</div>
+                </div>
+              </a>
             </Reveal>
             <Reveal delay={240} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card">
               <MapPin className="mt-1 h-6 w-6 text-primary" />
