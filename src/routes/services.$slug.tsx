@@ -38,7 +38,6 @@ export const Route = createFileRoute("/services/$slug")({
     const s = loaderData?.service;
     if (!s) return { meta: [{ title: "Не найдено" }] };
     const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
-    const heroImg = `${SITE.domain}/og/default.jpg`;
     return {
       meta: [
         { title: s.metaTitle },
