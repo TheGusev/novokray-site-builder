@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
+import { COMMON, GALLERY } from "@/data/images";
 import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
@@ -110,6 +111,8 @@ function HomePage() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
+        <img src={COMMON.heroTeam} alt="Бригада санитарной службы Дез-Федерация в Новосибирске" className="absolute inset-0 h-full w-full object-cover opacity-30" loading="eager" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/75 to-primary/90" />
         <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle at 15% 10%, oklch(0.62 0.18 230 / 0.5) 0%, transparent 55%), radial-gradient(circle at 85% 85%, oklch(0.62 0.24 30 / 0.35) 0%, transparent 55%)" }} />
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="container-x relative grid gap-10 py-10 md:py-16 lg:grid-cols-[1.15fr,1fr] lg:py-20">
