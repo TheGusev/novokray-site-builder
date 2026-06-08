@@ -16,7 +16,6 @@ import { TrustStrip } from "@/components/site/TrustStrip";
 import { FAQ } from "@/components/site/FAQ";
 import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
-import { WaveText } from "@/components/site/WaveText";
 import { WaveSentences } from "@/components/site/WaveSentences";
 import { CountUp } from "@/components/site/CountUp";
 
@@ -141,9 +140,13 @@ function HomePage() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={heroBg} alt="Современная квартира в Новосибирске — обслуживается санитарной службой Дез-Федерация" className="hero-kenburns absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" width={1920} height={1024} />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/65 via-black/35 to-black/10" />
-        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle at 15% 10%, oklch(0.62 0.18 230 / 0.5) 0%, transparent 55%), radial-gradient(circle at 85% 85%, oklch(0.62 0.24 30 / 0.35) 0%, transparent 55%)" }} />
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="hero-room-tour-frame">
+            <img src={heroBg} alt="Современная квартира в Новосибирске — обслуживается санитарной службой Дез-Федерация" className="hero-room-tour-media h-full w-full object-cover" loading="eager" width={1920} height={1024} />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-black/72 via-black/42 to-black/18" />
+        <div className="hero-ambient-glow absolute inset-0 opacity-55" style={{ backgroundImage: "radial-gradient(circle at 14% 12%, oklch(0.72 0.16 32 / 0.24) 0%, transparent 36%), radial-gradient(circle at 78% 80%, oklch(0.62 0.18 228 / 0.26) 0%, transparent 44%), radial-gradient(circle at 58% 48%, rgba(255, 255, 255, 0.06) 0%, transparent 38%)" }} />
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="container-x relative py-10 md:py-16 lg:py-20">
           <div className="flex max-w-3xl flex-col">
@@ -157,18 +160,16 @@ function HomePage() {
               </div>
             </Reveal>
 
-            <h1 className="mt-5 font-display text-[34px] font-extrabold leading-[1.05] text-balance md:text-5xl lg:text-6xl">
-              <WaveText
-                text="Санитарная служба №1 в Новосибирске"
-                className="on-dark"
-                duration={4}
-              />
+            <h1 className="mt-5 max-w-3xl font-display text-[34px] font-extrabold leading-[1.02] text-balance text-white md:text-5xl lg:text-6xl">
+              Санитарная служба №1 в Новосибирске
             </h1>
 
             <WaveSentences
               text="Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов. Работаем с 2014 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев, безопасные для детей и животных препараты."
-              className="mt-5 max-w-xl text-[15px] leading-relaxed md:text-lg on-dark"
-              startDelay={250}
+              className="mt-5 min-h-[9.5rem] max-w-xl text-[15px] font-medium leading-[1.75] md:min-h-[7rem] md:text-lg"
+              startDelay={420}
+              wordStep={160}
+              sentencePause={950}
             />
 
             <Reveal delay={350} className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
