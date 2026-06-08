@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BadgeCheck, CreditCard, Percent, Calculator, Phone } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { COMMON, SERVICE_IMAGES } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
+import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/price")({
   head: () => ({
@@ -20,20 +22,43 @@ export const Route = createFileRoute("/price")({
 });
 
 function PricePage() {
+  const factors = [
+    { i: Calculator, t: "Площадь объекта", s: "Цена пропорциональна квадратуре. Чем больше м² — тем ниже цена за м²." },
+    { i: Percent, t: "Степень заражения", s: "Лёгкое — стандарт. Сильное — повторная обработка, тогда обе со скидкой 30%." },
+    { i: BadgeCheck, t: "Тип помещения", s: "Квартира, кафе, склад, подвал, участок — разные нормы расхода препаратов." },
+    { i: CreditCard, t: "Срочность", s: "Стандарт — выезд за 60 мин. Ночной выезд — +20% к чеку. Аварийная сушка 24/7 — без наценки." },
+  ];
+  const discounts = [
+    "5% при повторном заказе в течение года",
+    "10% пенсионерам и многодетным семьям (по запросу)",
+    "10–15% юрлицам при договоре на год",
+    "20% при обработке всего подъезда (квартир-соседей)",
+  ];
   return (
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Цены" }]} />
-      <section className="container-x pb-6">
-        <h1 className="font-display text-3xl font-extrabold md:text-5xl">Прайс-лист</h1>
-        <p className="mt-4 max-w-3xl text-muted-foreground">
-          Стоимость санитарной обработки в Новосибирске — фиксируется до выезда. Без скрытых платежей и доплат за препараты. Для юрлиц — счёт с НДС или без, для физлиц — наличная и безналичная оплата.
-        </p>
+      <section className="relative overflow-hidden bg-hero text-primary-foreground">
+        <img src={COMMON.equipment} alt="Прайс на санитарную обработку" className="absolute inset-0 h-full w-full object-cover opacity-20" loading="eager" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/90" />
+        <div className="container-x relative py-12 md:py-16">
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl">Цены санитарной службы — Новосибирск</h1>
+          <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
+            Полный прайс-лист на 13 направлений санитарной обработки. Цена фиксируется до выезда, никаких скрытых платежей и доплат «за препараты». Принимаем наличные, карты, СБП, безналичный расчёт с НДС или без — для физлиц и юрлиц.
+          </p>
+        </div>
       </section>
 
-      <section className="container-x py-8">
+      <section className="container-x py-14">
         <div className="space-y-10">
-          {SERVICES.map((s) => (
-            <div key={s.slug} className="rounded-2xl border border-border bg-card p-6 shadow-card md:p-8">
+          {SERVICES.map((s, idx) => (
+            <Reveal key={s.slug} delay={(idx % 3) * 80} className="overflow-hidden rounded-2xl border border-border bg-card shadow-card md:p-0">
+              <div className="grid gap-0 md:grid-cols-[260px,1fr]">
+                {SERVICE_IMAGES[s.slug] && (
+                  <div className="relative aspect-[16/10] md:aspect-auto">
+                    <img src={SERVICE_IMAGES[s.slug]} alt={s.title} loading="lazy" className="h-full w-full object-cover" />
+                  </div>
+                )}
+                <div className="p-6 md:p-8">
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <s.icon className="h-7 w-7 text-primary" />
@@ -61,16 +86,62 @@ function PricePage() {
                   </tbody>
                 </table>
               </div>
-            </div>
+                </div>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
-      <section className="container-x py-10">
+      {/* What affects price */}
+      <section className="bg-surface py-14 md:py-20">
+        <div className="container-x">
+          <Reveal>
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">Прозрачное ценообразование</div>
+            <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">От чего зависит итоговая цена</h2>
+          </Reveal>
+          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {factors.map((f, i) => (
+              <Reveal key={f.t} delay={i * 80} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-secondary text-primary"><f.i className="h-5 w-5" /></div>
+                <div className="mt-4 font-display text-base font-bold">{f.t}</div>
+                <div className="mt-2 text-sm text-muted-foreground">{f.s}</div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Discounts + payment */}
+      <section className="container-x py-14 md:py-20">
+        <div className="grid gap-8 lg:grid-cols-2">
+          <Reveal className="rounded-3xl border border-border bg-card p-8 shadow-card">
+            <Percent className="h-8 w-8 text-accent" />
+            <h2 className="mt-3 font-display text-2xl font-bold">Скидки и бонусы</h2>
+            <ul className="mt-5 space-y-2 text-sm">
+              {discounts.map((d) => (<li key={d} className="flex items-start gap-2"><BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" />{d}</li>))}
+            </ul>
+          </Reveal>
+          <Reveal delay={120} className="rounded-3xl border border-border bg-card p-8 shadow-card">
+            <CreditCard className="h-8 w-8 text-primary" />
+            <h2 className="mt-3 font-display text-2xl font-bold">Способы оплаты</h2>
+            <ul className="mt-5 space-y-2 text-sm">
+              <li className="flex items-start gap-2"><BadgeCheck className="mt-0.5 h-4 w-4 text-success" /> Наличные с выдачей чека</li>
+              <li className="flex items-start gap-2"><BadgeCheck className="mt-0.5 h-4 w-4 text-success" /> Карты Visa, Mastercard, МИР</li>
+              <li className="flex items-start gap-2"><BadgeCheck className="mt-0.5 h-4 w-4 text-success" /> СБП по QR-коду</li>
+              <li className="flex items-start gap-2"><BadgeCheck className="mt-0.5 h-4 w-4 text-success" /> Безналичный расчёт для юрлиц, счёт с НДС или без</li>
+              <li className="flex items-start gap-2"><BadgeCheck className="mt-0.5 h-4 w-4 text-success" /> Оплата после обработки — на месте</li>
+            </ul>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="container-x pb-16">
         <div className="grid items-start gap-8 rounded-3xl bg-hero p-8 text-primary-foreground md:p-12 lg:grid-cols-2">
           <div>
-            <h2 className="font-display text-2xl font-bold md:text-3xl">Нужен точный расчёт?</h2>
+            <h2 className="font-display text-2xl font-bold md:text-3xl">Нужен точный расчёт по объекту?</h2>
             <p className="mt-3 text-white/85">Опишите объект — назовём цену по телефону и зафиксируем её в договоре.</p>
+            <a href={SITE.phoneHref} className="cta-shine mt-5 inline-flex items-center gap-2 rounded-xl bg-cta-gradient px-5 py-3.5 font-bold text-accent-foreground shadow-cta"><Phone className="h-5 w-5" /> {SITE.phone}</a>
           </div>
           <LeadForm variant="hero" />
         </div>
