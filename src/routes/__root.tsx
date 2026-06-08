@@ -15,6 +15,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { SITE } from "@/data/site";
+import { SERVICES } from "@/data/services";
 
 const ORG_GRAPH = {
   "@context": "https://schema.org",
@@ -112,15 +113,29 @@ const ORG_GRAPH = {
 };
 
 function NotFoundComponent() {
+  const top = [...SERVICES].sort((a, b) => b.priority - a.priority).slice(0, 4);
   return (
-    <div className="flex min-h-[70vh] items-center justify-center px-4">
-      <div className="max-w-md text-center">
+    <div className="container-x flex min-h-[70vh] flex-col items-center justify-center py-12 text-center">
+      <div className="max-w-md">
         <h1 className="font-display text-7xl font-extrabold text-primary">404</h1>
         <h2 className="mt-4 font-display text-xl font-bold">Страница не найдена</h2>
         <p className="mt-2 text-sm text-muted-foreground">Возможно, страница была перенесена. Проверьте адрес или вернитесь на главную.</p>
-        <Link to="/" className="mt-6 inline-flex items-center justify-center rounded-md bg-accent-gradient px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-accent">
-          На главную
-        </Link>
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <Link to="/" className="inline-flex items-center justify-center rounded-md bg-accent-gradient px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-accent">На главную</Link>
+          <Link to="/services" className="inline-flex items-center justify-center rounded-md border border-input px-5 py-2.5 text-sm font-semibold">Все услуги</Link>
+          <Link to="/contacts" className="inline-flex items-center justify-center rounded-md border border-input px-5 py-2.5 text-sm font-semibold">Контакты</Link>
+        </div>
+      </div>
+      <div className="mt-10 w-full max-w-3xl">
+        <div className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Популярные услуги</div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {top.map((s) => (
+            <Link key={s.slug} to="/services/$slug" params={{ slug: s.slug }} className="rounded-xl border border-border bg-card p-4 text-left hover:border-primary/40 hover:shadow-card">
+              <div className="font-display text-sm font-bold">{s.title}</div>
+              <div className="mt-1 text-xs text-muted-foreground">от {s.priceFrom.toLocaleString("ru-RU")} ₽</div>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
