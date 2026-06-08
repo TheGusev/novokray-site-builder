@@ -5,6 +5,7 @@ import { COMMON } from "@/data/images";
 import { FAQ } from "@/components/site/FAQ";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
+import { WaveText } from "@/components/site/WaveText";
 
 const GENERAL = [
   { q: "Сколько стоит обработка?", a: "Стоимость зависит от объекта и услуги. Однокомнатная квартира — от 1 500 ₽, дом — от 3 500 ₽, участок — от 25 ₽/м². Точную цену озвучиваем по телефону." },
@@ -70,7 +71,7 @@ function FAQPage() {
         <img src={COMMON.office} alt="Поддержка клиентов Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
-          <h1 className="font-display text-3xl font-extrabold md:text-5xl">Вопросы и ответы о санитарной обработке</h1>
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Вопросы и ответы о санитарной обработке" duration={4} /></h1>
           <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
             Собрали 25+ популярных вопросов клиентов: о ценах, безопасности препаратов, сроках гарантии, документах для юрлиц и подготовке к обработке. Если не нашли ответ — позвоните оператору, проконсультируем бесплатно.
           </p>

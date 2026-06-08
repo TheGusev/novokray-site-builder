@@ -6,6 +6,7 @@ import { SITE } from "@/data/site";
 import { POSTS, POSTS_PER_PAGE } from "@/data/blog";
 import { BLOG_COVERS, COMMON } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { WaveText } from "@/components/site/WaveText";
 
 const searchSchema = z.object({
   page: fallback(z.number().int().min(1), 1).default(1),
@@ -40,7 +41,7 @@ function BlogIndex() {
         <img src={COMMON.heroSpray} alt="Блог санитарной службы Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
-          <h1 className="font-display text-3xl font-extrabold md:text-5xl">Блог санитарной службы</h1>
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Блог санитарной службы" duration={4} /></h1>
           <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
             Полезные статьи об уничтожении вредителей, плесени, дезинфекции и сушке после потопов — от экспертов Дез-Федерации с 12-летним опытом работы в Новосибирске. Практические гайды, чек-листы, разборы реальных кейсов.
           </p>

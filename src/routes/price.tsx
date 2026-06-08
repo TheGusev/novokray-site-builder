@@ -6,6 +6,7 @@ import { COMMON, SERVICE_IMAGES } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Reveal } from "@/components/site/Reveal";
+import { WaveText } from "@/components/site/WaveText";
 
 export const Route = createFileRoute("/price")({
   head: () => ({
@@ -41,7 +42,7 @@ function PricePage() {
         <img src={COMMON.equipment} alt="Прайс на санитарную обработку" className="absolute inset-0 h-full w-full object-cover opacity-20" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
-          <h1 className="font-display text-3xl font-extrabold md:text-5xl">Цены санитарной службы — Новосибирск</h1>
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Цены санитарной службы — Новосибирск" duration={4} /></h1>
           <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
             Полный прайс-лист на 13 направлений санитарной обработки. Цена фиксируется до выезда, никаких скрытых платежей и доплат «за препараты». Принимаем наличные, карты, СБП, безналичный расчёт с НДС или без — для физлиц и юрлиц.
           </p>
