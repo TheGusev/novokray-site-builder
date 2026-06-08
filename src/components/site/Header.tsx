@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Phone, X, ChevronDown, MessageCircle, Clock } from "lucide-react";
+import { Menu, Phone, ChevronDown, MessageCircle, Clock } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
 import { Logo } from "@/components/site/Logo";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Accordion,
   AccordionContent,
@@ -38,11 +44,6 @@ export function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
 
   const grouped = SERVICES.reduce<Record<string, typeof SERVICES>>((acc, s) => {
     (acc[s.category] ||= []).push(s);
@@ -145,34 +146,20 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile sheet */}
-      <div
-        className={`fixed inset-0 z-[60] lg:hidden ${open ? "pointer-events-auto" : "pointer-events-none"}`}
-        aria-hidden={!open}
-      >
-        <div
-          onClick={() => setOpen(false)}
-          className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
-        />
-        <aside
-          className={`absolute right-0 top-0 flex h-full w-[min(92vw,420px)] flex-col overflow-y-auto bg-background shadow-elegant transition-transform duration-300 ${
-            open ? "translate-x-0" : "translate-x-full"
-          }`}
+      {/* Mobile sheet (shadcn Sheet — no duplicate header) */}
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          side="right"
+          className="flex w-full max-w-[420px] flex-col overflow-y-auto bg-background p-0 sm:max-w-[420px]"
         >
-          <div className="flex items-center justify-between border-b border-border p-4">
-            <Logo />
-            <button
-              onClick={() => setOpen(false)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border"
-              aria-label="Закрыть меню"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          <SheetHeader className="border-b border-border p-4">
+            <SheetTitle className="text-left font-display text-base font-bold">Меню</SheetTitle>
+          </SheetHeader>
 
           <div className="space-y-2 p-4">
             <a
               href={SITE.phoneHref}
+              onClick={() => setOpen(false)}
               className="flex items-center justify-between gap-3 rounded-2xl bg-cta-gradient p-4 text-accent-foreground shadow-cta cta-shine"
             >
               <span className="flex items-center gap-3">
@@ -188,6 +175,7 @@ export function Header() {
             </a>
             <a
               href={SITE.whatsappHref}
+              onClick={() => setOpen(false)}
               className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 font-semibold"
             >
               <MessageCircle className="h-5 w-5 text-success" /> Написать в WhatsApp
@@ -252,8 +240,8 @@ export function Header() {
             <div>{SITE.address}</div>
             <div className="mt-1">{SITE.email}</div>
           </div>
-        </aside>
-      </div>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 }
