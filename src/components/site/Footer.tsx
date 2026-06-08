@@ -75,6 +75,8 @@ export function Footer() {
           <div>© {new Date().getFullYear()} Дез-Федерация.ру — Санитарная служба Новосибирска. Все права защищены.</div>
           <div className="flex gap-4">
             <Link to="/contacts" className="hover:text-primary">Реквизиты</Link>
+            <Link to="/privacy" className="hover:text-primary">Политика</Link>
+            <Link to="/terms" className="hover:text-primary">Соглашение</Link>
             <a href="/sitemap.xml" className="hover:text-primary">Карта сайта</a>
           </div>
         </div>

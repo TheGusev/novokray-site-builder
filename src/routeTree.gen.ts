@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PriceRouteImport } from './routes/price'
 import { Route as OKompaniiRouteImport } from './routes/o-kompanii'
 import { Route as GarantiiRouteImport } from './routes/garantii'
@@ -22,9 +24,19 @@ import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PriceRoute = PriceRouteImport.update({
@@ -91,7 +103,9 @@ export interface FileRoutesByFullPath {
   '/garantii': typeof GarantiiRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -105,7 +119,9 @@ export interface FileRoutesByTo {
   '/garantii': typeof GarantiiRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -120,7 +136,9 @@ export interface FileRoutesById {
   '/garantii': typeof GarantiiRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -136,7 +154,9 @@ export interface FileRouteTypes {
     | '/garantii'
     | '/o-kompanii'
     | '/price'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/services/$slug'
@@ -150,7 +170,9 @@ export interface FileRouteTypes {
     | '/garantii'
     | '/o-kompanii'
     | '/price'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/services/$slug'
@@ -164,7 +186,9 @@ export interface FileRouteTypes {
     | '/garantii'
     | '/o-kompanii'
     | '/price'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/services/$slug'
@@ -179,7 +203,9 @@ export interface RootRouteChildren {
   GarantiiRoute: typeof GarantiiRoute
   OKompaniiRoute: typeof OKompaniiRoute
   PriceRoute: typeof PriceRoute
+  PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CategoryDezinfekciyaNovosibirskRoute: typeof CategoryDezinfekciyaNovosibirskRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
@@ -189,11 +215,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/price': {
@@ -283,7 +323,9 @@ const rootRouteChildren: RootRouteChildren = {
   GarantiiRoute: GarantiiRoute,
   OKompaniiRoute: OKompaniiRoute,
   PriceRoute: PriceRoute,
+  PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   BlogSlugRoute: BlogSlugRoute,
   CategoryDezinfekciyaNovosibirskRoute: CategoryDezinfekciyaNovosibirskRoute,
   ServicesSlugRoute: ServicesSlugRoute,
@@ -293,3 +335,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
