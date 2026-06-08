@@ -108,5 +108,5 @@ export const POSTS: BlogPost[] = [
   },
 ];
 
-export const POSTS_BY_SLUG = Object.fromEntries(POSTS.map((p) => [p.slug, p]));
+export const POSTS_BY_SLUG: Record<string, BlogPost> = Object.fromEntries(POSTS.map((p) => [p.slug, p]));
 export const POSTS_PER_PAGE = 6;

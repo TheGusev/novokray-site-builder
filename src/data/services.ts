@@ -574,7 +574,7 @@ export const SERVICES: Service[] = [
   },
 ];
 
-export const SERVICES_BY_SLUG = Object.fromEntries(SERVICES.map((s) => [s.slug, s]));
+export const SERVICES_BY_SLUG: Record<string, Service> = Object.fromEntries(SERVICES.map((s) => [s.slug, s]));
 
 export const PRIORITY_SLUGS = [
   "unichtozhenie-klopov",
