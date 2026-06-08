@@ -184,7 +184,16 @@
   75%  { color: var(--color-primary-glow); transform: translateY(-2px); }
   100% { color: var(--color-foreground); transform: translateY(0); }
 }
-.wave-text { display: inline-block; }
+.wave-text {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: manual;
+  text-wrap: balance;
+}
+.wave-text .wave-word {
+  display: inline-block;
+  white-space: nowrap;
+}
 .wave-text .wave-char {
   display: inline-block;
   animation-name: wave-text-color;
