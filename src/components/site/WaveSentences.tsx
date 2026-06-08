@@ -89,7 +89,10 @@ export function WaveSentences({
   return (
     <p className={`hero-sentence-reveal ${className}`} aria-label={text}>
       <span className="sr-only">{text}</span>
-      <span aria-hidden>
+      <span className="hero-sentence-reveal__ghost" aria-hidden>
+        {text}
+      </span>
+      <span className="hero-sentence-reveal__live" aria-hidden>
         {visibleWords.map((word, index) => (
           <span key={word.id} className="reveal-word">
             {index > 0 ? " " : null}
