@@ -174,9 +174,23 @@
   to { transform: translateX(-50%); }
 }
 
-@keyframes wave-sentence-in {
+@keyframes wave-word-in {
   0% { opacity: 0; transform: translateY(8px); filter: blur(4px); }
   100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.wave-word-in {
+  animation-name: wave-word-in;
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave-word-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
 }
 
 .animate-floaty { animation: floaty 4.5s ease-in-out infinite; }

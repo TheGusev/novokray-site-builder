@@ -3,46 +3,61 @@ import { WaveText } from "./WaveText";
 interface Props {
   text: string;
   className?: string;
-  /** Delay before the first sentence appears, ms */
+  /** Delay before the first word appears, ms */
   startDelay?: number;
-  /** Gap between sentence reveals, ms */
-  step?: number;
+  /** Delay between words, ms */
+  wordStep?: number;
+  /** Extra pause inserted between sentences, ms */
+  sentencePause?: number;
   /** Wave color cycle duration, seconds */
   waveDuration?: number;
 }
 
 /**
- * Renders a paragraph sentence-by-sentence with a soft rise-in animation,
- * while a colored wave (same palette as the H1) runs through the letters.
+ * Renders a paragraph word-by-word, with an extra pause between sentences,
+ * like a voiceover reading the text. The colored "wave" runs continuously
+ * through the already-revealed words in the H1 palette.
  */
 export function WaveSentences({
   text,
   className = "",
   startDelay = 0,
-  step = 650,
+  wordStep = 90,
+  sentencePause = 700,
   waveDuration = 6,
 }: Props) {
-  // Split on sentence terminators, keep the terminator with the sentence
-  const parts = text
+  // Split into sentences, then into words; keep terminators with their words.
+  const sentences = text
     .split(/(?<=[.!?])\s+/)
     .map((s) => s.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((s) => s.split(/\s+/));
+
+  let elapsed = startDelay;
 
   return (
     <p className={className} aria-label={text}>
       <span className="sr-only">{text}</span>
-      {parts.map((sentence, i) => (
-        <span
-          key={i}
-          aria-hidden
-          className="wave-sentence inline-block opacity-0"
-          style={{
-            animation: "wave-sentence-in 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards",
-            animationDelay: `${startDelay + i * step}ms`,
-          }}
-        >
-          <WaveText text={sentence} className="on-dark" duration={waveDuration} />
-          {i < parts.length - 1 ? " " : null}
+      {sentences.map((words, si) => (
+        <span key={si} aria-hidden>
+          {words.map((word, wi) => {
+            const delay = elapsed;
+            elapsed += wordStep;
+            const isLastWordOfSentence = wi === words.length - 1;
+            if (isLastWordOfSentence && si < sentences.length - 1) {
+              elapsed += sentencePause;
+            }
+            return (
+              <span
+                key={wi}
+                className="wave-word-in inline-block whitespace-nowrap opacity-0 will-change-transform"
+                style={{ animationDelay: `${delay}ms` }}
+              >
+                <WaveText text={word} className="on-dark" duration={waveDuration} />
+                {!(isLastWordOfSentence && si === sentences.length - 1) ? "\u00A0" : null}
+              </span>
+            );
+          })}
         </span>
       ))}
     </p>
