@@ -17,6 +17,7 @@ import { FAQ } from "@/components/site/FAQ";
 import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { WaveSentences } from "@/components/site/WaveSentences";
+import { WaveText } from "@/components/site/WaveText";
 import { CountUp } from "@/components/site/CountUp";
 
 const HOME_FAQ = [
@@ -160,9 +161,12 @@ function HomePage() {
               </div>
             </Reveal>
 
-            <h1 className="mt-5 max-w-3xl font-display text-[34px] font-extrabold leading-[1.02] text-balance text-white md:text-5xl lg:text-6xl">
-              Санитарная служба №1 в Новосибирске
-            </h1>
+            <WaveText
+              as="h1"
+              text="Санитарная служба №1 в Новосибирске"
+              duration={5.2}
+              className="on-dark mt-5 max-w-3xl font-display text-[34px] font-extrabold leading-[1.02] text-balance md:text-5xl lg:text-6xl"
+            />
 
             <WaveSentences
               text="Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов. Работаем с 2014 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев, безопасные для детей и животных препараты."
