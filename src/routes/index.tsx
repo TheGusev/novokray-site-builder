@@ -9,6 +9,7 @@ import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
 import { CITIES } from "@/data/cities";
 import { COMMON, GALLERY } from "@/data/images";
+import heroBg from "@/assets/hero-bg.jpg";
 import { LeadFormModal } from "@/components/site/LeadFormModal";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
@@ -140,8 +141,8 @@ function HomePage() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.heroTeam} alt="Бригада санитарной службы Дез-Федерация в Новосибирске" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
+        <img src={heroBg} alt="Современная квартира в Новосибирске — обслуживается санитарной службой Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" width={1920} height={1024} />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/65 via-black/35 to-black/10" />
         <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle at 15% 10%, oklch(0.62 0.18 230 / 0.5) 0%, transparent 55%), radial-gradient(circle at 85% 85%, oklch(0.62 0.24 30 / 0.35) 0%, transparent 55%)" }} />
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="container-x relative py-10 md:py-16 lg:py-20">
