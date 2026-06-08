@@ -11,7 +11,6 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
           <li key={i} className="flex items-center gap-1.5">
             {i > 0 && <ChevronRight className="h-3.5 w-3.5 opacity-50" />}
             {c.to && i < items.length - 1 ? (
-              // @ts-expect-error dynamic link target
               <Link to={c.to} params={c.params as never} className="hover:text-primary">{c.label}</Link>
             ) : (
               <span className="text-foreground">{c.label}</span>
