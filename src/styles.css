@@ -174,6 +174,11 @@
   to { transform: translateX(-50%); }
 }
 
+@keyframes wave-sentence-in {
+  0% { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
 .animate-floaty { animation: floaty 4.5s ease-in-out infinite; }
 .animate-ticker { animation: ticker 32s linear infinite; }
 

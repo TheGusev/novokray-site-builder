@@ -16,6 +16,7 @@ import { FAQ } from "@/components/site/FAQ";
 import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { WaveText } from "@/components/site/WaveText";
+import { WaveSentences } from "@/components/site/WaveSentences";
 import { CountUp } from "@/components/site/CountUp";
 
 const HOME_FAQ = [
@@ -163,11 +164,11 @@ function HomePage() {
               />
             </h1>
 
-            <Reveal delay={250} className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/85 md:text-lg">
-              <p>
-                Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов. Работаем с 2014 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев, безопасные для детей и животных препараты.
-              </p>
-            </Reveal>
+            <WaveSentences
+              text="Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов. Работаем с 2014 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев, безопасные для детей и животных препараты."
+              className="mt-5 max-w-xl text-[15px] leading-relaxed md:text-lg on-dark"
+              startDelay={250}
+            />
 
             <Reveal delay={350} className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <a
