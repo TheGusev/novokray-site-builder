@@ -1,25 +1,31 @@
 import { Link } from "@tanstack/react-router";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, ShieldCheck, Star } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { Logo } from "@/components/site/Logo";
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-border bg-surface">
+    <footer className="mt-20 border-t border-border bg-surface">
       <div className="container-x grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-1">
-          <Link to="/" className="flex items-center gap-2 font-display text-lg font-extrabold">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-hero text-primary-foreground">ДФ</span>
-            Дез-Федерация
-          </Link>
-          <p className="mt-3 text-sm text-muted-foreground">
+          <Logo />
+          <p className="mt-4 text-sm text-muted-foreground">
             Санитарная служба №1 в Новосибирске. Работаем с {SITE.founded} года, лицензия Роспотребнадзора, гарантия по договору.
           </p>
-          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="mt-5 flex items-center gap-3 rounded-xl border border-border bg-card p-3">
             <span className="font-display text-2xl font-extrabold text-foreground">{SITE.rating.value}</span>
-            <span>★★★★★<br />
-              <span className="text-xs">{SITE.rating.count} отзывов</span>
+            <span>
+              <span className="flex gap-0.5 text-accent">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                ))}
+              </span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">{SITE.rating.count} отзывов</span>
             </span>
+          </div>
+          <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+            <ShieldCheck className="h-4 w-4 text-success" /> Лицензия Роспотребнадзора № 54.НС.01.000
           </div>
         </div>
 
