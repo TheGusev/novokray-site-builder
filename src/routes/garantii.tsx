@@ -3,7 +3,7 @@ import { ShieldCheck, FileCheck2, RefreshCw, Award, CheckCircle2, AlertTriangle 
 import { SITE } from "@/data/site";
 import { COMMON } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
-import { LeadForm } from "@/components/site/LeadForm";
+import { DocsRequest } from "@/components/site/DocsRequest";
 import { Reveal } from "@/components/site/Reveal";
 import { FAQ } from "@/components/site/FAQ";
 import { WaveText } from "@/components/site/WaveText";
@@ -173,9 +173,9 @@ function GuaranteesPage() {
         <div className="grid items-start gap-8 rounded-3xl bg-surface p-8 md:p-12 lg:grid-cols-2">
           <div>
             <h2 className="font-display text-2xl font-bold md:text-3xl">Образец договора и журнал СанПиН</h2>
-            <p className="mt-3 text-muted-foreground">Высылаем образец договора и комплект документов по запросу — особенно актуально для юрлиц и УК.</p>
+            <p className="mt-3 text-muted-foreground">Скачайте образцы PDF — договор, журнал по СанПиН, акт и сертификат. Для юрлиц и УК запросим договор под ваши реквизиты.</p>
           </div>
-          <LeadForm title="Запросить документы" subtitle="Укажите номер — вышлем образцы в WhatsApp." />
+          <DocsRequest />
         </div>
       </section>
     </>
