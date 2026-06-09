@@ -392,12 +392,12 @@ function HomePage() {
             />
           </Reveal>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-2">
+          <div className="mt-8 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-center">
             {Object.keys(grouped).map((c) => (
               <button
                 key={c}
                 onClick={() => setCat(c)}
-                className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                className={`inline-flex items-center justify-center rounded-full border px-4 py-2.5 text-sm font-semibold transition ${
                   cat === c
                     ? "border-primary bg-primary text-primary-foreground shadow-card"
                     : "border-border bg-card text-foreground/70 hover:border-primary/40 hover:text-foreground"
