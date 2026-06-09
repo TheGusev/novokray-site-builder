@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Phone, ShieldCheck, Zap, CheckCircle2, Quote, Star, ArrowRight, MapPin,
   BadgeCheck, FileText, Award, Building2, Sparkles, ClipboardCheck, HandCoins,
-  CalendarClock,
+  CalendarClock, Clock4,
 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
@@ -33,8 +33,9 @@ const WHY_US = [
   { icon: ShieldCheck, t: "Гарантия по договору", s: "До 24 месяцев. Если проблема вернётся — приедем повторно бесплатно." },
   { icon: Sparkles, t: "Безопасно для детей и животных", s: "Сертифицированные препараты 4 класса опасности без запаха." },
   { icon: HandCoins, t: "Фикс цена до выезда", s: "Никаких доплат за препараты и время. Оплата после обработки." },
-  { icon: Zap, t: "Выезд за 60 минут", s: "Бригада в форме, СИЗ и оборудование уже в машине." },
+  { icon: Clock4, t: "Выезд за 60 минут", s: "Бригада в форме, СИЗ и оборудование уже в машине." },
   { icon: FileText, t: "Договор, акт, чек", s: "Принимаем оплату наличными, картой, СБП и безналом." },
+  { icon: Award, t: "12 лет опыта", s: "Более 38 000 объектов с 2014 года в Новосибирске и области." },
 ];
 
 const TIMELINE = [
