@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Phone, ShieldCheck, Zap, CheckCircle2, Quote, Star, ArrowRight, MapPin,
+  Phone, ShieldCheck, CheckCircle2, Quote, Star, ArrowRight, MapPin,
   BadgeCheck, FileText, Award, Building2, Sparkles, ClipboardCheck, HandCoins,
-  CalendarClock,
+  CalendarClock, Clock4,
 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
@@ -33,8 +33,9 @@ const WHY_US = [
   { icon: ShieldCheck, t: "Гарантия по договору", s: "До 24 месяцев. Если проблема вернётся — приедем повторно бесплатно." },
   { icon: Sparkles, t: "Безопасно для детей и животных", s: "Сертифицированные препараты 4 класса опасности без запаха." },
   { icon: HandCoins, t: "Фикс цена до выезда", s: "Никаких доплат за препараты и время. Оплата после обработки." },
-  { icon: Zap, t: "Выезд за 60 минут", s: "Бригада в форме, СИЗ и оборудование уже в машине." },
+  { icon: Clock4, t: "Выезд за 60 минут", s: "Бригада в форме, СИЗ и оборудование уже в машине." },
   { icon: FileText, t: "Договор, акт, чек", s: "Принимаем оплату наличными, картой, СБП и безналом." },
+  { icon: Award, t: "12 лет опыта", s: "Более 38 000 объектов с 2014 года в Новосибирске и области." },
 ];
 
 const TIMELINE = [
@@ -292,14 +293,20 @@ function HomePage() {
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">Почему нас выбирают</div>
             <AnimatedHeading
               as="h2"
-              text="6 причин довериться Дез-Федерации"
+              text="7 причин довериться Дез-Федерации"
               highlight="Дез-Федерации"
               className="mt-2 font-display text-3xl font-bold md:text-4xl text-balance"
             />
           </Reveal>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {WHY_US.map((w, i) => (
-              <Reveal key={w.t} delay={i * 70} className="group rounded-2xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-1 hover:shadow-elegant">
+              <Reveal
+                key={w.t}
+                delay={i * 70}
+                className={`group rounded-2xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-1 hover:shadow-elegant ${
+                  i === WHY_US.length - 1 ? "lg:col-span-3 lg:bg-secondary" : ""
+                }`}
+              >
                 <div className="flex items-start gap-3">
                   <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary transition group-hover:bg-cta-gradient group-hover:text-accent-foreground">
                     <w.icon className="h-5 w-5" />
@@ -361,7 +368,7 @@ function HomePage() {
               className="mt-2 max-w-2xl font-display text-3xl font-bold md:text-4xl text-balance"
             />
           </Reveal>
-          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
             {GALLERY.map((g, i) => (
               <Reveal key={i} delay={i * 70} variant="scale" className={`relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-[4/3]" : "aspect-square"} group`}>
                 <img src={g} alt={`Работы санитарной службы — кадр ${i + 1}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -385,12 +392,12 @@ function HomePage() {
             />
           </Reveal>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-2">
+          <div className="mt-8 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-center">
             {Object.keys(grouped).map((c) => (
               <button
                 key={c}
                 onClick={() => setCat(c)}
-                className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                className={`inline-flex items-center justify-center rounded-full border px-4 py-2.5 text-sm font-semibold transition ${
                   cat === c
                     ? "border-primary bg-primary text-primary-foreground shadow-card"
                     : "border-border bg-card text-foreground/70 hover:border-primary/40 hover:text-foreground"
