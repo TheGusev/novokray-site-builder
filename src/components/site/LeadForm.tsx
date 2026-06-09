@@ -9,6 +9,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { SITE } from "@/data/site";
 import { getLeadPrice, formatRub } from "@/data/leadPricing";
+import { sendLeadViaWhatsapp } from "@/lib/sendLead";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
@@ -142,9 +143,18 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
     if (phoneDigits < 11) return toast.error("Укажите телефон полностью");
     if (!agree) return toast.error("Нужно согласие с политикой");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 700));
+    const sent = sendLeadViaWhatsapp({
+      type: "Заявка на обработку",
+      pest, object, name, phone,
+      priceFrom: price,
+    });
+    await new Promise((r) => setTimeout(r, 400));
     setLoading(false);
-    toast.success("Заявка принята! Перезвоним в течение 10 минут.");
+    toast.success(
+      sent
+        ? "Заявка отправлена в WhatsApp. Перезвоним в течение 10 минут."
+        : "Заявка принята. Если WhatsApp не открылся — позвоните нам.",
+    );
     setStep(1); setPest(""); setObject(""); setName(""); setPhone(""); setAgree(false);
     onSuccess?.();
   };
