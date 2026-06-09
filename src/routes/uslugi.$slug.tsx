@@ -143,7 +143,7 @@ function HubPage() {
 
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <img src={COMMON.heroSpray} alt={h.h1} className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent" />
         <div className="container-x relative py-12 md:py-16">
           <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text={h.h1} duration={4} /></h1>
           <p className="speakable mt-5 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">{h.intro}</p>
