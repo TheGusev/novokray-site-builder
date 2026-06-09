@@ -172,8 +172,18 @@ function HomePage() {
               text="Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов. Работаем с 2014 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев, безопасные для детей и животных препараты."
               className="mt-5 min-h-[9.5rem] max-w-xl text-[15px] font-medium leading-[1.75] md:min-h-[7rem] md:text-lg"
               startDelay={420}
-              wordStep={160}
-              sentencePause={950}
+              wordStep={195}
+              sentencePause={720}
+              highlights={{
+                "озонирование": "ozone",
+                "сушку": "ozone",
+                "плесень": "nature",
+                "безопасные": "nature",
+                "детей": "nature",
+                "животных": "nature",
+                "гарантия": "warm",
+                "лицензия": "warm",
+              }}
             />
 
             <Reveal delay={350} className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
