@@ -293,14 +293,20 @@ function HomePage() {
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">Почему нас выбирают</div>
             <AnimatedHeading
               as="h2"
-              text="6 причин довериться Дез-Федерации"
+              text="7 причин довериться Дез-Федерации"
               highlight="Дез-Федерации"
               className="mt-2 font-display text-3xl font-bold md:text-4xl text-balance"
             />
           </Reveal>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {WHY_US.map((w, i) => (
-              <Reveal key={w.t} delay={i * 70} className="group rounded-2xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-1 hover:shadow-elegant">
+              <Reveal
+                key={w.t}
+                delay={i * 70}
+                className={`group rounded-2xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-1 hover:shadow-elegant ${
+                  i === WHY_US.length - 1 ? "lg:col-span-3 lg:bg-secondary" : ""
+                }`}
+              >
                 <div className="flex items-start gap-3">
                   <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary transition group-hover:bg-cta-gradient group-hover:text-accent-foreground">
                     <w.icon className="h-5 w-5" />
