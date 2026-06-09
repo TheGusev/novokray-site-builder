@@ -47,7 +47,7 @@ export const SERVICE_IMAGES: Record<string, string> = {
 
 // Re-exports for variety in galleries
 export const GALLERY = [
-  svcKlopy, svcMuravi, svcMoshkiKomari, svcOzon, svcSushka, svcPlesen,
+  svcKlopy, svcMuravi, svcMoshkiKomari, svcOzon, svcSushka, svcDezinfekciya, svcPlesen,
 ];
 
 // Map blog post slug → cover image (reuses service photos thematically)
