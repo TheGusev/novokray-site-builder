@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
 import { FileText, Download, BookOpenCheck, FileCheck2, BadgeCheck, Loader2, Send, Phone } from "lucide-react";
 import { SITE } from "@/data/site";
+import { sendLeadViaWhatsapp } from "@/lib/sendLead";
 import dogovorAsset from "@/assets/docs/dogovor-obrazec.pdf.asset.json";
 import zhurnalAsset from "@/assets/docs/zhurnal-sanpin.pdf.asset.json";
 import aktAsset from "@/assets/docs/akt-vypolnennyh-rabot.pdf.asset.json";
@@ -43,9 +44,17 @@ export function DocsRequest() {
     if (phoneDigits < 11) return toast.error("Укажите телефон полностью");
     if (!agree) return toast.error("Нужно согласие с политикой");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 700));
+    const sent = sendLeadViaWhatsapp({
+      type: "Запрос документов",
+      org, inn, phone,
+    });
+    await new Promise((r) => setTimeout(r, 400));
     setLoading(false);
-    toast.success("Заявка принята! Менеджер пришлёт договор под вашу организацию в течение часа.");
+    toast.success(
+      sent
+        ? "Заявка отправлена в WhatsApp. Договор пришлём в течение часа."
+        : "Заявка принята. Если WhatsApp не открылся — позвоните нам.",
+    );
     setOrg(""); setInn(""); setPhone(""); setAgree(false);
   };
 
