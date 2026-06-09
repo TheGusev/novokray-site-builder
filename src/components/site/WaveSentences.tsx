@@ -6,6 +6,7 @@ interface Props {
   startDelay?: number;
   wordStep?: number;
   sentencePause?: number;
+  highlights?: Record<string, "nature" | "ozone" | "warm">;
 }
 
 interface WordToken {
@@ -17,8 +18,9 @@ export function WaveSentences({
   text,
   className = "",
   startDelay = 0,
-  wordStep = 160,
-  sentencePause = 950,
+  wordStep = 190,
+  sentencePause = 700,
+  highlights,
 }: Props) {
   const sentences = useMemo(
     () =>
@@ -86,6 +88,19 @@ export function WaveSentences({
 
   const visibleWords = words.slice(0, visibleCount);
 
+  const normalizedHighlights = useMemo(() => {
+    if (!highlights) return null;
+    const map = new Map<string, "nature" | "ozone" | "warm">();
+    Object.entries(highlights).forEach(([k, v]) => map.set(k.toLowerCase(), v));
+    return map;
+  }, [highlights]);
+
+  const accentFor = (word: string) => {
+    if (!normalizedHighlights) return null;
+    const key = word.toLowerCase().replace(/[.,!?;:()«»"']/g, "");
+    return normalizedHighlights.get(key) ?? null;
+  };
+
   return (
     <p className={`hero-sentence-reveal ${className}`} aria-label={text}>
       <span className="sr-only">{text}</span>
@@ -94,7 +109,10 @@ export function WaveSentences({
       </span>
       <span className="hero-sentence-reveal__live" aria-hidden>
         {visibleWords.map((word, index) => (
-          <span key={word.id} className="reveal-word">
+          <span
+            key={word.id}
+            className={`reveal-word${accentFor(word.text) ? ` reveal-word--accent-${accentFor(word.text)}` : ""}`}
+          >
             {index > 0 ? " " : null}
             {word.text}
           </span>
