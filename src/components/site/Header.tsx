@@ -45,13 +45,42 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [services, setServices] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
+    let lastY = typeof window !== "undefined" ? window.scrollY : 0;
+    let ticking = false;
+    const THRESHOLD = 6;
+    const TOP_ZONE = 80;
+
+    const update = () => {
+      const y = window.scrollY;
+      setScrolled(y > 8);
+      const delta = y - lastY;
+      if (y < TOP_ZONE) {
+        setHidden(false);
+      } else if (delta > THRESHOLD) {
+        setHidden(true);
+      } else if (delta < -THRESHOLD) {
+        setHidden(false);
+      }
+      lastY = y;
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Keep header visible while menus/sheets are open
+  const forceVisible = open || services;
 
   const grouped = SERVICES.reduce<Record<string, typeof SERVICES>>((acc, s) => {
     (acc[s.category] ||= []).push(s);
@@ -60,11 +89,11 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b transition-all ${
+      className={`sticky top-0 z-50 border-b transition-[transform,background-color,box-shadow,border-color,height] duration-300 will-change-transform ${
         scrolled
           ? "border-border bg-background/95 shadow-card backdrop-blur-md"
           : "border-transparent bg-background/80 backdrop-blur-sm"
-      }`}
+      } ${hidden && !forceVisible ? "-translate-y-full" : "translate-y-0"}`}
     >
       <div className={`container-x flex items-center justify-between gap-4 transition-all ${scrolled ? "h-14" : "h-16 md:h-18"}`}>
         <Logo />
