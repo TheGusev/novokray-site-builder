@@ -8,6 +8,7 @@ import {
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
 import { CITIES } from "@/data/cities";
+import { DISTRICTS } from "@/data/districts";
 import { COMMON, GALLERY } from "@/data/images";
 import heroBg from "@/assets/hero-bg.jpg";
 import { LeadFormModal } from "@/components/site/LeadFormModal";
@@ -45,8 +46,7 @@ const TIMELINE = [
   { icon: ShieldCheck, t: "Обработка и гарантия", s: "Договор, акт, гарантийный талон", min: "2 ч" },
 ];
 
-const GEO_DISTRICTS = ["Центральный", "Заельцовский", "Калининский", "Кировский", "Ленинский", "Октябрьский", "Первомайский", "Советский (Академгородок)", "Дзержинский", "Железнодорожный"];
-const GEO_AREA = ["Бердск", "Искитим", "Кольцово", "Краснообск", "Обь", "Мочище", "Криводановка", "Толмачёво", "Барышево"];
+const GEO_AREA_SLUGS = ["berdsk", "iskitim", "koltsovo", "krasnoobsk", "ob", "mochische", "krivodanovka", "tolmachevo", "baryshevo"] as const;
 
 const B2B = [
   { t: "Кафе и рестораны", s: "Журнал по СанПиН, выезд ночью без остановки работы." },
