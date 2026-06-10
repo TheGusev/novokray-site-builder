@@ -120,8 +120,8 @@ function PricePage() {
                   <tbody className="divide-y divide-border">
                     {s.prices.map((p, i) => (
                       <tr key={i}>
-                        <td className="px-4 py-3">{p.label}</td>
-                        <td className="px-4 py-3 text-right font-display font-bold">{p.price}</td>
+                        <td className="px-3 py-3 md:px-4">{p.label}</td>
+                        <td className="whitespace-nowrap px-3 py-3 text-right font-display font-bold md:px-4">{p.price.replace(/\s/g, "\u00a0")}</td>
                       </tr>
                     ))}
                   </tbody>
