@@ -66,7 +66,6 @@ export function DocsRequest() {
             key={d.file}
             href={d.url}
             download={d.file}
-            target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
