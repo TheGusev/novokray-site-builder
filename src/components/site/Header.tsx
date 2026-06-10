@@ -48,23 +48,24 @@ export function Header() {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    let lastY = typeof window !== "undefined" ? window.scrollY : 0;
+    let anchorY = typeof window !== "undefined" ? window.scrollY : 0;
     let ticking = false;
-    const THRESHOLD = 6;
+    const DOWN_THRESHOLD = 8;
     const TOP_ZONE = 80;
 
     const update = () => {
       const y = window.scrollY;
       setScrolled(y > 8);
-      const delta = y - lastY;
       if (y < TOP_ZONE) {
         setHidden(false);
-      } else if (delta > THRESHOLD) {
+        anchorY = y;
+      } else if (y > anchorY + DOWN_THRESHOLD) {
         setHidden(true);
-      } else if (delta < -THRESHOLD) {
+        anchorY = y;
+      } else if (y < anchorY) {
         setHidden(false);
+        anchorY = y;
       }
-      lastY = y;
       ticking = false;
     };
 
