@@ -26,8 +26,8 @@ export function ServiceCard({ service }: { service: Service }) {
           <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-card/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary shadow-card backdrop-blur">
             <Icon className="h-3.5 w-3.5" /> {service.category === "vrediteli" ? "Вредители" : service.category === "uchastok" ? "Участок" : service.category === "sanitarnaya" ? "Санитарная" : "Спец."}
           </span>
-          <span className="absolute right-3 top-3 rounded-full bg-cta-gradient px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-foreground shadow-cta">
-            от {service.priceFrom.toLocaleString("ru-RU")} ₽
+          <span className="absolute right-3 top-3 whitespace-nowrap rounded-full bg-cta-gradient px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-foreground shadow-cta">
+            от&nbsp;{service.priceFrom.toLocaleString("ru-RU")}&nbsp;₽
           </span>
         </div>
       )}
@@ -36,8 +36,8 @@ export function ServiceCard({ service }: { service: Service }) {
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-hero group-hover:text-primary-foreground">
           <Icon className="h-6 w-6" />
         </div>
-        <span className="rounded-full bg-secondary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
-          от {service.priceFrom.toLocaleString("ru-RU")} ₽
+        <span className="whitespace-nowrap rounded-full bg-secondary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
+          от&nbsp;{service.priceFrom.toLocaleString("ru-RU")}&nbsp;₽
         </span>
       </div>
       )}
