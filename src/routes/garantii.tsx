@@ -132,8 +132,8 @@ function GuaranteesPage() {
               <tbody className="divide-y divide-border">
                 {guarTable.map((g) => (
                   <tr key={g.svc}>
-                    <td className="px-5 py-3 font-semibold">{g.svc}</td>
-                    <td className="px-5 py-3 font-display font-bold text-primary">{g.term}</td>
+                    <td className="px-3 py-3 font-semibold md:px-5">{g.svc}</td>
+                    <td className="whitespace-nowrap px-3 py-3 font-display font-bold text-primary md:px-5">{g.term}</td>
                     <td className="hidden px-5 py-3 text-muted-foreground md:table-cell">{g.cond}</td>
                   </tr>
                 ))}

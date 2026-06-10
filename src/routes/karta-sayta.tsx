@@ -3,6 +3,7 @@ import { SERVICES } from "@/data/services";
 import { POSTS } from "@/data/blog";
 import { SITE } from "@/data/site";
 import { CITIES } from "@/data/cities";
+import { DISTRICTS } from "@/data/districts";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 
 const HUBS = [
@@ -106,6 +107,19 @@ function SiteMapPage() {
                     Санитарная служба {c.prepositional}
                   </Link>
                   <span className="shrink-0 text-xs text-muted-foreground">{c.distanceKm} км</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section aria-labelledby="sm-districts" className="md:col-span-2">
+            <h2 id="sm-districts" className="mb-4 font-display text-xl font-bold">Районы Новосибирска ({DISTRICTS.length})</h2>
+            <ul className="grid gap-2 md:grid-cols-2">
+              {DISTRICTS.map((d) => (
+                <li key={d.slug} className="flex items-baseline justify-between gap-3 border-b border-border/60 py-2">
+                  <Link to="/raion/$slug" params={{ slug: d.slug }} className="text-foreground hover:text-primary">
+                    Санитарная служба {d.prepositional}
+                  </Link>
                 </li>
               ))}
             </ul>

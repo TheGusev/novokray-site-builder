@@ -8,6 +8,7 @@ import {
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
 import { CITIES } from "@/data/cities";
+import { DISTRICTS } from "@/data/districts";
 import { COMMON, GALLERY } from "@/data/images";
 import heroBg from "@/assets/hero-bg.jpg";
 import { LeadFormModal } from "@/components/site/LeadFormModal";
@@ -45,8 +46,7 @@ const TIMELINE = [
   { icon: ShieldCheck, t: "Обработка и гарантия", s: "Договор, акт, гарантийный талон", min: "2 ч" },
 ];
 
-const GEO_DISTRICTS = ["Центральный", "Заельцовский", "Калининский", "Кировский", "Ленинский", "Октябрьский", "Первомайский", "Советский (Академгородок)", "Дзержинский", "Железнодорожный"];
-const GEO_AREA = ["Бердск", "Искитим", "Кольцово", "Краснообск", "Обь", "Мочище", "Криводановка", "Толмачёво", "Барышево"];
+const GEO_AREA_SLUGS = ["berdsk", "iskitim", "koltsovo", "krasnoobsk", "ob", "mochische", "krivodanovka", "tolmachevo", "baryshevo"] as const;
 
 const B2B = [
   { t: "Кафе и рестораны", s: "Журнал по СанПиН, выезд ночью без остановки работы." },
@@ -453,21 +453,36 @@ function HomePage() {
             <Reveal delay={120}>
               <div className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Районы Новосибирска</div>
               <div className="mt-3 flex flex-wrap gap-2">
-                {GEO_DISTRICTS.map((g, i) => (
-                  <span key={g} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm transition hover:border-primary/40" style={{ animationDelay: `${i * 30}ms` }}>
-                    <MapPin className="h-3.5 w-3.5 text-primary" /> {g}
-                  </span>
+                {DISTRICTS.map((d, i) => (
+                  <Link
+                    key={d.slug}
+                    to="/raion/$slug"
+                    params={{ slug: d.slug }}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary"
+                    style={{ animationDelay: `${i * 30}ms` }}
+                  >
+                    <MapPin className="h-3.5 w-3.5 text-primary" /> {d.name}
+                  </Link>
                 ))}
               </div>
             </Reveal>
             <Reveal delay={200} className="mt-6">
               <div className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Область</div>
               <div className="mt-3 flex flex-wrap gap-2">
-                {GEO_AREA.map((g) => (
-                  <span key={g} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm">
-                    <MapPin className="h-3.5 w-3.5 text-accent" /> {g}
-                  </span>
-                ))}
+                {GEO_AREA_SLUGS.map((slug) => {
+                  const c = CITIES.find((x) => x.slug === slug);
+                  if (!c) return null;
+                  return (
+                    <Link
+                      key={c.slug}
+                      to="/gorod/$slug"
+                      params={{ slug: c.slug }}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm transition hover:-translate-y-0.5 hover:border-accent hover:text-accent"
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-accent" /> {c.name}
+                    </Link>
+                  );
+                })}
               </div>
             </Reveal>
           </div>

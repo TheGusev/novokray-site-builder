@@ -23,6 +23,7 @@ import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as UslugiSlugRouteImport } from './routes/uslugi.$slug'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as RaionSlugRouteImport } from './routes/raion.$slug'
 import { Route as GorodSlugRouteImport } from './routes/gorod.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -97,6 +98,11 @@ const ServicesSlugRoute = ServicesSlugRouteImport.update({
   path: '/services/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RaionSlugRoute = RaionSlugRouteImport.update({
+  id: '/raion/$slug',
+  path: '/raion/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GorodSlugRoute = GorodSlugRouteImport.update({
   id: '/gorod/$slug',
   path: '/gorod/$slug',
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/gorod/$slug': typeof GorodSlugRoute
+  '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog/': typeof BlogIndexRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/gorod/$slug': typeof GorodSlugRoute
+  '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog': typeof BlogIndexRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/gorod/$slug': typeof GorodSlugRoute
+  '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog/': typeof BlogIndexRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/gorod/$slug'
+    | '/raion/$slug'
     | '/services/$slug'
     | '/uslugi/$slug'
     | '/blog/'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/gorod/$slug'
+    | '/raion/$slug'
     | '/services/$slug'
     | '/uslugi/$slug'
     | '/blog'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/gorod/$slug'
+    | '/raion/$slug'
     | '/services/$slug'
     | '/uslugi/$slug'
     | '/blog/'
@@ -246,6 +258,7 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   CategoryDezinfekciyaNovosibirskRoute: typeof CategoryDezinfekciyaNovosibirskRoute
   GorodSlugRoute: typeof GorodSlugRoute
+  RaionSlugRoute: typeof RaionSlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   UslugiSlugRoute: typeof UslugiSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -352,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/raion/$slug': {
+      id: '/raion/$slug'
+      path: '/raion/$slug'
+      fullPath: '/raion/$slug'
+      preLoaderRoute: typeof RaionSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gorod/$slug': {
       id: '/gorod/$slug'
       path: '/gorod/$slug'
@@ -390,6 +410,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   CategoryDezinfekciyaNovosibirskRoute: CategoryDezinfekciyaNovosibirskRoute,
   GorodSlugRoute: GorodSlugRoute,
+  RaionSlugRoute: RaionSlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   UslugiSlugRoute: UslugiSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
