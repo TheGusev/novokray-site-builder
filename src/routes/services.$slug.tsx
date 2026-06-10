@@ -275,15 +275,15 @@ function ServicePage() {
             <table className="w-full text-left">
               <thead className="bg-secondary text-sm text-secondary-foreground">
                 <tr>
-                  <th className="px-5 py-3 font-display font-semibold">Объект</th>
-                  <th className="px-5 py-3 font-display font-semibold text-right">Стоимость</th>
+                  <th className="px-3 py-3 font-display font-semibold md:px-5">Объект</th>
+                  <th className="px-3 py-3 text-right font-display font-semibold md:px-5">Цена</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {s.prices.map((p, i) => (
                   <tr key={i} className="text-sm">
-                    <td className="px-5 py-4">{p.label}{p.note && <span className="ml-2 text-xs text-muted-foreground">({p.note})</span>}</td>
-                    <td className="px-5 py-4 text-right font-display font-bold text-foreground">{p.price}</td>
+                    <td className="px-3 py-3 md:px-5 md:py-4">{p.label}{p.note && <span className="ml-2 text-xs text-muted-foreground">({p.note})</span>}</td>
+                    <td className="whitespace-nowrap px-3 py-3 text-right font-display font-bold text-foreground md:px-5 md:py-4">{p.price.replace(/\s/g, "\u00a0")}</td>
                   </tr>
                 ))}
               </tbody>
