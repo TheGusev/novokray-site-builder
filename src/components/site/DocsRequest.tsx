@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
-import { FileText, Download, BookOpenCheck, FileCheck2, BadgeCheck, Loader2, Send, Phone } from "lucide-react";
+import { FileText, BookOpenCheck, FileCheck2, BadgeCheck, Loader2, Send, Phone, Eye } from "lucide-react";
 import { SITE } from "@/data/site";
 import { sendLeadViaWhatsapp } from "@/lib/sendLead";
-import dogovorAsset from "@/assets/docs/dogovor-obrazec.pdf.asset.json";
-import zhurnalAsset from "@/assets/docs/zhurnal-sanpin.pdf.asset.json";
-import aktAsset from "@/assets/docs/akt-vypolnennyh-rabot.pdf.asset.json";
-import sertAsset from "@/assets/docs/sertifikat-dezinfekcii.pdf.asset.json";
+import { DOCS } from "@/data/docs";
 
-const DOCS = [
-  { icon: FileText, title: "Договор", note: "Разовая обработка · 2 стр.", url: dogovorAsset.url, file: "dogovor-obrazec.pdf" },
-  { icon: BookOpenCheck, title: "Журнал СанПиН", note: "Учёт мероприятий · форма", url: zhurnalAsset.url, file: "zhurnal-sanpin.pdf" },
-  { icon: FileCheck2, title: "Акт выполненных работ", note: "Образец акта приёмки", url: aktAsset.url, file: "akt-vypolnennyh-rabot.pdf" },
-  { icon: BadgeCheck, title: "Сертификат дезинфекции", note: "Подтверждение работ", url: sertAsset.url, file: "sertifikat-dezinfekcii.pdf" },
-] as const;
+const ICONS: Record<string, typeof FileText> = {
+  dogovor: FileText,
+  "zhurnal-sanpin": BookOpenCheck,
+  akt: FileCheck2,
+  sertifikat: BadgeCheck,
+};
 
 function formatPhone(raw: string): string {
   const d = raw.replace(/\D/g, "").replace(/^8/, "7").slice(0, 11);
@@ -61,24 +58,26 @@ export function DocsRequest() {
   return (
     <div className="grid gap-5">
       <div className="grid gap-3 sm:grid-cols-2">
-        {DOCS.map((d) => (
-          <a
-            key={d.file}
-            href={d.url}
-            download={d.file}
-            rel="noopener noreferrer"
-            className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-              <d.icon className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-display text-sm font-bold text-foreground">{d.title}</div>
-              <div className="mt-0.5 truncate text-[11px] text-muted-foreground">{d.note}</div>
-            </div>
-            <Download className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:text-primary" />
-          </a>
-        ))}
+        {DOCS.map((d) => {
+          const Icon = ICONS[d.slug] ?? FileText;
+          return (
+            <Link
+              key={d.slug}
+              to="/docs/$slug"
+              params={{ slug: d.slug }}
+              className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-display text-sm font-bold text-foreground">{d.title}</div>
+                <div className="mt-0.5 truncate text-[11px] text-muted-foreground">{d.note}</div>
+              </div>
+              <Eye className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:text-primary" />
+            </Link>
+          );
+        })}
       </div>
 
       <form onSubmit={onSubmit} className="rounded-2xl border border-border bg-card p-5 shadow-card md:p-6">
