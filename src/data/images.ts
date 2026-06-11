@@ -20,6 +20,28 @@ import svcFumigaciya from "@/assets/svc-fumigaciya.jpg";
 import svcDezinfekciya from "@/assets/svc-dezinfekciya.jpg";
 import svcDezodoraciya from "@/assets/svc-dezodoraciya.jpg";
 
+// Unique blog covers
+import blogUkusKlopa from "@/assets/blog-ukus-klopa.jpg";
+import blogNovostroyka from "@/assets/blog-novostroyka.jpg";
+import blogUchastokVesnoy from "@/assets/blog-uchastok-vesnoy.jpg";
+import blogOzonAvto from "@/assets/blog-ozon-avto.jpg";
+import blogPlesenVannaya from "@/assets/blog-plesen-vannaya.jpg";
+import blogZatopili from "@/assets/blog-zatopili.jpg";
+import blogKafe from "@/assets/blog-kafe.jpg";
+import blogPodgotovka from "@/assets/blog-podgotovka.jpg";
+import blogPodval from "@/assets/blog-podval.jpg";
+import blogBorschevik from "@/assets/blog-borschevik.jpg";
+import blogOsyBalkon from "@/assets/blog-osy-balkon.jpg";
+import blogOzonVirus from "@/assets/blog-ozon-virus.jpg";
+
+// Unique gallery (process-in-action photos)
+import gallery1 from "@/assets/gallery-1.jpg";
+import gallery2 from "@/assets/gallery-2.jpg";
+import gallery3 from "@/assets/gallery-3.jpg";
+import gallery4 from "@/assets/gallery-4.jpg";
+import gallery5 from "@/assets/gallery-5.jpg";
+import gallery6 from "@/assets/gallery-6.jpg";
+
 export const COMMON = {
   heroTeam,
   heroSpray,
@@ -47,21 +69,21 @@ export const SERVICE_IMAGES: Record<string, string> = {
 
 // Re-exports for variety in galleries
 export const GALLERY = [
-  svcKlopy, svcMuravi, svcMoshkiKomari, svcOzon, svcSushka, svcDezinfekciya, svcPlesen,
+  gallery1, gallery2, gallery3, gallery4, gallery5, gallery6,
 ];
 
 // Map blog post slug → cover image (reuses service photos thematically)
 export const BLOG_COVERS: Record<string, string> = {
-  "kak-otlichit-ukus-klopa": svcKlopy,
-  "tarakany-v-novostroyke": svcTarakany,
-  "obrabotka-uchastka-vesnoy": svcKleshchi,
-  "ozonirovanie-avto-zachem": svcOzon,
-  "plesen-v-vannoy-prichiny": svcPlesen,
-  "zatopili-sosedi-chto-delat": svcSushka,
-  "deratizatsiya-v-kafe": svcGryzuny,
-  "kak-podgotovit-kvartiru": svcDezinfekciya,
-  "blohi-iz-podvala": svcBloh,
-  "borschevik-na-dache": svcBorshchevik,
-  "osy-na-balkone": svcOsy,
-  "ozon-protiv-virusov": svcOzon,
+  "kak-otlichit-ukus-klopa": blogUkusKlopa,
+  "tarakany-v-novostroyke": blogNovostroyka,
+  "obrabotka-uchastka-vesnoy": blogUchastokVesnoy,
+  "ozonirovanie-avto-zachem": blogOzonAvto,
+  "plesen-v-vannoy-prichiny": blogPlesenVannaya,
+  "zatopili-sosedi-chto-delat": blogZatopili,
+  "deratizatsiya-v-kafe": blogKafe,
+  "kak-podgotovit-kvartiru": blogPodgotovka,
+  "blohi-iz-podvala": blogPodval,
+  "borschevik-na-dache": blogBorschevik,
+  "osy-na-balkone": blogOsyBalkon,
+  "ozon-protiv-virusov": blogOzonVirus,
 };
