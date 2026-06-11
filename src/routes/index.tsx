@@ -9,7 +9,7 @@ import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
 import { CITIES } from "@/data/cities";
 import { DISTRICTS } from "@/data/districts";
-import { COMMON, GALLERY } from "@/data/images";
+import { COMMON, GALLERY, GALLERY_META } from "@/data/images";
 import heroBg from "@/assets/hero-bg.jpg";
 import { LeadFormModal } from "@/components/site/LeadFormModal";
 import { ServiceCard } from "@/components/site/ServiceCard";
@@ -144,7 +144,7 @@ function HomePage() {
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <div className="absolute inset-0 overflow-hidden">
           <div className="hero-room-tour-frame">
-            <img src={heroBg} alt="Современная квартира в Новосибирске — обслуживается санитарной службой Дез-Федерация" className="hero-room-tour-media h-full w-full object-cover" loading="eager" width={1920} height={1024} />
+            <img src={heroBg} alt="Современная квартира в Новосибирске после санитарной обработки — Дез-Федерация" title="Дез-Федерация — санитарная служба №1 в Новосибирске с 2014 года" className="hero-room-tour-media h-full w-full object-cover" loading="eager" width={1920} height={1024} />
           </div>
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-black/72 via-black/42 to-black/18" />
