@@ -300,7 +300,7 @@ function BlogIndex() {
           {hasAnyFilter && (
             <div className="mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 text-sm">
               <span className="text-muted-foreground">Фильтр:</span>
-              {search.cat && <span className="rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">{CATEGORY_BY_SLUG[search.cat].title}</span>}
+              {search.cat && <span className="rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">{CATEGORY_BY_SLUG[search.cat as BlogCategory].title}</span>}
               {search.geo && <span className="rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">{search.geo === "novosibirsk" ? "НСК" : search.geo === "oblast" ? "НСО" : "НСК + НСО"}</span>}
               {search.hf && <span className="rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">Запрос {search.hf}</span>}
               {search.tag && <span className="rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">#{search.tag}</span>}
