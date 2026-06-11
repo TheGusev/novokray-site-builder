@@ -1,50 +1,24 @@
-## Текущее состояние (после аудита)
+## Проблема
 
-Уже реализовано в проекте:
+Фото `src/assets/blog-ukus-klopa.jpg` выглядит мультяшно — нарисованные красные «ягоды» на руке вместо реалистичных следов от укусов. Размещено на `/blog/kak-otlichit-ukus-klopa`. Аналогичные риски — у других «сенситивных» фото (вредители, плесень, медицинские темы), где AI часто выдаёт неправдоподобные результаты.
 
-- **`src/routes/sitemap[.]xml.ts`** — динамический sitemap покрывает все маршруты: `/`, `/services`, `/services/$slug` (×13), `/uslugi/$slug` (×4 хаба), `/gorod/$slug`, `/raion/$slug`, `/blog`, `/blog/$slug`, `/price`, `/faq`, `/contacts`, `/garantii`, `/o-kompanii`, `/category/dezinfekciya-novosibirsk`, `/karta-sayta`, `/privacy`, `/terms`. С `lastmod`, `changefreq`, `priority`.
-- **`public/robots.txt`** — `Allow: /`, закрыты `/admin`, `/api/`, `/lovable/`, UTM/yclid/gclid, отдельные правила для GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, YandexGPT, Googlebot, директива `Sitemap:` и `Clean-param` для Яндекса.
-- **Schema.org**:
-  - `__root.tsx` — Organization, WebSite (SearchAction), LocalBusiness, AggregateRating.
-  - `index.tsx` — FAQPage, ItemList, LocalBusiness + Review.
-  - `services.$slug.tsx` — Service + Offer + HowTo + FAQPage + BreadcrumbList.
-  - `services.index.tsx` — BreadcrumbList.
-  - `uslugi.$slug.tsx` — CollectionPage + ItemList + BreadcrumbList.
-  - `faq.tsx` — FAQPage.
-  - `contacts.tsx` — ContactPage + BreadcrumbList.
-  - `o-kompanii.tsx` — AboutPage + BreadcrumbList.
-  - `garantii.tsx` — WebPage + BreadcrumbList.
-  - `price.tsx` — OfferCatalog + AggregateOffer + BreadcrumbList.
-  - `blog.$slug.tsx` — Article + BreadcrumbList.
-  - `gorod.$slug.tsx`, `raion.$slug.tsx` — LocalBusiness + BreadcrumbList (+ FAQPage в городах).
+## Что сделаю
 
-Пагинации в проекте нет (блог/категории отдают полный список единым `ItemList`), поэтому правил под `?page=` в robots не требуется.
+1. **Перегенерировать `src/assets/blog-ukus-klopa.jpg`** — на качественной модели `standard` (или `premium`, если потребуется второй заход). Промпт переориентирую с «крупных красных точек» на реальную дерматологическую фотографию: мелкие красноватые папулы дорожкой по 2–3 штуки на предплечье, естественное освещение, без насыщенно-алых вишен, без эффекта рисунка.
 
-## Что добавить
+2. **Аудит остальных blog/svc фото** на предмет AI-фейлов — открою через preview и осмотрю:
+   - `blog-osy-balkon.jpg`, `blog-plesen-vannaya.jpg`, `blog-podval.jpg`, `blog-borschevik.jpg`, `blog-ukus-klopa.jpg`
+   - `svc-klopy.jpg`, `svc-tarakany.jpg`, `svc-gryzuny.jpg`, `svc-bloh.jpg`, `svc-muravi.jpg`, `svc-osy.jpg`, `svc-kleshchi.jpg`, `svc-moshki-komari.jpg`, `svc-plesen.jpg`, `svc-borshchevik.jpg`
+   
+   Те, что выглядят нереалистично/мультяшно/с артефактами — перегенерирую с улучшенными промптами на `standard`.
 
-1. **`src/routes/contacts.tsx`** — добавить отдельный блок `LocalBusiness` с `@id`, `telephone`, `email`, `address` (PostalAddress), `geo` (GeoCoordinates из `SITE.geo`), `openingHoursSpecification`, `areaServed` (Новосибирск + города), `priceRange`, `image`, `url`. Это нужно именно на странице контактов как первичный профиль бизнеса (сейчас LocalBusiness есть только в `__root.tsx` и привязан к WebSite).
-2. **`src/routes/category.dezinfekciya-novosibirsk.tsx`** — добавить JSON-LD `CollectionPage` + `ItemList` со ссылками на все 13 услуг и `BreadcrumbList` (сейчас разметки на странице нет вообще).
-3. **`src/routes/blog.index.tsx`** — добавить `Blog` + `BreadcrumbList` + `ItemList` со списком постов (сейчас разметки нет).
-4. **`src/routes/karta-sayta.tsx`** — добавить `BreadcrumbList` + `SiteNavigationElement` (минимальный JSON-LD для навигационной карты).
-5. **`src/routes/sitemap[.]xml.ts`** — мелкие правки:
-   - `Entry.changefreq` типизировать union вместо `string` (для соответствия XSD-словарю sitemap).
-   - В `<urlset>` добавить namespace `xmlns:xhtml` (заготовка под будущие hreflang, не обязательно, но безопасно).
-6. **`public/robots.txt`** — без изменений по содержанию; навести порядок:
-   - Сгруппировать секции с комментариями.
-   - Подтвердить, что `Sitemap:` указывает на `https://dez-federation.ru/sitemap.xml` (уже да).
+3. **Не трогаю** хорошие фото (hero, office, equipment, documents, gallery, b2b-cafe, dezinfekciya, dezodoraciya, fumigaciya, ozon, sushka — нейтральные технические сцены).
 
-## Чего НЕ трогаю
-
-- Существующий JSON-LD на страницах услуг/FAQ/гарантий/блога — там уже корректные типы.
-- Структуру маршрутов и наполнение страниц.
-- Картинки/тексты — задача только про SEO-разметку.
+4. **Код не правлю** — все импорты в `src/data/images.ts` остаются прежними, файлы перезаписываются по тем же путям.
 
 ## Файлы под изменение
 
-- `src/routes/contacts.tsx` — расширить блок JSON-LD объектом LocalBusiness.
-- `src/routes/category.dezinfekciya-novosibirsk.tsx` — добавить `<script type="application/ld+json">` с CollectionPage/ItemList/BreadcrumbList.
-- `src/routes/blog.index.tsx` — добавить JSON-LD Blog + ItemList + BreadcrumbList.
-- `src/routes/karta-sayta.tsx` — добавить BreadcrumbList + SiteNavigationElement.
-- `src/routes/sitemap[.]xml.ts` — узкий рефактор типа `changefreq` + namespace.
+- `src/assets/blog-ukus-klopa.jpg` — гарантированно перегенерируется.
+- 0–N других файлов из списка выше — по результатам аудита.
 
-После внедрения SEO-ревью можно пересканировать кнопкой Rescan в SEO-панели.
+После перегенерации проверю результат в preview перед тем, как закрыть задачу.
