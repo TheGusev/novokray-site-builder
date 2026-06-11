@@ -42,7 +42,7 @@ function ServicesHub() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Услуги" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.equipment} alt="Услуги санитарной службы" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+        <img src={COMMON.equipment} alt="Полный каталог услуг санитарной службы Дез-Федерация в Новосибирске" title="13 направлений: от клопов и тараканов до озонирования и сушки" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
           <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Услуги санитарной службы в Новосибирске" duration={4} /></h1>

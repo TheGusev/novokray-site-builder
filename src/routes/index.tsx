@@ -9,7 +9,7 @@ import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
 import { CITIES } from "@/data/cities";
 import { DISTRICTS } from "@/data/districts";
-import { COMMON, GALLERY } from "@/data/images";
+import { COMMON, GALLERY, GALLERY_META } from "@/data/images";
 import heroBg from "@/assets/hero-bg.jpg";
 import { LeadFormModal } from "@/components/site/LeadFormModal";
 import { ServiceCard } from "@/components/site/ServiceCard";
@@ -144,7 +144,7 @@ function HomePage() {
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <div className="absolute inset-0 overflow-hidden">
           <div className="hero-room-tour-frame">
-            <img src={heroBg} alt="Современная квартира в Новосибирске — обслуживается санитарной службой Дез-Федерация" className="hero-room-tour-media h-full w-full object-cover" loading="eager" width={1920} height={1024} />
+            <img src={heroBg} alt="Современная квартира в Новосибирске после санитарной обработки — Дез-Федерация" title="Дез-Федерация — санитарная служба №1 в Новосибирске с 2014 года" className="hero-room-tour-media h-full w-full object-cover" loading="eager" width={1920} height={1024} />
           </div>
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-black/72 via-black/42 to-black/18" />
@@ -371,7 +371,7 @@ function HomePage() {
           <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
             {GALLERY.map((g, i) => (
               <Reveal key={i} delay={i * 70} variant="scale" className={`relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-[4/3]" : "aspect-square"} group`}>
-                <img src={g} alt={`Работы санитарной службы — кадр ${i + 1}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <img src={g} alt={GALLERY_META[i]?.alt ?? `Работа санитарной службы Дез-Федерация — кадр ${i + 1}`} title={GALLERY_META[i]?.title ?? "Дез-Федерация — выезд день в день по Новосибирску"} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </Reveal>
             ))}

@@ -3,7 +3,7 @@ import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import { SITE } from "@/data/site";
 import { POSTS_BY_SLUG, POSTS, type BlogPost } from "@/data/blog";
 import { SERVICES_BY_SLUG } from "@/data/services";
-import { BLOG_COVERS } from "@/data/images";
+import { BLOG_COVERS, BLOG_IMAGE_META } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
@@ -102,7 +102,7 @@ function PostPage() {
         </div>
         {cover && (
           <div className="mt-6 overflow-hidden rounded-2xl">
-            <img src={cover} alt={p.title} className="h-auto w-full object-cover" loading="eager" />
+            <img src={cover} alt={BLOG_IMAGE_META[p.slug]?.alt ?? p.title} title={BLOG_IMAGE_META[p.slug]?.title ?? p.title} className="h-auto w-full object-cover" loading="eager" />
           </div>
         )}
 

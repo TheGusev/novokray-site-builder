@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES_BY_SLUG, type Service } from "@/data/services";
-import { SERVICE_IMAGES, COMMON } from "@/data/images";
+import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META } from "@/data/images";
 import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -140,6 +140,7 @@ function ServicePage() {
   const related = s.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
   const hero = SERVICE_IMAGES[s.slug];
   const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
+  const imgMeta = SERVICE_IMAGE_META[s.slug];
 
   return (
     <>
@@ -153,7 +154,7 @@ function ServicePage() {
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         {hero && (
           <>
-            <img src={hero} alt={s.h1} className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+            <img src={hero} alt={imgMeta?.heroAlt ?? s.h1} title={imgMeta?.heroTitle ?? s.title} className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent" />
           </>
         )}
@@ -207,14 +208,14 @@ function ServicePage() {
         <section className="container-x pt-12">
           <div className="grid gap-4 md:grid-cols-3">
             <div className="relative overflow-hidden rounded-2xl md:col-span-2 aspect-[16/10]">
-              <img src={hero} alt={`${s.title} — фото работ`} loading="lazy" className="h-full w-full object-cover" />
+              <img src={hero} alt={imgMeta?.cardAlt ?? `${s.title} — фото работ`} title={imgMeta?.cardTitle ?? `${s.title} — пример работы Дез-Федерация`} loading="lazy" className="h-full w-full object-cover" />
             </div>
             <div className="grid gap-4">
               <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
-                <img src={COMMON.equipment} alt="Профессиональное оборудование" loading="lazy" className="h-full w-full object-cover" />
+                <img src={COMMON.equipment} alt={`Оборудование для услуги «${s.title}» — ULV-генератор и СИЗ`} title={COMMON_IMAGE_META.equipment.title} loading="lazy" className="h-full w-full object-cover" />
               </div>
               <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
-                <img src={COMMON.documents} alt="Договор, акт и гарантия" loading="lazy" className="h-full w-full object-cover" />
+                <img src={COMMON.documents} alt={`Договор и акт по услуге «${s.title}» — закрывающие документы`} title={COMMON_IMAGE_META.documents.title} loading="lazy" className="h-full w-full object-cover" />
               </div>
             </div>
           </div>

@@ -89,7 +89,7 @@ function GuaranteesPage() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Гарантии" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.documents} alt="Лицензия и сертификаты Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+        <img src={COMMON.documents} alt="Документы по гарантии: договор, акт и сертификат от Дез-Федерация" title="Гарантия на санитарные работы — закреплена в договоре" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
           <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Гарантии и сертификаты" duration={4} /></h1>

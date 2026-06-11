@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BadgeCheck, CreditCard, Percent, Calculator, Phone } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
-import { COMMON, SERVICE_IMAGES } from "@/data/images";
+import { COMMON, SERVICE_IMAGES, SERVICE_IMAGE_META } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Reveal } from "@/components/site/Reveal";
@@ -79,7 +79,7 @@ function PricePage() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Цены" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.equipment} alt="Прайс на санитарную обработку" className="absolute inset-0 h-full w-full object-cover opacity-20" loading="eager" />
+        <img src={COMMON.equipment} alt="Прайс-лист санитарной службы Дез-Федерация — цены на дезинсекцию, дератизацию и дезинфекцию" title="Прозрачные цены: от 1 800 ₽, без скрытых доплат" className="absolute inset-0 h-full w-full object-cover opacity-20" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
           <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Цены санитарной службы — Новосибирск" duration={4} /></h1>
@@ -96,7 +96,7 @@ function PricePage() {
               <div className="grid gap-0 md:grid-cols-[260px,1fr]">
                 {SERVICE_IMAGES[s.slug] && (
                   <div className="relative aspect-[16/10] md:aspect-auto">
-                    <img src={SERVICE_IMAGES[s.slug]} alt={s.title} loading="lazy" className="h-full w-full object-cover" />
+                    <img src={SERVICE_IMAGES[s.slug]} alt={SERVICE_IMAGE_META[s.slug]?.cardAlt ?? `Цена на услугу «${s.title}»`} title={SERVICE_IMAGE_META[s.slug]?.cardTitle ?? s.title} loading="lazy" className="h-full w-full object-cover" />
                   </div>
                 )}
                 <div className="p-6 md:p-8">

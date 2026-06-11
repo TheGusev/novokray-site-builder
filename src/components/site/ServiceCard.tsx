@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import type { Service } from "@/data/services";
-import { SERVICE_IMAGES } from "@/data/images";
+import { SERVICE_IMAGES, SERVICE_IMAGE_META } from "@/data/images";
 
 export function ServiceCard({ service }: { service: Service }) {
   const Icon = service.icon;
   const image = SERVICE_IMAGES[service.slug];
+  const meta = SERVICE_IMAGE_META[service.slug];
   return (
     <Link
       to="/services/$slug"
@@ -17,7 +18,8 @@ export function ServiceCard({ service }: { service: Service }) {
         <div className="relative -mx-5 -mt-5 mb-4 aspect-[16/10] overflow-hidden bg-secondary">
           <img
             src={image}
-            alt={service.title}
+            alt={meta?.cardAlt ?? `Услуга «${service.title}» — Дез-Федерация, Новосибирск`}
+            title={meta?.cardTitle ?? service.title}
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

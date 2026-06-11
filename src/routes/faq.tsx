@@ -69,7 +69,7 @@ function FAQPage() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Вопросы и ответы" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.office} alt="Поддержка клиентов Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+        <img src={COMMON.office} alt="Операторы Дез-Федерация отвечают на вопросы клиентов — раздел FAQ" title="Ответы на частые вопросы о санитарной обработке" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
           <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Вопросы и ответы о санитарной обработке" duration={4} /></h1>

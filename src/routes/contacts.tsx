@@ -50,7 +50,7 @@ function ContactsPage() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Контакты" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.office} alt="Офис и диспетчерская Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+        <img src={COMMON.office} alt="Контакты Дез-Федерация — офис и диспетчерская в Новосибирске" title="Связаться с Дез-Федерация: телефон, мессенджеры, форма заявки" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
           <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Контакты санитарной службы" duration={4} /></h1>
