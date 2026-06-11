@@ -4,7 +4,7 @@ import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { ChevronLeft, ChevronRight, Calendar, Clock } from "lucide-react";
 import { SITE } from "@/data/site";
 import { POSTS, POSTS_PER_PAGE } from "@/data/blog";
-import { BLOG_COVERS, COMMON } from "@/data/images";
+import { BLOG_COVERS, COMMON, BLOG_IMAGE_META } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { WaveText } from "@/components/site/WaveText";
 
@@ -49,7 +49,7 @@ function BlogIndex() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Блог" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.heroSpray} alt="Блог санитарной службы Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+        <img src={COMMON.heroSpray} alt="Статьи блога Дез-Федерация — практические советы по санитарной обработке" title="Блог Дез-Федерация: клопы, тараканы, плесень, озонирование" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-12 md:py-16">
           <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Блог санитарной службы" duration={4} /></h1>
@@ -69,7 +69,7 @@ function BlogIndex() {
             >
               {BLOG_COVERS[p.slug] && (
                 <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-                  <img src={BLOG_COVERS[p.slug]} alt={p.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img src={BLOG_COVERS[p.slug]} alt={BLOG_IMAGE_META[p.slug]?.alt ?? p.title} title={BLOG_IMAGE_META[p.slug]?.title ?? p.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 </div>
               )}

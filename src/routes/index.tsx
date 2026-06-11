@@ -371,7 +371,7 @@ function HomePage() {
           <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
             {GALLERY.map((g, i) => (
               <Reveal key={i} delay={i * 70} variant="scale" className={`relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-[4/3]" : "aspect-square"} group`}>
-                <img src={g} alt={`Работы санитарной службы — кадр ${i + 1}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <img src={g} alt={GALLERY_META[i]?.alt ?? `Работа санитарной службы Дез-Федерация — кадр ${i + 1}`} title={GALLERY_META[i]?.title ?? "Дез-Федерация — выезд день в день по Новосибирску"} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </Reveal>
             ))}
