@@ -74,18 +74,66 @@ export const GALLERY = [
 
 // Map blog post slug → cover image (reuses service photos thematically)
 export const BLOG_COVERS: Record<string, string> = {
+  // Насекомые
   "kak-otlichit-ukus-klopa": blogUkusKlopa,
+  "priznaki-zarazheniya-klopami": blogUkusKlopa,
+  "klopy-v-divane-chto-delat": svcKlopy,
   "tarakany-v-novostroyke": blogNovostroyka,
-  "obrabotka-uchastka-vesnoy": blogUchastokVesnoy,
-  "ozonirovanie-avto-zachem": blogOzonAvto,
-  "plesen-v-vannoy-prichiny": blogPlesenVannaya,
-  "zatopili-sosedi-chto-delat": blogZatopili,
-  "deratizatsiya-v-kafe": blogKafe,
-  "kak-podgotovit-kvartiru": blogPodgotovka,
+  "ryzhie-i-chernye-tarakany-razlichiya": svcTarakany,
+  "pochemu-tarakany-vozvraschayutsya": svcTarakany,
+  "muravi-v-kvartire-novosibirsk": svcMuravi,
+  "faraonovy-muravi-kak-vyvesti": svcMuravi,
   "blohi-iz-podvala": blogPodval,
-  "borschevik-na-dache": blogBorschevik,
+  "koshachi-blohi-v-kvartire": svcBloh,
+  "pischevaya-mol-na-kuhne": svcDezinfekciya,
+  "cheshuynitsy-v-vannoy": svcPlesen,
+  // Грызуны
+  "krysy-v-chastnom-dome-nsk": svcGryzuny,
+  "myshi-na-dache-zimoy": svcGryzuny,
+  "kroty-na-uchastke-borba": blogUchastokVesnoy,
+  "kak-najti-myshinoe-gnezdo": svcGryzuny,
+  "deratizatsiya-skladov-trebovaniya": equipmentFlatlay,
+  // Участок
+  "obrabotka-uchastka-vesnoy": blogUchastokVesnoy,
+  "kleshchi-v-akademgorodke-statistika": svcKleshchi,
+  "entsefalitnyy-kleshch-pervaya-pomosch": svcKleshchi,
   "osy-na-balkone": blogOsyBalkon,
+  "sherzhni-opasnost-i-udalenie": svcOsy,
+  "borschevik-na-dache": blogBorschevik,
+  "moshka-i-komary-v-novosibirske": svcMoshkiKomari,
+  "obrabotka-bazy-otdyha-ob": blogUchastokVesnoy,
+  // Плесень
+  "plesen-v-vannoy-prichiny": blogPlesenVannaya,
+  "plesen-v-podvale-mnogokvartirnogo-doma": blogPodval,
+  "plesen-posle-zatopleniya": blogZatopili,
+  "chernaya-plesen-vred-dlya-zdorovya": svcPlesen,
+  "plesen-v-konditsionere-avto-i-doma": blogOzonAvto,
+  // Запахи
+  "ozonirovanie-avto-zachem": blogOzonAvto,
   "ozon-protiv-virusov": blogOzonVirus,
+  "kak-ubrat-zapakh-gari-posle-pozhara": svcDezodoraciya,
+  "dezodoratsiya-posle-zhivotnyh": svcDezodoraciya,
+  "zapakh-tabaka-v-arendnoy-kvartire": svcOzon,
+  // ЧС
+  "zatopili-sosedi-chto-delat": blogZatopili,
+  "sushka-posle-zatopleniya-skolko-stoit": svcSushka,
+  "obrabotka-kvartiry-posle-umershego": svcDezinfekciya,
+  "obrabotka-posle-pozhara-pervye-shagi": svcDezodoraciya,
+  // СанПиН
+  "deratizatsiya-v-kafe": blogKafe,
+  "dezinfektsiya-v-detskom-sadu-sanpin": svcDezinfekciya,
+  "obrabotka-gostinits-trebovaniya": b2bCafe,
+  "dezinfektsiya-dlya-uk-i-tsg": svcDezinfekciya,
+  "dogovor-na-dezinsektsiyu-obrazets": documentsImg,
+  "zhurnal-sanpin-kak-vesti": documentsImg,
+  // Препараты
+  "goryachiy-tuman-vs-holodnyy": svcFumigaciya,
+  "barernaya-obrabotka-chto-eto": equipmentFlatlay,
+  "mikrokapsulirovannye-preparaty-2026": equipmentFlatlay,
+  "akaritsidy-spisok-i-otlichiya": svcKleshchi,
+  "rodentitsidy-bezopasnost-dlya-detey-i-zhivotnyh": svcGryzuny,
+  // Доп. (остался из старого набора)
+  "kak-podgotovit-kvartiru": blogPodgotovka,
 };
 
 // =====================================================================
