@@ -259,7 +259,7 @@
 }
 
 .animate-floaty { animation: floaty 4.5s ease-in-out infinite; }
-.animate-ticker { animation: ticker 32s linear infinite; }
+.animate-ticker { animation: ticker 14s linear infinite; }
 
 /* Wave text — colored wave running through letters */
 @keyframes wave-text-color {
