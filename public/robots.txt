@@ -9,6 +9,11 @@ Disallow: /lovable/
 Disallow: /*?utm_
 Disallow: /*?yclid=
 Disallow: /*?gclid=
+Disallow: /blog?cat=
+Disallow: /blog?tag=
+Disallow: /blog?hf=
+Disallow: /blog?geo=
+Disallow: /blog?q=
 
 # OpenAI — training
 User-agent: GPTBot
