@@ -27,7 +27,7 @@ export const Route = createFileRoute("/blog/$slug")({
         { property: "og:url", content: `/blog/${params.slug}` },
         { property: "og:type", content: "article" },
         { property: "article:published_time", content: p.date },
-        { property: "og:image", content: `${SITE.domain}${BLOG_COVERS[p.slug] ?? "/og/default.jpg"}` },
+        { property: "og:image", content: `${SITE.domain}${typeof BLOG_COVERS[p.slug] === "string" ? BLOG_COVERS[p.slug] : "/og/default.jpg"}` },
       ],
       links: [{ rel: "canonical", href: `/blog/${params.slug}` }],
       scripts: [{
@@ -141,10 +141,24 @@ function PostPage() {
         <h2 className="font-display text-2xl font-bold md:text-3xl">Читайте также</h2>
         <div className="mt-6 grid gap-5 md:grid-cols-3">
           {otherPosts.map((o) => (
-            <Link key={o.slug} to="/blog/$slug" params={{ slug: o.slug }} className="group rounded-2xl border border-border bg-card p-6 shadow-card hover:border-primary/40 hover:shadow-elegant">
-              <div className="text-xs text-muted-foreground">{new Date(o.date).toLocaleDateString("ru-RU")}</div>
-              <h3 className="mt-2 font-display text-lg font-bold group-hover:text-primary">{o.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{o.excerpt}</p>
+            <Link key={o.slug} to="/blog/$slug" params={{ slug: o.slug }} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
+              {BLOG_COVERS[o.slug] && (
+                <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
+                  <img
+                    src={BLOG_COVERS[o.slug]}
+                    alt={BLOG_IMAGE_META[o.slug]?.alt ?? o.title}
+                    title={BLOG_IMAGE_META[o.slug]?.title ?? o.title}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                </div>
+              )}
+              <div className="flex flex-1 flex-col p-6">
+                <div className="text-xs text-muted-foreground">{new Date(o.date).toLocaleDateString("ru-RU")}</div>
+                <h3 className="mt-2 font-display text-lg font-bold group-hover:text-primary">{o.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{o.excerpt}</p>
+              </div>
             </Link>
           ))}
         </div>
