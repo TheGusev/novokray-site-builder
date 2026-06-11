@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Calendar, Clock, ArrowLeft, MapPin, Download, FileText, ExternalLink, ListTree } from "lucide-react";
 import { SITE } from "@/data/site";
-import { POSTS_BY_SLUG, POSTS, CATEGORY_BY_SLUG, type BlogPost } from "@/data/blog";
+import { POSTS_BY_SLUG, POSTS, CATEGORY_BY_SLUG, type BlogPost, type BlogCategory } from "@/data/blog";
 import { SERVICES_BY_SLUG } from "@/data/services";
 import { BLOG_COVERS, BLOG_IMAGE_META } from "@/data/images";
 import { DOCS } from "@/data/docs";
@@ -96,14 +96,15 @@ export const Route = createFileRoute("/blog/$slug")({
 });
 
 function PostPage() {
-  const { post: p } = Route.useLoaderData();
-  const cat = CATEGORY_BY_SLUG[p.category];
-  const related = p.relatedServices.map((s) => SERVICES_BY_SLUG[s]).filter(Boolean);
+  const data = Route.useLoaderData() as { post: BlogPost };
+  const p = data.post;
+  const cat = CATEGORY_BY_SLUG[p.category as BlogCategory];
+  const related = p.relatedServices.map((s: string) => SERVICES_BY_SLUG[s]).filter(Boolean);
   const others = POSTS.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 3);
   const otherPosts = others.length >= 3 ? others : POSTS.filter((x) => x.slug !== p.slug).slice(0, 3);
   const cover = BLOG_COVERS[p.slug];
   const toc = extractToc(p.body);
-  const docs = (p.relatedDocs ?? []).map((s) => DOCS.find((d) => d.slug === s)).filter(Boolean) as typeof DOCS;
+  const docs = (p.relatedDocs ?? []).map((s: string) => DOCS.find((d) => d.slug === s)).filter(Boolean) as typeof DOCS;
 
   return (
     <>
@@ -148,7 +149,7 @@ function PostPage() {
                 <ListTree className="h-3.5 w-3.5" /> В этой статье
               </div>
               <nav className="mt-3 space-y-1.5 text-sm">
-                {toc.filter((t) => t.level === 2).map((t) => (
+                {toc.filter((t: { level: number }) => t.level === 2).map((t: { id: string; title: string }) => (
                   <a key={t.id} href={`#${t.id}`} className="block rounded px-2 py-1 leading-tight transition hover:bg-primary/10 hover:text-primary">{t.title}</a>
                 ))}
               </nav>
@@ -186,7 +187,7 @@ function PostPage() {
               <section className="mt-10">
                 <h2 className="font-display text-2xl font-bold md:text-3xl">Частые вопросы</h2>
                 <div className="mt-4 divide-y divide-border rounded-2xl border border-border bg-card">
-                  {p.faq.map((f, i) => (
+                  {p.faq.map((f: { q: string; a: string }, i: number) => (
                     <details key={i} className="group p-5">
                       <summary className="cursor-pointer list-none text-base font-bold text-foreground transition hover:text-primary">
                         {f.q}
@@ -203,7 +204,7 @@ function PostPage() {
               <section className="mt-10 rounded-2xl border border-border bg-secondary/40 p-5">
                 <h2 className="m-0 font-display text-lg font-bold">Источники и нормативы</h2>
                 <ul className="mt-3 space-y-1.5 text-sm">
-                  {p.sources.map((s, i) => (
+                  {p.sources.map((s: { label: string; url: string }, i: number) => (
                     <li key={i}>
                       <a href={s.url} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center gap-1 text-primary underline decoration-primary/40 hover:decoration-primary">
                         {s.label} <ExternalLink className="h-3 w-3" />
@@ -222,7 +223,7 @@ function PostPage() {
               <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
                 <div className="font-display text-sm font-bold uppercase tracking-wider text-muted-foreground">По теме статьи</div>
                 <div className="mt-3 space-y-2">
-                  {related.map((r) => (
+                  {related.map((r: typeof related[number]) => (
                     <Link key={r.slug} to="/services/$slug" params={{ slug: r.slug }} className="flex items-center gap-3 rounded-lg p-2 hover:bg-secondary">
                       <r.icon className="h-5 w-5 text-primary" />
                       <div>
@@ -263,7 +264,7 @@ function PostPage() {
         <section className="container-x pb-16">
           <h2 className="font-display text-2xl font-bold md:text-3xl">Услуги по теме</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {related.map((r) => (<ServiceCard key={r.slug} service={r} />))}
+            {related.map((r: typeof related[number]) => (<ServiceCard key={r.slug} service={r} />))}
           </div>
         </section>
       )}
