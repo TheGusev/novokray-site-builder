@@ -63,7 +63,7 @@ function AboutPage() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "О компании" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.heroTeam} alt="Команда санитарной службы Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
+        <img src={COMMON.heroTeam} alt="Команда из 28 специалистов санитарной службы Дез-Федерация на выезде в Новосибирске" title="Дез-Федерация — с 2014 года в Новосибирске и области" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative grid gap-8 py-12 md:py-20 lg:grid-cols-[1.2fr,1fr]">
           <div>
@@ -86,7 +86,7 @@ function AboutPage() {
             </a>
           </div>
           <Reveal variant="scale" delay={120} className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/20 shadow-elegant">
-            <img src={COMMON.office} alt="Диспетчерская Дез-Федерация в Новосибирске" loading="lazy" className="h-full w-full object-cover" />
+            <img src={COMMON.office} alt="Диспетчерская санитарной службы Дез-Федерация: приём заявок круглосуточно" title="Круглосуточный приём заявок по Новосибирску" loading="lazy" className="h-full w-full object-cover" />
           </Reveal>
         </div>
       </section>
@@ -120,10 +120,10 @@ function AboutPage() {
             </p>
           </Reveal>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <Reveal className="overflow-hidden rounded-2xl aspect-[4/3] md:col-span-2"><img src={COMMON.heroTeam} alt="Бригада дезинфекторов" loading="lazy" className="h-full w-full object-cover" /></Reveal>
+            <Reveal className="overflow-hidden rounded-2xl aspect-[4/3] md:col-span-2"><img src={COMMON.heroTeam} alt="Аттестованные дезинфекторы Дез-Федерация в СИЗ перед выездом" title="28 специалистов в штате — аттестация и медосмотры" loading="lazy" className="h-full w-full object-cover" /></Reveal>
             <div className="grid gap-4">
-              <Reveal delay={120} className="overflow-hidden rounded-2xl aspect-[4/3]"><img src={COMMON.equipment} alt="Оборудование санитарной службы" loading="lazy" className="h-full w-full object-cover" /></Reveal>
-              <Reveal delay={200} className="overflow-hidden rounded-2xl aspect-[4/3]"><img src={COMMON.documents} alt="Лицензии и сертификаты" loading="lazy" className="h-full w-full object-cover" /></Reveal>
+              <Reveal delay={120} className="overflow-hidden rounded-2xl aspect-[4/3]"><img src={COMMON.equipment} alt="ULV-генераторы Trotec, осушители и ранцевые опрыскиватели Дез-Федерация" title="Профессиональная техника для дезинсекции и дезинфекции" loading="lazy" className="h-full w-full object-cover" /></Reveal>
+              <Reveal delay={200} className="overflow-hidden rounded-2xl aspect-[4/3]"><img src={COMMON.documents} alt="Лицензия Роспотребнадзора и сертификаты дезинфекции Дез-Федерация" title="Полный пакет документов для УК, ТСЖ и юрлиц" loading="lazy" className="h-full w-full object-cover" /></Reveal>
             </div>
           </div>
         </div>
