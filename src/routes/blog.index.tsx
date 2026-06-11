@@ -16,11 +16,11 @@ import { WaveText } from "@/components/site/WaveText";
 
 const searchSchema = z.object({
   page: fallback(z.number().int().min(1), 1).default(1),
-  cat: fallback(z.enum(["nasekomye","gryzuny","uchastok","plesen","zapahi","chs","sanpin","preparaty"]).optional(), undefined).default(undefined),
-  geo: fallback(z.enum(["novosibirsk","oblast","both"]).optional(), undefined).default(undefined),
-  hf: fallback(z.enum(["ВЧ","СЧ","НЧ"]).optional(), undefined).default(undefined),
-  q: fallback(z.string().max(80).optional(), undefined).default(undefined),
-  tag: fallback(z.string().max(40).optional(), undefined).default(undefined),
+  cat: fallback(z.enum(["nasekomye","gryzuny","uchastok","plesen","zapahi","chs","sanpin","preparaty"]).optional(), undefined),
+  geo: fallback(z.enum(["novosibirsk","oblast","both"]).optional(), undefined),
+  hf: fallback(z.enum(["ВЧ","СЧ","НЧ"]).optional(), undefined),
+  q: fallback(z.string().max(80).optional(), undefined),
+  tag: fallback(z.string().max(40).optional(), undefined),
 });
 
 export const Route = createFileRoute("/blog/")({
