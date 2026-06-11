@@ -10,7 +10,8 @@ const HUB_SLUGS = ["unichtozhenie-vrediteley", "sanitarnaya-obrabotka", "obrabot
 
 const BASE_URL = SITE.domain;
 
-interface Entry { path: string; lastmod?: string; changefreq?: string; priority?: string }
+type ChangeFreq = "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+interface Entry { path: string; lastmod?: string; changefreq?: ChangeFreq; priority?: string }
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -63,7 +64,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,
-          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`,
           ...urls,
           `</urlset>`,
         ].join("\n");

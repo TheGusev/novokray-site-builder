@@ -42,9 +42,20 @@ export const Route = createFileRoute("/karta-sayta")({
       type: "application/ld+json",
       children: JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "SiteNavigationElement",
-        name: "Карта сайта",
-        url: `${SITE.domain}/karta-sayta`,
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+              { "@type": "ListItem", position: 2, name: "Карта сайта", item: `${SITE.domain}/karta-sayta` },
+            ],
+          },
+          {
+            "@type": "SiteNavigationElement",
+            name: MAIN_SECTIONS.map((s) => s.label),
+            url: MAIN_SECTIONS.map((s) => `${SITE.domain}${s.to}`),
+          },
+        ],
       }),
     }],
   }),
