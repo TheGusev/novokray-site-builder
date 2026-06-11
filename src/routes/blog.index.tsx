@@ -33,6 +33,46 @@ export const Route = createFileRoute("/blog/")({
         { property: "og:url", content: canonical },
       ],
       links,
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Blog",
+              name: "Блог Дез-Федерация",
+              url: `${SITE.domain}/blog`,
+              inLanguage: "ru-RU",
+              publisher: { "@id": `${SITE.domain}#organization` },
+              blogPost: POSTS.slice(0, 20).map((p) => ({
+                "@type": "BlogPosting",
+                headline: p.title,
+                url: `${SITE.domain}/blog/${p.slug}`,
+                datePublished: p.date,
+                description: p.excerpt,
+              })),
+            },
+            {
+              "@type": "ItemList",
+              name: "Статьи блога",
+              numberOfItems: POSTS.length,
+              itemListElement: POSTS.map((p, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                url: `${SITE.domain}/blog/${p.slug}`,
+                name: p.title,
+              })),
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+                { "@type": "ListItem", position: 2, name: "Блог", item: `${SITE.domain}/blog` },
+              ],
+            },
+          ],
+        }),
+      }],
     };
   },
   component: BlogIndex,

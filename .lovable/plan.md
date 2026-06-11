@@ -1,45 +1,50 @@
-# План: уникальные alt и SEO-заголовки (title) для всех изображений
+## Текущее состояние (после аудита)
 
-## Проблема
+Уже реализовано в проекте:
 
-Сейчас многие `<img>` используют одинаковые формулировки (`s.title`, `p.title`, «Услуги санитарной службы», «Бригада дезинфекторов», «Лицензии и сертификаты», `Работы санитарной службы — кадр N`). Это плохо для SEO и доступности.
+- **`src/routes/sitemap[.]xml.ts`** — динамический sitemap покрывает все маршруты: `/`, `/services`, `/services/$slug` (×13), `/uslugi/$slug` (×4 хаба), `/gorod/$slug`, `/raion/$slug`, `/blog`, `/blog/$slug`, `/price`, `/faq`, `/contacts`, `/garantii`, `/o-kompanii`, `/category/dezinfekciya-novosibirsk`, `/karta-sayta`, `/privacy`, `/terms`. С `lastmod`, `changefreq`, `priority`.
+- **`public/robots.txt`** — `Allow: /`, закрыты `/admin`, `/api/`, `/lovable/`, UTM/yclid/gclid, отдельные правила для GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, YandexGPT, Googlebot, директива `Sitemap:` и `Clean-param` для Яндекса.
+- **Schema.org**:
+  - `__root.tsx` — Organization, WebSite (SearchAction), LocalBusiness, AggregateRating.
+  - `index.tsx` — FAQPage, ItemList, LocalBusiness + Review.
+  - `services.$slug.tsx` — Service + Offer + HowTo + FAQPage + BreadcrumbList.
+  - `services.index.tsx` — BreadcrumbList.
+  - `uslugi.$slug.tsx` — CollectionPage + ItemList + BreadcrumbList.
+  - `faq.tsx` — FAQPage.
+  - `contacts.tsx` — ContactPage + BreadcrumbList.
+  - `o-kompanii.tsx` — AboutPage + BreadcrumbList.
+  - `garantii.tsx` — WebPage + BreadcrumbList.
+  - `price.tsx` — OfferCatalog + AggregateOffer + BreadcrumbList.
+  - `blog.$slug.tsx` — Article + BreadcrumbList.
+  - `gorod.$slug.tsx`, `raion.$slug.tsx` — LocalBusiness + BreadcrumbList (+ FAQPage в городах).
 
-## Решение — один источник правды
+Пагинации в проекте нет (блог/категории отдают полный список единым `ItemList`), поэтому правил под `?page=` в robots не требуется.
 
-В `src/data/images.ts` добавить три словаря:
+## Что добавить
 
-1. **`IMAGE_META`** — по «ключу ассета» (`heroTeam`, `heroSpray`, `equipment`, `documents`, `office`, `b2bCafe`, `gallery1..6`): объект `{ alt, title }`. Уникальные формулировки с упоминанием бренда «Дез-Федерация», Новосибирска и сути сцены (например, `gallery-2` → «Холодный туман от тараканов в квартире на ул. Ленина — Дез-Федерация, Новосибирск»).
-2. **`SERVICE_IMAGE_META`** — по slug услуги (13 шт.): для каждой услуги два варианта `{ heroAlt, heroTitle, cardAlt, cardTitle }`, чтобы карточка на главной/прайсе и hero на странице услуги не дублировались.
-3. **`BLOG_IMAGE_META`** — по slug поста (12 шт.): `{ coverAlt, coverTitle }` под тематику поста, а не просто заголовок.
+1. **`src/routes/contacts.tsx`** — добавить отдельный блок `LocalBusiness` с `@id`, `telephone`, `email`, `address` (PostalAddress), `geo` (GeoCoordinates из `SITE.geo`), `openingHoursSpecification`, `areaServed` (Новосибирск + города), `priceRange`, `image`, `url`. Это нужно именно на странице контактов как первичный профиль бизнеса (сейчас LocalBusiness есть только в `__root.tsx` и привязан к WebSite).
+2. **`src/routes/category.dezinfekciya-novosibirsk.tsx`** — добавить JSON-LD `CollectionPage` + `ItemList` со ссылками на все 13 услуг и `BreadcrumbList` (сейчас разметки на странице нет вообще).
+3. **`src/routes/blog.index.tsx`** — добавить `Blog` + `BreadcrumbList` + `ItemList` со списком постов (сейчас разметки нет).
+4. **`src/routes/karta-sayta.tsx`** — добавить `BreadcrumbList` + `SiteNavigationElement` (минимальный JSON-LD для навигационной карты).
+5. **`src/routes/sitemap[.]xml.ts`** — мелкие правки:
+   - `Entry.changefreq` типизировать union вместо `string` (для соответствия XSD-словарю sitemap).
+   - В `<urlset>` добавить namespace `xmlns:xhtml` (заготовка под будущие hreflang, не обязательно, но безопасно).
+6. **`public/robots.txt`** — без изменений по содержанию; навести порядок:
+   - Сгруппировать секции с комментариями.
+   - Подтвердить, что `Sitemap:` указывает на `https://dez-federation.ru/sitemap.xml` (уже да).
 
-Помощник `getImageMeta(key)` → возвращает `{ alt, title }` с дефолтом, чтобы нигде не падало.
+## Чего НЕ трогаю
 
-## Где править рендер
+- Существующий JSON-LD на страницах услуг/FAQ/гарантий/блога — там уже корректные типы.
+- Структуру маршрутов и наполнение страниц.
+- Картинки/тексты — задача только про SEO-разметку.
 
-Минимальные точечные правки в JSX (только подставить alt/title из словаря, без логики):
+## Файлы под изменение
 
-- `src/routes/index.tsx` — hero и галерея (6 кадров).
-- `src/routes/services.index.tsx` — hero услуг.
-- `src/routes/services.$slug.tsx` — hero услуги, основное фото, equipment, documents.
-- `src/routes/uslugi.$slug.tsx` — hero услуги.
-- `src/routes/price.tsx` — hero + миниатюры услуг (cardAlt/cardTitle).
-- `src/routes/blog.index.tsx` — hero + обложки постов.
-- `src/routes/blog.$slug.tsx` — обложка поста.
-- `src/routes/o-kompanii.tsx` — hero, офис, бригада, оборудование, документы (5 шт., все разные).
-- `src/routes/garantii.tsx`, `faq.tsx`, `contacts.tsx`, `category.dezinfekciya-novosibirsk.tsx`, `raion.$slug.tsx`, `gorod.$slug.tsx` — hero (по одному, формулировки с учётом района/города из данных, не дублируя `prepositional`).
-- `src/components/site/ServiceCard.tsx` — карточка услуги (cardAlt/cardTitle).
+- `src/routes/contacts.tsx` — расширить блок JSON-LD объектом LocalBusiness.
+- `src/routes/category.dezinfekciya-novosibirsk.tsx` — добавить `<script type="application/ld+json">` с CollectionPage/ItemList/BreadcrumbList.
+- `src/routes/blog.index.tsx` — добавить JSON-LD Blog + ItemList + BreadcrumbList.
+- `src/routes/karta-sayta.tsx` — добавить BreadcrumbList + SiteNavigationElement.
+- `src/routes/sitemap[.]xml.ts` — узкий рефактор типа `changefreq` + namespace.
 
-Принцип формулировок (чтобы не было дублей):
-- alt: что именно изображено + контекст (район/услуга/объект) + «Дез-Федерация, Новосибирск».
-- title: коммерческая подпись с УТП («Озонирование квартиры за 60 мин — выезд день в день»).
-- Для динамических страниц (`raion.$slug`, `gorod.$slug`, `services.$slug`) шаблон параметризован slug'ом, поэтому каждая страница даёт уникальную строку автоматически.
-
-## Что НЕ трогаю
-
-- `og:image`-метатеги — это отдельная задача (там нужны абсолютные URL и отдельные шарящиеся картинки).
-- Сами файлы картинок — недавно перегенерированы, остаются как есть.
-- `loading`, `width`, `height` атрибуты.
-
-## Итог
-
-После правок ни одна пара `<img alt="…">` на сайте не совпадает буквально, у каждого фото есть SEO-`title`, всё управляется из одного файла.
+После внедрения SEO-ревью можно пересканировать кнопкой Rescan в SEO-панели.

@@ -18,6 +18,41 @@ export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
       { property: "og:url", content: "/category/dezinfekciya-novosibirsk" },
     ],
     links: [{ rel: "canonical", href: "/category/dezinfekciya-novosibirsk" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "CollectionPage",
+            name: `Дезинфекция в Новосибирске — ${SITE.name}`,
+            url: `${SITE.domain}/category/dezinfekciya-novosibirsk`,
+            inLanguage: "ru-RU",
+            isPartOf: { "@id": `${SITE.domain}#website` },
+            about: { "@id": `${SITE.domain}#localbusiness` },
+            speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
+          },
+          {
+            "@type": "ItemList",
+            name: "Услуги дезинфекции в Новосибирске",
+            numberOfItems: SERVICES.length,
+            itemListElement: SERVICES.map((s, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: `${SITE.domain}/services/${s.slug}`,
+              name: s.title,
+            })),
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+              { "@type": "ListItem", position: 2, name: "Дезинфекция в Новосибирске", item: `${SITE.domain}/category/dezinfekciya-novosibirsk` },
+            ],
+          },
+        ],
+      }),
+    }],
   }),
   component: CategoryPage,
 });

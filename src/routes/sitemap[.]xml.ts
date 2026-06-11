@@ -10,7 +10,8 @@ const HUB_SLUGS = ["unichtozhenie-vrediteley", "sanitarnaya-obrabotka", "obrabot
 
 const BASE_URL = SITE.domain;
 
-interface Entry { path: string; lastmod?: string; changefreq?: string; priority?: string }
+type ChangeFreq = "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+interface Entry { path: string; lastmod?: string; changefreq?: ChangeFreq; priority?: string }
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -30,23 +31,23 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/karta-sayta", changefreq: "monthly", priority: "0.3", lastmod: today },
           { path: "/privacy", changefreq: "yearly", priority: "0.2", lastmod: today },
           { path: "/terms", changefreq: "yearly", priority: "0.2", lastmod: today },
-          ...HUB_SLUGS.map((slug) => ({
+          ...HUB_SLUGS.map((slug): Entry => ({
             path: `/uslugi/${slug}`,
             changefreq: "weekly", priority: "0.85", lastmod: today,
           })),
-          ...CITIES.map((c) => ({
+          ...CITIES.map((c): Entry => ({
             path: `/gorod/${c.slug}`,
             changefreq: "weekly", priority: "0.85", lastmod: today,
           })),
-          ...DISTRICTS.map((d) => ({
+          ...DISTRICTS.map((d): Entry => ({
             path: `/raion/${d.slug}`,
             changefreq: "weekly", priority: "0.8", lastmod: today,
           })),
-          ...SERVICES.map((s) => ({
+          ...SERVICES.map((s): Entry => ({
             path: `/services/${s.slug}`,
             changefreq: "weekly", priority: "0.9", lastmod: today,
           })),
-          ...POSTS.map((p) => ({
+          ...POSTS.map((p): Entry => ({
             path: `/blog/${p.slug}`,
             changefreq: "monthly", priority: "0.6", lastmod: p.date,
           })),
@@ -63,7 +64,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,
-          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`,
           ...urls,
           `</urlset>`,
         ].join("\n");
