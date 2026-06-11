@@ -92,6 +92,26 @@
   --shadow-cta: 0 16px 36px -10px color-mix(in oklab, oklch(0.62 0.22 30) 55%, transparent), 0 0 0 1px color-mix(in oklab, oklch(0.62 0.22 30) 40%, transparent) inset;
 
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Blog "library" tokens */
+  --paper: oklch(0.97 0.018 80);
+  --paper-foreground: oklch(0.22 0.04 240);
+  --shelf-line: oklch(0.86 0.025 60);
+
+  /* 8 категорий блога — пастель + контрастный foreground */
+  --cat-1: oklch(0.93 0.06 25);   --cat-1-fg: oklch(0.30 0.12 25);
+  --cat-2: oklch(0.92 0.05 60);   --cat-2-fg: oklch(0.30 0.12 60);
+  --cat-3: oklch(0.92 0.07 140);  --cat-3-fg: oklch(0.28 0.10 145);
+  --cat-4: oklch(0.92 0.05 200);  --cat-4-fg: oklch(0.28 0.10 220);
+  --cat-5: oklch(0.92 0.06 260);  --cat-5-fg: oklch(0.30 0.12 260);
+  --cat-6: oklch(0.92 0.07 310);  --cat-6-fg: oklch(0.30 0.12 320);
+  --cat-7: oklch(0.93 0.05 95);   --cat-7-fg: oklch(0.30 0.10 95);
+  --cat-8: oklch(0.92 0.04 235);  --cat-8-fg: oklch(0.28 0.10 235);
+
+  /* Бейджи частотности запросов */
+  --hf-vch: oklch(0.85 0.13 145); --hf-vch-fg: oklch(0.25 0.08 145);
+  --hf-sch: oklch(0.88 0.13 85);  --hf-sch-fg: oklch(0.30 0.10 85);
+  --hf-nch: oklch(0.92 0.01 240); --hf-nch-fg: oklch(0.40 0.02 240);
 }
 
 @layer base {
