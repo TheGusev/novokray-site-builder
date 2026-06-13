@@ -72,7 +72,7 @@ export const Route = createFileRoute("/contacts")({
               { "@type": "City", name: "Краснообск" },
               { "@type": "City", name: "Обь" },
             ],
-            sameAs: [SITE.social.vk, SITE.social.telegram],
+            sameAs: [SITE.social.telegram, SITE.social.max],
             aggregateRating: {
               "@type": "AggregateRating",
               ratingValue: SITE.rating.value,
@@ -154,10 +154,12 @@ function ContactsPage() {
             <Reveal delay={320} className="sm:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-card">
               <div className="font-display text-lg font-bold">Реквизиты</div>
               <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-                <div><dt className="text-muted-foreground">ИНН</dt><dd className="font-medium">5406789012</dd></div>
-                <div><dt className="text-muted-foreground">ОГРН</dt><dd className="font-medium">1145476123456</dd></div>
-                <div><dt className="text-muted-foreground">Лицензия Роспотребнадзора</dt><dd className="font-medium">№ 54.НС.04.001.Л.000123.04.14</dd></div>
-                <div><dt className="text-muted-foreground">Юр. адрес</dt><dd className="font-medium">630099, г. Новосибирск, Красный проспект, 28</dd></div>
+                <div><dt className="text-muted-foreground">Наименование</dt><dd className="font-medium">{SITE.legal.name}</dd></div>
+                <div><dt className="text-muted-foreground">ИНН</dt><dd className="font-medium">{SITE.legal.inn}</dd></div>
+                <div><dt className="text-muted-foreground">ОГРН</dt><dd className="font-medium">{SITE.legal.ogrn}</dd></div>
+                <div><dt className="text-muted-foreground">Юридический адрес</dt><dd className="font-medium">{SITE.legal.legalAddress}</dd></div>
+                <div className="sm:col-span-2"><dt className="text-muted-foreground">Лицензия Роспотребнадзора</dt><dd className="font-medium">№ {SITE.legal.licenseNo} от {SITE.legal.licenseDate} · ЕРУЛ № {SITE.legal.licenseErul}</dd></div>
+                <div className="sm:col-span-2"><dt className="text-muted-foreground">Орган, выдавший лицензию</dt><dd className="font-medium">{SITE.legal.licenseAuthority}</dd></div>
               </dl>
             </Reveal>
           </div>
