@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Download, Phone } from "lucide-react";
+import { ArrowLeft, Download, Phone, FileSignature } from "lucide-react";
 import { SITE } from "@/data/site";
 import { DOCS, getDoc } from "@/data/docs";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -78,6 +78,14 @@ function DocViewerPage() {
             >
               <Download className="h-4 w-4" /> Скачать PDF
             </a>
+            {doc.slug === "dogovor" && (
+              <Link
+                to="/dogovor/zapolnit"
+                className="inline-flex h-10 items-center gap-2 rounded-lg border border-primary bg-secondary px-4 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                <FileSignature className="h-4 w-4" /> Заполнить и скачать
+              </Link>
+            )}
             <a
               href={SITE.phoneHref}
               aria-label="Позвонить"
