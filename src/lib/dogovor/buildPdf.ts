@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, StandardFonts, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import regAsset from "@/assets/fonts/PTSans-Regular.ttf.asset.json";
 import boldAsset from "@/assets/fonts/PTSans-Bold.ttf.asset.json";
@@ -168,15 +168,9 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
   const [regBytes, boldBytes] = await Promise.all([
     loadFontBytes(regAsset.url),
     loadFontBytes(boldAsset.url),
-  ]).catch(async () => {
-    // Fallback: standard fonts (no Cyrillic). Не должно случиться, но безопасно.
-    const f = await doc.embedFont(StandardFonts.Helvetica);
-    const fb = await doc.embedFont(StandardFonts.HelveticaBold);
-    return [f, fb] as unknown as [ArrayBuffer, ArrayBuffer];
-  });
-
-  const font = await doc.embedFont(regBytes as ArrayBuffer, { subset: true });
-  const bold = await doc.embedFont(boldBytes as ArrayBuffer, { subset: true });
+  ]);
+  const font = await doc.embedFont(regBytes, { subset: true });
+  const bold = await doc.embedFont(boldBytes, { subset: true });
 
   const firstPage = doc.addPage([PAGE_W, PAGE_H]);
   const c: Cursor = { page: firstPage, y: PAGE_H - MARGIN, pages: [firstPage] };
