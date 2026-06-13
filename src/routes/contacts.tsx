@@ -43,7 +43,7 @@ export const Route = createFileRoute("/contacts")({
             priceRange: "₽₽",
             address: {
               "@type": "PostalAddress",
-              streetAddress: "Красный проспект, 28, офис 412",
+              streetAddress: "ул. Тайгинская, зд. 13/1, помещ. 212",
               addressLocality: SITE.city,
               addressRegion: SITE.region,
               postalCode: "630099",
