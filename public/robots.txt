@@ -6,6 +6,7 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 Disallow: /lovable/
+Disallow: /dogovor/zapolnit
 Disallow: /*?utm_
 Disallow: /*?yclid=
 Disallow: /*?gclid=

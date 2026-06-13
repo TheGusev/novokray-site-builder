@@ -25,6 +25,7 @@ import { Route as UslugiSlugRouteImport } from './routes/uslugi.$slug'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as RaionSlugRouteImport } from './routes/raion.$slug'
 import { Route as GorodSlugRouteImport } from './routes/gorod.$slug'
+import { Route as DogovorZapolnitRouteImport } from './routes/dogovor.zapolnit'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -109,6 +110,11 @@ const GorodSlugRoute = GorodSlugRouteImport.update({
   path: '/gorod/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DogovorZapolnitRoute = DogovorZapolnitRouteImport.update({
+  id: '/dogovor/zapolnit',
+  path: '/dogovor/zapolnit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsSlugRoute = DocsSlugRouteImport.update({
   id: '/docs/$slug',
   path: '/docs/$slug',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
+  '/dogovor/zapolnit': typeof DogovorZapolnitRoute
   '/gorod/$slug': typeof GorodSlugRoute
   '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
+  '/dogovor/zapolnit': typeof DogovorZapolnitRoute
   '/gorod/$slug': typeof GorodSlugRoute
   '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
+  '/dogovor/zapolnit': typeof DogovorZapolnitRoute
   '/gorod/$slug': typeof GorodSlugRoute
   '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
+    | '/dogovor/zapolnit'
     | '/gorod/$slug'
     | '/raion/$slug'
     | '/services/$slug'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
+    | '/dogovor/zapolnit'
     | '/gorod/$slug'
     | '/raion/$slug'
     | '/services/$slug'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
+    | '/dogovor/zapolnit'
     | '/gorod/$slug'
     | '/raion/$slug'
     | '/services/$slug'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   CategoryDezinfekciyaNovosibirskRoute: typeof CategoryDezinfekciyaNovosibirskRoute
   DocsSlugRoute: typeof DocsSlugRoute
+  DogovorZapolnitRoute: typeof DogovorZapolnitRoute
   GorodSlugRoute: typeof GorodSlugRoute
   RaionSlugRoute: typeof RaionSlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GorodSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dogovor/zapolnit': {
+      id: '/dogovor/zapolnit'
+      path: '/dogovor/zapolnit'
+      fullPath: '/dogovor/zapolnit'
+      preLoaderRoute: typeof DogovorZapolnitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/$slug': {
       id: '/docs/$slug'
       path: '/docs/$slug'
@@ -430,6 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   CategoryDezinfekciyaNovosibirskRoute: CategoryDezinfekciyaNovosibirskRoute,
   DocsSlugRoute: DocsSlugRoute,
+  DogovorZapolnitRoute: DogovorZapolnitRoute,
   GorodSlugRoute: GorodSlugRoute,
   RaionSlugRoute: RaionSlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,
@@ -440,13 +461,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

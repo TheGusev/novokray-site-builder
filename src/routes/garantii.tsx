@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ShieldCheck, FileCheck2, RefreshCw, Award, CheckCircle2, AlertTriangle } from "lucide-react";
+import { ShieldCheck, FileCheck2, RefreshCw, Award, CheckCircle2, AlertTriangle, FileSignature } from "lucide-react";
 import { SITE } from "@/data/site";
 import { COMMON } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -7,6 +7,7 @@ import { DocsRequest } from "@/components/site/DocsRequest";
 import { Reveal } from "@/components/site/Reveal";
 import { FAQ } from "@/components/site/FAQ";
 import { WaveText } from "@/components/site/WaveText";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/garantii")({
   head: () => ({
@@ -174,6 +175,12 @@ function GuaranteesPage() {
           <div>
             <h2 className="font-display text-2xl font-bold md:text-3xl">Образец договора и журнал СанПиН</h2>
             <p className="mt-3 text-muted-foreground">Скачайте образцы PDF — договор, журнал по СанПиН, акт и сертификат. Для юрлиц и УК запросим договор под ваши реквизиты.</p>
+            <Link
+              to="/dogovor/zapolnit"
+              className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-cta-gradient px-5 font-bold text-accent-foreground shadow-cta hover:scale-[1.01]"
+            >
+              <FileSignature className="h-4 w-4" /> Заполнить договор и скачать PDF
+            </Link>
           </div>
           <DocsRequest />
         </div>
