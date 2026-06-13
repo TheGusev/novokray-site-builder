@@ -43,7 +43,7 @@ export const Route = createFileRoute("/contacts")({
             priceRange: "₽₽",
             address: {
               "@type": "PostalAddress",
-              streetAddress: "Красный проспект, 28, офис 412",
+              streetAddress: "ул. Тайгинская, зд. 13/1, помещ. 212",
               addressLocality: SITE.city,
               addressRegion: SITE.region,
               postalCode: "630099",
@@ -72,7 +72,7 @@ export const Route = createFileRoute("/contacts")({
               { "@type": "City", name: "Краснообск" },
               { "@type": "City", name: "Обь" },
             ],
-            sameAs: [SITE.social.vk, SITE.social.telegram],
+            sameAs: [SITE.social.telegram, SITE.social.max],
             aggregateRating: {
               "@type": "AggregateRating",
               ratingValue: SITE.rating.value,
@@ -124,12 +124,12 @@ function ContactsPage() {
               </a>
             </Reveal>
             <Reveal delay={80}>
-              <a href={SITE.whatsappHref} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
+              <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
                 <MessageCircle className="mt-1 h-6 w-6 text-success" />
                 <div>
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">WhatsApp / Telegram</div>
-                  <div className="font-display text-lg font-bold">{SITE.whatsapp}</div>
-                  <div className="text-xs text-muted-foreground">Отвечаем в течение 15 минут</div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Telegram · MAX · WhatsApp</div>
+                  <div className="font-display text-lg font-bold">{SITE.telegramHandle} · {SITE.phone}</div>
+                  <div className="text-xs text-muted-foreground">MAX и WhatsApp — тот же номер. Отвечаем в течение 15 минут.</div>
                 </div>
               </a>
             </Reveal>
@@ -154,10 +154,12 @@ function ContactsPage() {
             <Reveal delay={320} className="sm:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-card">
               <div className="font-display text-lg font-bold">Реквизиты</div>
               <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-                <div><dt className="text-muted-foreground">ИНН</dt><dd className="font-medium">5406789012</dd></div>
-                <div><dt className="text-muted-foreground">ОГРН</dt><dd className="font-medium">1145476123456</dd></div>
-                <div><dt className="text-muted-foreground">Лицензия Роспотребнадзора</dt><dd className="font-medium">№ 54.НС.04.001.Л.000123.04.14</dd></div>
-                <div><dt className="text-muted-foreground">Юр. адрес</dt><dd className="font-medium">630099, г. Новосибирск, Красный проспект, 28</dd></div>
+                <div><dt className="text-muted-foreground">Наименование</dt><dd className="font-medium">{SITE.legal.name}</dd></div>
+                <div><dt className="text-muted-foreground">ИНН</dt><dd className="font-medium">{SITE.legal.inn}</dd></div>
+                <div><dt className="text-muted-foreground">ОГРН</dt><dd className="font-medium">{SITE.legal.ogrn}</dd></div>
+                <div><dt className="text-muted-foreground">Юридический адрес</dt><dd className="font-medium">{SITE.legal.legalAddress}</dd></div>
+                <div className="sm:col-span-2"><dt className="text-muted-foreground">Лицензия Роспотребнадзора</dt><dd className="font-medium">№ {SITE.legal.licenseNo} от {SITE.legal.licenseDate} · ЕРУЛ № {SITE.legal.licenseErul}</dd></div>
+                <div className="sm:col-span-2"><dt className="text-muted-foreground">Орган, выдавший лицензию</dt><dd className="font-medium">{SITE.legal.licenseAuthority}</dd></div>
               </dl>
             </Reveal>
           </div>

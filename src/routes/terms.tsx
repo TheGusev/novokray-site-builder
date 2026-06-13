@@ -32,7 +32,9 @@ function TermsPage() {
           <section>
             <h2 className="font-display text-xl font-bold">1. Предмет соглашения</h2>
             <p className="mt-2">
-              Настоящее Соглашение регулирует отношения между санитарной службой «{SITE.shortName}» (далее — «Исполнитель»)
+              Настоящее Соглашение регулирует отношения между {SITE.legal.fullName}
+              (бренд «{SITE.shortName}», ИНН&nbsp;{SITE.legal.inn}, ОГРН&nbsp;{SITE.legal.ogrn},
+              лицензия Роспотребнадзора №&nbsp;{SITE.legal.licenseNo} от&nbsp;{SITE.legal.licenseDate}; далее — «Исполнитель»)
               и&nbsp;пользователем сайта{" "}
               <a href={SITE.domain} className="text-primary underline-offset-2 hover:underline">{SITE.domain}</a>{" "}
               (далее — «Пользователь») при&nbsp;использовании Сайта и&nbsp;сервиса оформления заявок на&nbsp;услуги

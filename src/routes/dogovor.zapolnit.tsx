@@ -231,7 +231,7 @@ function DogovorBuilderPage() {
               )}
 
               <Field label="Телефон">
-                <input className={inputCls} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (913) 000-00-00" />
+                <input className={inputCls} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (993) 000-00-00" />
               </Field>
               <Field label="Адрес объекта обработки" full>
                 <input className={inputCls} value={objectAddress} onChange={(e) => setObjectAddress(e.target.value)} placeholder="г. Новосибирск, ул. Ленина, д. 1, кв. 1" />

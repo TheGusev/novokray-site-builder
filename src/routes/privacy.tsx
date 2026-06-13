@@ -38,11 +38,15 @@ function PrivacyPage() {
               (далее — Сайт), а&nbsp;также меры по&nbsp;обеспечению их&nbsp;безопасности.
             </p>
             <p className="mt-2">
-              Оператор: санитарная служба «{SITE.shortName}», {SITE.city}. Контактный e-mail:{" "}
+              Оператор: {SITE.legal.fullName} (бренд «{SITE.shortName}»), ИНН&nbsp;{SITE.legal.inn},
+              ОГРН&nbsp;{SITE.legal.ogrn}, юридический адрес:&nbsp;{SITE.legal.legalAddress}.
+              Лицензия Роспотребнадзора №&nbsp;{SITE.legal.licenseNo} от&nbsp;{SITE.legal.licenseDate}.
+              Контактный e-mail:{" "}
               <a href={SITE.emailHref} className="text-primary underline-offset-2 hover:underline">{SITE.email}</a>,
               телефон:{" "}
-              <a href={SITE.phoneHref} className="text-primary underline-offset-2 hover:underline">{SITE.phone}</a>.
-              Реквизиты юридического лица предоставляются по&nbsp;запросу.
+              <a href={SITE.phoneHref} className="text-primary underline-offset-2 hover:underline">{SITE.phone}</a>,
+              Telegram:{" "}
+              <a href={SITE.telegramHref} className="text-primary underline-offset-2 hover:underline">{SITE.telegramHandle}</a>.
             </p>
           </section>
 

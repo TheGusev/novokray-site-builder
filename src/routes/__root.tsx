@@ -40,7 +40,7 @@ const ORG_GRAPH = {
         "Сушка после затопления", "Обработка участков от клещей",
         "Фумигация зерна", "Уничтожение борщевика", "Дезодорация",
       ],
-      sameAs: [SITE.social.vk, SITE.social.telegram],
+      sameAs: [SITE.social.telegram, SITE.social.max],
       address: {
         "@type": "PostalAddress",
         addressCountry: "RU",
