@@ -189,13 +189,13 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
     ? `${data.companyName ?? ""}, ИНН ${data.companyInn ?? ""}${data.companyKpp ? `, КПП ${data.companyKpp}` : ""}, юр. адрес: ${data.companyLegalAddress ?? ""}, в лице ${data.contactPerson ?? "уполномоченного представителя"}`
     : `${data.personFio ?? ""}${data.personPassport ? `, паспорт ${data.personPassport}` : ""}${data.personIssuedBy ? `, выдан ${data.personIssuedBy}` : ""}${data.personIssuedDate ? ` ${formatDateRu(data.personIssuedDate)}` : ""}`;
 
-  drawText(c, doc, `ООО «${SITE.shortName}», именуемое в дальнейшем «Исполнитель», в лице руководителя, действующего на основании Устава, с одной стороны, и ${clientBlock}, именуемый(ая) в дальнейшем «Заказчик», с другой стороны, заключили настоящий Договор о нижеследующем:`, { font, size: 10, gap: 10 });
+  drawText(c, doc, `${SITE.legal.fullName} (ИНН ${SITE.legal.inn}, ОГРН ${SITE.legal.ogrn}), бренд «${SITE.shortName}», именуемое в дальнейшем «Исполнитель», в лице руководителя, действующего на основании Устава, с одной стороны, и ${clientBlock}, именуемый(ая) в дальнейшем «Заказчик», с другой стороны, заключили настоящий Договор о нижеследующем:`, { font, size: 10, gap: 10 });
 
   // 1. Предмет договора
   drawText(c, doc, "1. Предмет договора", { font: bold, size: 11, gap: 4 });
   drawText(c, doc, `1.1. Исполнитель обязуется оказать услуги по санитарной обработке (дезинсекция, дератизация, дезинфекция) по адресу: ${data.objectAddress}.`, { font, size: 10, gap: 2 });
   drawText(c, doc, `1.2. Перечень и стоимость услуг согласованы Сторонами в таблице ниже.`, { font, size: 10, gap: 2 });
-  drawText(c, doc, `1.3. Услуги оказываются с применением препаратов, имеющих государственную регистрацию, в соответствии с СанПиН 3.3686-21 и СанПиН 3.5.2.3472-17.`, { font, size: 10, gap: 10 });
+  drawText(c, doc, `1.3. Услуги оказываются с применением препаратов, имеющих государственную регистрацию, в соответствии с СанПиН 3.3686-21 и СанПиН 3.5.2.3472-17. Лицензия Исполнителя: № ${SITE.legal.licenseNo} от ${SITE.legal.licenseDate}, выдана Управлением Роспотребнадзора по Новосибирской области (ЕРУЛ № ${SITE.legal.licenseErul}).`, { font, size: 10, gap: 10 });
 
   // 2. Перечень услуг
   drawText(c, doc, "2. Перечень услуг и стоимость", { font: bold, size: 11, gap: 6 });
@@ -247,8 +247,10 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
 
   const leftEnd = drawBlock(leftX, [
     { t: "ИСПОЛНИТЕЛЬ", bold: true, size: 10 },
-    { t: SITE.shortName, bold: true },
-    { t: SITE.address },
+    { t: SITE.legal.name, bold: true },
+    { t: `ИНН ${SITE.legal.inn}, ОГРН ${SITE.legal.ogrn}` },
+    { t: SITE.legal.legalAddress },
+    { t: `Лицензия № ${SITE.legal.licenseNo} от ${SITE.legal.licenseDate}` },
     { t: `Тел.: ${SITE.phone}` },
     { t: `Email: ${SITE.email}` },
     { t: SITE.domain },
