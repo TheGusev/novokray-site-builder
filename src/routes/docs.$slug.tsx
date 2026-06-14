@@ -20,8 +20,9 @@ export const Route = createFileRoute("/docs/$slug")({
         { name: "description", content: description },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
-        { name: "robots", content: "noindex,follow" },
+        { property: "og:url", content: d ? `${SITE.domain}/docs/${d.slug}` : `${SITE.domain}/garantii` },
       ],
+      links: d ? [{ rel: "canonical", href: `${SITE.domain}/docs/${d.slug}` }] : [],
     };
   },
   notFoundComponent: () => (

@@ -26,13 +26,13 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/blog/")({
   validateSearch: zodValidator(searchSchema),
   head: ({ match }) => {
-    const search = (match as unknown as { search?: { page?: number; cat?: BlogCategory } })?.search;
+    const search = (match as unknown as { search?: { page?: number; cat?: BlogCategory; geo?: string; hf?: string; tag?: string; q?: string } })?.search;
     const page = Math.max(1, search?.page ?? 1);
-    const hasFilter = !!(search?.cat);
+    const hasFilter = !!(search?.cat || search?.geo || search?.hf || search?.tag || search?.q || page > 1);
     const totalPages = Math.max(1, Math.ceil(POSTS.length / POSTS_PER_PAGE));
     const base = "Библиотека санитарной службы Дез-Федерация — 50 статей о вредителях, плесени, СанПиН в Новосибирске";
     const title = page > 1 ? `${base} — стр. ${page}` : base;
-    const canonical = "/blog";
+    const canonical = `${SITE.domain}/blog`;
     return {
       meta: [
         { title },
@@ -44,8 +44,8 @@ export const Route = createFileRoute("/blog/")({
       ],
       links: [
         { rel: "canonical", href: canonical },
-        ...(page > 1 ? [{ rel: "prev", href: page - 1 === 1 ? "/blog" : `/blog?page=${page - 1}` }] : []),
-        ...(page < totalPages ? [{ rel: "next", href: `/blog?page=${page + 1}` }] : []),
+        ...(page > 1 ? [{ rel: "prev", href: page - 1 === 1 ? `${SITE.domain}/blog` : `${SITE.domain}/blog?page=${page - 1}` }] : []),
+        ...(page < totalPages ? [{ rel: "next", href: `${SITE.domain}/blog?page=${page + 1}` }] : []),
       ],
       scripts: [{
         type: "application/ld+json",
