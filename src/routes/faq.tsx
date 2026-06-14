@@ -44,9 +44,9 @@ export const Route = createFileRoute("/faq")({
       { name: "description", content: "Ответы на популярные вопросы о санитарной обработке: цены, безопасность, гарантии, документы. Дез-Федерация, Новосибирск." },
       { property: "og:title", content: "Вопросы и ответы Дез-Федерация" },
       { property: "og:description", content: "Часто задаваемые вопросы о санитарной обработке в Новосибирске." },
-      { property: "og:url", content: "/faq" },
+      { property: "og:url", content: `${SITE.domain}/faq` },
     ],
-    links: [{ rel: "canonical", href: "/faq" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/faq` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({

@@ -15,9 +15,9 @@ export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
       { name: "description", content: "Дезинфекция в Новосибирске и области: уничтожение вредителей, обработка от плесени, озонирование, дератизация. 13 направлений, выезд за 60 минут, лицензия." },
       { property: "og:title", content: "Дезинфекция в Новосибирске" },
       { property: "og:description", content: "Все виды санитарной обработки в Новосибирске и области." },
-      { property: "og:url", content: "/category/dezinfekciya-novosibirsk" },
+      { property: "og:url", content: `${SITE.domain}/category/dezinfekciya-novosibirsk` },
     ],
-    links: [{ rel: "canonical", href: "/category/dezinfekciya-novosibirsk" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/category/dezinfekciya-novosibirsk` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({

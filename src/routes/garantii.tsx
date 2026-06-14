@@ -16,9 +16,9 @@ export const Route = createFileRoute("/garantii")({
       { name: "description", content: "Гарантия на санитарную обработку до 24 месяцев. Договор, акт, лицензия Роспотребнадзора, сертификаты препаратов. Бесплатная повторная обработка." },
       { property: "og:title", content: "Гарантии Дез-Федерация" },
       { property: "og:description", content: "Гарантия до 24 месяцев, договор, сертификаты препаратов." },
-      { property: "og:url", content: "/garantii" },
+      { property: "og:url", content: `${SITE.domain}/garantii` },
     ],
-    links: [{ rel: "canonical", href: "/garantii" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/garantii` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({

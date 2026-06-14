@@ -28,7 +28,7 @@ export const Route = createFileRoute("/gorod/$slug")({
         { name: "description", content: description },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
-        { property: "og:url", content: `/gorod/${params.slug}` },
+        { property: "og:url", content: `${SITE.domain}/gorod/${params.slug}` },
         { property: "og:type", content: "website" },
         { property: "og:image", content: `${SITE.domain}/og/default.jpg` },
       ],
@@ -172,7 +172,7 @@ function CityPage() {
           </div>
           <ul className="mt-8 grid gap-3 md:grid-cols-2">
             {[
-              `Лицензия Роспотребнадзора № 54.НС.01.000 — работаем легально по всей области.`,
+              `Лицензия Роспотребнадзора № ${SITE.legal.licenseNo} — работаем легально по всей области.`,
               `Препараты 4 класса опасности — безопасны для детей, аллергиков, кошек, собак и аквариумов.`,
               `Опытные дезинфекторы с допусками — стаж в среднем 6+ лет.`,
               `Без запаха после высыхания — можно сразу возвращаться в помещение.`,

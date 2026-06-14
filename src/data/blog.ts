@@ -808,12 +808,12 @@ export const POSTS: BlogPost[] = [
     ),
   },
   {
-    slug: "sherzhni-opasnost-i-udalenie",
+    slug: "shershni-opasnost-i-udalenie",
     title: "Шершни в Новосибирске: чем опасны и как удалить гнездо",
     excerpt: "Vespa crabro в НСО — крупнее обычной осы в 2–3 раза. Особенности удаления гнёзд на даче и в доме.",
     category: "uchastok", hf: "СЧ", geo: "oblast",
     date: "2026-03-22", readMin: 5,
-    tags: ["шершни", "опасность"],
+    tags: ["шершни", "удаление"],
     relatedServices: ["unichtozhenie-os"],
     body: md(
       "## Кратко",

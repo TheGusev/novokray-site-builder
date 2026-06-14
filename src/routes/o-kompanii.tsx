@@ -15,9 +15,9 @@ export const Route = createFileRoute("/o-kompanii")({
       { name: "description", content: "Дез-Федерация — санитарная служба №1 в Новосибирске. 12 лет на рынке, 38 000+ обработанных объектов, лицензия Роспотребнадзора, гарантия по договору." },
       { property: "og:title", content: "О компании Дез-Федерация" },
       { property: "og:description", content: "Санитарная служба №1 в Новосибирске с 2014 года. Лицензия, гарантия, 38 000+ объектов." },
-      { property: "og:url", content: "/o-kompanii" },
+      { property: "og:url", content: `${SITE.domain}/o-kompanii` },
     ],
-    links: [{ rel: "canonical", href: "/o-kompanii" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/o-kompanii` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({

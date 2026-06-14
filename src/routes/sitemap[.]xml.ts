@@ -5,6 +5,7 @@ import { SERVICES } from "@/data/services";
 import { POSTS } from "@/data/blog";
 import { CITIES } from "@/data/cities";
 import { DISTRICTS } from "@/data/districts";
+import { DOCS } from "@/data/docs";
 
 const HUB_SLUGS = ["unichtozhenie-vrediteley", "sanitarnaya-obrabotka", "obrabotka-uchastkov", "spec-uslugi"];
 
@@ -50,6 +51,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           ...POSTS.map((p): Entry => ({
             path: `/blog/${p.slug}`,
             changefreq: "monthly", priority: "0.6", lastmod: p.date,
+          })),
+          ...DOCS.map((d): Entry => ({
+            path: `/docs/${d.slug}`,
+            changefreq: "yearly", priority: "0.4", lastmod: today,
           })),
         ];
 

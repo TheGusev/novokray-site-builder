@@ -15,6 +15,7 @@ Disallow: /blog?tag=
 Disallow: /blog?hf=
 Disallow: /blog?geo=
 Disallow: /blog?q=
+Disallow: /blog?page=
 
 # OpenAI — training
 User-agent: GPTBot
