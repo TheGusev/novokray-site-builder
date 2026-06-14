@@ -13,9 +13,9 @@ export const Route = createFileRoute("/services/")({
       { name: "description", content: "Полный каталог санитарной обработки в Новосибирске: клопы, тараканы, грызуны, плесень, озонирование, сушка после потопов, фумигация. Цены, гарантии, выезд за 60 минут." },
       { property: "og:title", content: "Услуги санитарной обработки в Новосибирске" },
       { property: "og:description", content: "13 направлений санитарной обработки. Цены, гарантии, выезд за 60 минут." },
-      { property: "og:url", content: "/services" },
+      { property: "og:url", content: `${SITE.domain}/services` },
     ],
-    links: [{ rel: "canonical", href: "/services" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/services` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({

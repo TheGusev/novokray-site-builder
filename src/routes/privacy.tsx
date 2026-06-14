@@ -9,9 +9,9 @@ export const Route = createFileRoute("/privacy")({
       { name: "description", content: "Политика обработки персональных данных санитарной службы Дез-Федерация. Цели обработки, состав данных, сроки хранения, права субъекта по 152-ФЗ." },
       { property: "og:title", content: "Политика обработки персональных данных" },
       { property: "og:description", content: "Как мы собираем, храним и используем персональные данные пользователей сайта." },
-      { property: "og:url", content: "/privacy" },
+      { property: "og:url", content: `${SITE.domain}/privacy` },
     ],
-    links: [{ rel: "canonical", href: "/privacy" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/privacy` }],
   }),
   component: PrivacyPage,
 });

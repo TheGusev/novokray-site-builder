@@ -15,9 +15,9 @@ export const Route = createFileRoute("/price")({
       { name: "description", content: "Полный прайс-лист санитарной службы Дез-Федерация в Новосибирске: уничтожение клопов, тараканов, грызунов, обработка от плесени, озонирование. Цены от 1 500 ₽." },
       { property: "og:title", content: "Цены санитарной службы в Новосибирске" },
       { property: "og:description", content: "Прайс-лист на 13 направлений санитарной обработки." },
-      { property: "og:url", content: "/price" },
+      { property: "og:url", content: `${SITE.domain}/price` },
     ],
-    links: [{ rel: "canonical", href: "/price" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/price` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({

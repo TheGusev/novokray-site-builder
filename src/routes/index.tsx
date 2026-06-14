@@ -86,9 +86,9 @@ export const Route = createFileRoute("/")({
       { name: "description", content: `Уничтожение клопов и тараканов, обработка от плесени, озонирование, сушка после потопов в Новосибирске. Выезд за 60 минут. Гарантия до 24 мес. Рейтинг ${SITE.rating.value} из 5 (${SITE.rating.count} отзывов).` },
       { property: "og:title", content: `${SITE.name} — санитарная служба №1 в Новосибирске` },
       { property: "og:description", content: "13 направлений санитарной обработки. Выезд за 60 минут, гарантия по договору, лицензия Роспотребнадзора." },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: `${SITE.domain}/` },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({

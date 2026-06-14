@@ -28,7 +28,7 @@ export const Route = createFileRoute("/raion/$slug")({
         { name: "description", content: description },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
-        { property: "og:url", content: `/raion/${params.slug}` },
+        { property: "og:url", content: `${SITE.domain}/raion/${params.slug}` },
         { property: "og:type", content: "website" },
         { property: "og:image", content: `${SITE.domain}/og/default.jpg` },
       ],

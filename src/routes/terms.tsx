@@ -9,9 +9,9 @@ export const Route = createFileRoute("/terms")({
       { name: "description", content: "Пользовательское соглашение сайта санитарной службы Дез-Федерация: предмет, условия использования, ответственность, изменения." },
       { property: "og:title", content: "Пользовательское соглашение" },
       { property: "og:description", content: "Условия использования сайта и сервиса оформления заявок." },
-      { property: "og:url", content: "/terms" },
+      { property: "og:url", content: `${SITE.domain}/terms` },
     ],
-    links: [{ rel: "canonical", href: "/terms" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/terms` }],
   }),
   component: TermsPage,
 });

@@ -81,7 +81,7 @@ export const Route = createFileRoute("/uslugi/$slug")({
         { name: "description", content: h.metaDescription },
         { property: "og:title", content: h.metaTitle },
         { property: "og:description", content: h.metaDescription },
-        { property: "og:url", content: `/uslugi/${params.slug}` },
+        { property: "og:url", content: `${SITE.domain}/uslugi/${params.slug}` },
         { property: "og:type", content: "website" },
       ],
       links: [

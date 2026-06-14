@@ -35,9 +35,9 @@ export const Route = createFileRoute("/karta-sayta")({
       { name: "description", content: "Полный список разделов сайта Дез-Федерация.ру: услуги, цены, блог, контакты и информация о компании." },
       { property: "og:title", content: "Карта сайта — Дез-Федерация.ру" },
       { property: "og:description", content: "Все страницы и разделы сайта в одном месте." },
-      { property: "og:url", content: "/karta-sayta" },
+      { property: "og:url", content: `${SITE.domain}/karta-sayta` },
     ],
-    links: [{ rel: "canonical", href: "/karta-sayta" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/karta-sayta` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({

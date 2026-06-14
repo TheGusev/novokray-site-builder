@@ -14,7 +14,7 @@ export const Route = createFileRoute("/dogovor/zapolnit")({
       { name: "description", content: "Конструктор договора на санитарную обработку: внесите данные клиента и услуги — получите готовый PDF." },
       { name: "robots", content: "noindex,nofollow" },
     ],
-    links: [{ rel: "canonical", href: "/dogovor/zapolnit" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/dogovor/zapolnit` }],
   }),
   component: DogovorBuilderPage,
 });

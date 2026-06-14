@@ -14,9 +14,9 @@ export const Route = createFileRoute("/contacts")({
       { name: "description", content: `Телефон ${SITE.phone}, email ${SITE.email}, адрес: ${SITE.address}. Санитарная служба Дез-Федерация в Новосибирске — ежедневно 07:00–23:00.` },
       { property: "og:title", content: "Контакты Дез-Федерация" },
       { property: "og:description", content: `Связаться с санитарной службой в Новосибирске: ${SITE.phone}` },
-      { property: "og:url", content: "/contacts" },
+      { property: "og:url", content: `${SITE.domain}/contacts` },
     ],
-    links: [{ rel: "canonical", href: "/contacts" }],
+    links: [{ rel: "canonical", href: `${SITE.domain}/contacts` }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({
