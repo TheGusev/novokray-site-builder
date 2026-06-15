@@ -3,8 +3,25 @@ import { useMemo, useState } from "react";
 import { Download, Plus, Trash2, ArrowLeft, FileText, Loader2 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
-import { PRICING, formatRub } from "@/data/leadPricing";
-import { buildContractPdf, downloadPdf, totalSum, type ContractData, type ServiceLine, type ClientType } from "@/lib/dogovor/buildPdf";
+import { formatRub } from "@/data/leadPricing";
+import {
+  CATALOG,
+  getPest,
+  LEVEL_MULTIPLIER,
+  LEVEL_WARRANTY_DAYS,
+  LEVEL_LABEL,
+  type InfestationLevel,
+  type TreatmentElement,
+} from "@/data/treatmentCatalog";
+import {
+  buildContractPdf,
+  downloadPdf,
+  totalSum,
+  blockSum,
+  type ContractBlock,
+  type ContractData,
+  type ClientType,
+} from "@/lib/dogovor/buildPdf";
 import { rubInWords } from "@/lib/dogovor/rubInWords";
 
 export const Route = createFileRoute("/dogovor/zapolnit")({
@@ -30,15 +47,76 @@ function genNumber(): string {
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
-const PESTS = Object.keys(PRICING);
+function uid() { return Math.random().toString(36).slice(2, 9); }
 
-interface UiServiceLine extends ServiceLine {
-  id: string;
-  pest?: string;
-  object?: string;
+interface UiElementPick {
+  rowId: string;
+  elementId: string; // или "custom"
+  name: string;
+  unit: string;
+  qty: number;
+  basePrice: number; // цена при степени 1
 }
 
-function uid() { return Math.random().toString(36).slice(2, 9); }
+interface UiBlock {
+  id: string;
+  pestKey: string;
+  level: InfestationLevel;
+  warrantyDays: number;
+  preparations: string[]; // выбранные
+  customPrep: string; // ввод нового
+  withBarrier: boolean;
+  picks: UiElementPick[];
+}
+
+function makeBlock(pestKey = CATALOG[0].key): UiBlock {
+  const p = getPest(pestKey)!;
+  const level: InfestationLevel = "1";
+  return {
+    id: uid(),
+    pestKey,
+    level,
+    warrantyDays: LEVEL_WARRANTY_DAYS[level],
+    preparations: p.preparations.slice(0, 1),
+    customPrep: "",
+    withBarrier: false,
+    picks: [],
+  };
+}
+
+function buildBlockLines(b: UiBlock) {
+  const p = getPest(b.pestKey);
+  if (!p) return [];
+  const m = LEVEL_MULTIPLIER[b.level];
+  const lines = b.picks
+    .filter((x) => x.qty > 0 && x.basePrice > 0 && x.name.trim())
+    .map((x) => ({
+      name: `${x.name} (${x.unit})`,
+      qty: x.qty,
+      price: Math.round(x.basePrice * m),
+    }));
+  if (b.withBarrier && p.barrier) {
+    lines.push({
+      name: p.barrier.name,
+      qty: 1,
+      price: Math.round(p.barrier.basePrice * m),
+    });
+  }
+  return lines;
+}
+
+function toContractBlock(b: UiBlock): ContractBlock {
+  const p = getPest(b.pestKey)!;
+  return {
+    pestName: p.name,
+    level: b.level,
+    multiplier: LEVEL_MULTIPLIER[b.level],
+    warrantyDays: b.warrantyDays,
+    preparations: b.preparations,
+    methodNote: p.methodNote,
+    lines: buildBlockLines(b),
+  };
+}
 
 function DogovorBuilderPage() {
   const [clientType, setClientType] = useState<ClientType>("person");
@@ -60,44 +138,114 @@ function DogovorBuilderPage() {
   const [objectAddress, setObjectAddress] = useState("");
 
   const [masterFio, setMasterFio] = useState("");
-  const [warrantyDays, setWarrantyDays] = useState(30);
   const [paymentMethod, setPaymentMethod] = useState("Наличные");
   const [signature, setSignature] = useState<ArrayBuffer | null>(null);
   const [signatureName, setSignatureName] = useState<string>("");
 
-  const [services, setServices] = useState<UiServiceLine[]>([
-    { id: uid(), name: "", qty: 1, price: 0 },
-  ]);
+  const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const total = useMemo(() => totalSum(services), [services]);
+  const contractBlocks = useMemo(() => blocks.map(toContractBlock), [blocks]);
+  const total = useMemo(() => totalSum(contractBlocks), [contractBlocks]);
 
-  const updateService = (id: string, patch: Partial<UiServiceLine>) => {
-    setServices((rows) => rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  const updateBlock = (id: string, patch: Partial<UiBlock>) => {
+    setBlocks((rows) => rows.map((b) => (b.id === id ? { ...b, ...patch } : b)));
+  };
+  const addBlock = () => setBlocks((rows) => [...rows, makeBlock()]);
+  const removeBlock = (id: string) => setBlocks((rows) => rows.filter((b) => b.id !== id));
+
+  const changePest = (id: string, pestKey: string) => {
+    const p = getPest(pestKey);
+    if (!p) return;
+    updateBlock(id, { pestKey, preparations: p.preparations.slice(0, 1), picks: [], withBarrier: false });
   };
 
-  const addService = () => setServices((r) => [...r, { id: uid(), name: "", qty: 1, price: 0 }]);
-  const removeService = (id: string) => setServices((r) => r.filter((x) => x.id !== id));
-
-  const setPest = (id: string, pest: string) => {
-    const objects = pest ? Object.keys(PRICING[pest] ?? {}) : [];
-    const firstObj = objects[0];
-    const price = firstObj ? PRICING[pest][firstObj] : 0;
-    updateService(id, {
-      pest,
-      object: firstObj,
-      price,
-      name: pest && firstObj ? `${pest} · ${firstObj}` : "",
-    });
+  const changeLevel = (id: string, level: InfestationLevel) => {
+    updateBlock(id, { level, warrantyDays: LEVEL_WARRANTY_DAYS[level] });
   };
 
-  const setObject = (id: string, object: string) => {
-    const row = services.find((s) => s.id === id);
-    if (!row?.pest) return;
-    const price = PRICING[row.pest][object] ?? 0;
-    updateService(id, { object, price, name: `${row.pest} · ${object}` });
+  const toggleElement = (blockId: string, el: TreatmentElement, checked: boolean) => {
+    setBlocks((rows) =>
+      rows.map((b) => {
+        if (b.id !== blockId) return b;
+        if (checked) {
+          if (b.picks.some((p) => p.elementId === el.id)) return b;
+          return {
+            ...b,
+            picks: [
+              ...b.picks,
+              {
+                rowId: uid(),
+                elementId: el.id,
+                name: el.name,
+                unit: el.unit,
+                qty: el.defaultQty ?? 1,
+                basePrice: el.basePrice,
+              },
+            ],
+          };
+        }
+        return { ...b, picks: b.picks.filter((p) => p.elementId !== el.id) };
+      })
+    );
+  };
+
+  const updatePick = (blockId: string, rowId: string, patch: Partial<UiElementPick>) => {
+    setBlocks((rows) =>
+      rows.map((b) =>
+        b.id === blockId
+          ? { ...b, picks: b.picks.map((p) => (p.rowId === rowId ? { ...p, ...patch } : p)) }
+          : b
+      )
+    );
+  };
+
+  const addCustomPick = (blockId: string) => {
+    setBlocks((rows) =>
+      rows.map((b) =>
+        b.id === blockId
+          ? {
+              ...b,
+              picks: [
+                ...b.picks,
+                { rowId: uid(), elementId: "custom-" + uid(), name: "", unit: "шт", qty: 1, basePrice: 0 },
+              ],
+            }
+          : b
+      )
+    );
+  };
+
+  const removePick = (blockId: string, rowId: string) => {
+    setBlocks((rows) =>
+      rows.map((b) =>
+        b.id === blockId ? { ...b, picks: b.picks.filter((p) => p.rowId !== rowId) } : b
+      )
+    );
+  };
+
+  const togglePrep = (blockId: string, prep: string) => {
+    setBlocks((rows) =>
+      rows.map((b) => {
+        if (b.id !== blockId) return b;
+        const has = b.preparations.includes(prep);
+        return { ...b, preparations: has ? b.preparations.filter((p) => p !== prep) : [...b.preparations, prep] };
+      })
+    );
+  };
+
+  const addCustomPrep = (blockId: string) => {
+    setBlocks((rows) =>
+      rows.map((b) => {
+        if (b.id !== blockId) return b;
+        const v = b.customPrep.trim();
+        if (!v) return b;
+        if (b.preparations.includes(v)) return { ...b, customPrep: "" };
+        return { ...b, preparations: [...b.preparations, v], customPrep: "" };
+      })
+    );
   };
 
   const onSignature = async (file: File | null) => {
@@ -112,9 +260,8 @@ function DogovorBuilderPage() {
 
   const onGenerate = async () => {
     setError(null);
-    // лёгкая валидация
-    const validServices = services.filter((s) => s.name.trim() && s.qty > 0 && s.price > 0);
-    if (!validServices.length) { setError("Добавьте хотя бы одну услугу с ценой и количеством."); return; }
+    const cBlocks = contractBlocks.filter((b) => b.lines.length > 0);
+    if (!cBlocks.length) { setError("Добавьте хотя бы одну услугу с ценой и количеством."); return; }
     if (clientType === "person" && !personFio.trim()) { setError("Укажите ФИО заказчика."); return; }
     if (clientType === "company" && (!companyName.trim() || !companyInn.trim())) { setError("Укажите наименование и ИНН организации."); return; }
     if (!objectAddress.trim()) { setError("Укажите адрес объекта обработки."); return; }
@@ -136,9 +283,8 @@ function DogovorBuilderPage() {
       contactPerson: clientType === "company" ? contactPerson.trim() || undefined : undefined,
       phone: phone.trim(),
       objectAddress: objectAddress.trim(),
-      services: validServices.map(({ name, qty, price }) => ({ name, qty, price })),
+      blocks: cBlocks,
       masterFio: masterFio.trim(),
-      warrantyDays,
       paymentMethod,
       signaturePng: signature,
     };
