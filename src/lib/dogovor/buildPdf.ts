@@ -13,6 +13,16 @@ export interface ServiceLine {
   price: number; // ₽ за единицу
 }
 
+export interface ContractBlock {
+  pestName: string;
+  level: string; // "1" | "2-3" | "4-5"
+  multiplier: number; // 1 / 1.5 / 2
+  warrantyDays: number;
+  preparations: string[];
+  methodNote: string;
+  lines: ServiceLine[]; // цены УЖЕ с учётом множителя
+}
+
 export interface ContractData {
   number: string;
   date: string; // YYYY-MM-DD
@@ -31,11 +41,10 @@ export interface ContractData {
   // common
   phone: string;
   objectAddress: string;
-  // services
-  services: ServiceLine[];
+  // services — сгруппированы по блокам (по вредителю)
+  blocks: ContractBlock[];
   // exec
   masterFio: string;
-  warrantyDays: number;
   paymentMethod: string;
   signaturePng?: ArrayBuffer | null;
 }
@@ -57,8 +66,12 @@ function formatDateRu(iso: string): string {
   return `«${Number(d)}» ${months[Number(m) - 1]} ${y} г.`;
 }
 
-export function totalSum(services: ServiceLine[]): number {
-  return services.reduce((s, x) => s + (x.qty || 0) * (x.price || 0), 0);
+export function blockSum(b: ContractBlock): number {
+  return b.lines.reduce((s, x) => s + (x.qty || 0) * (x.price || 0), 0);
+}
+
+export function totalSum(blocks: ContractBlock[]): number {
+  return blocks.reduce((s, b) => s + blockSum(b), 0);
 }
 
 // Перенос строк по ширине
@@ -117,7 +130,7 @@ function drawHr(c: Cursor, doc: PDFDocument): void {
   c.y -= 10;
 }
 
-function drawServicesTable(c: Cursor, doc: PDFDocument, services: ServiceLine[], font: PDFFont, bold: PDFFont): void {
+function drawServicesTable(c: Cursor, doc: PDFDocument, services: ServiceLine[], font: PDFFont, bold: PDFFont, startIdx = 1): void {
   const colX = [MARGIN, MARGIN + 30, MARGIN + 330, MARGIN + 400, MARGIN + 470];
   const colW = [30, 300, 70, 70, CONTENT_W - 470];
   const headers = ["№", "Наименование услуги", "Кол-во", "Цена, ₽", "Сумма, ₽"];
@@ -139,7 +152,7 @@ function drawServicesTable(c: Cursor, doc: PDFDocument, services: ServiceLine[],
     // bottom border
     c.page.drawLine({ start: { x: MARGIN, y: c.y - rowH }, end: { x: PAGE_W - MARGIN, y: c.y - rowH }, thickness: 0.4, color: rgb(0.82, 0.85, 0.9) });
     // cells
-    c.page.drawText(String(idx + 1), { x: colX[0] + 6, y: c.y - 12, size, font });
+    c.page.drawText(String(startIdx + idx), { x: colX[0] + 6, y: c.y - 12, size, font });
     let ny = c.y - 12;
     for (const ln of nameLines) {
       c.page.drawText(ln, { x: colX[1] + 4, y: ny, size, font });
@@ -151,14 +164,6 @@ function drawServicesTable(c: Cursor, doc: PDFDocument, services: ServiceLine[],
     c.page.drawText(sum.toLocaleString("ru-RU"), { x: colX[4] + 4, y: c.y - 12, size, font: bold });
     c.y -= rowH;
   });
-
-  // total
-  const total = totalSum(services);
-  ensureSpace(c, 22, doc);
-  c.page.drawRectangle({ x: MARGIN, y: c.y - 20, width: CONTENT_W, height: 20, color: rgb(0.96, 0.97, 1) });
-  c.page.drawText("ИТОГО", { x: colX[1] + 4, y: c.y - 14, size: 10.5, font: bold });
-  c.page.drawText(total.toLocaleString("ru-RU") + " ₽", { x: colX[4] + 4, y: c.y - 14, size: 10.5, font: bold, color: rgb(0.1, 0.2, 0.55) });
-  c.y -= 24;
 }
 
 export async function buildContractPdf(data: ContractData): Promise<Uint8Array> {
@@ -199,14 +204,38 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
 
   // 2. Перечень услуг
   drawText(c, doc, "2. Перечень услуг и стоимость", { font: bold, size: 11, gap: 6 });
-  drawServicesTable(c, doc, data.services, font, bold);
+  let runningIdx = 1;
+  data.blocks.forEach((b, bi) => {
+    drawText(c, doc, `Блок ${bi + 1}. ${b.pestName} · степень заражения ${b.level} (коэффициент ×${b.multiplier})`, { font: bold, size: 10.5, gap: 2 });
+    if (b.preparations.length) {
+      drawText(c, doc, `Препараты: ${b.preparations.join(", ")}.`, { font, size: 9.5, gap: 2 });
+    }
+    if (b.methodNote) {
+      drawText(c, doc, `Методика: ${b.methodNote}`, { font, size: 9.5, gap: 4 });
+    }
+    drawServicesTable(c, doc, b.lines, font, bold, runningIdx);
+    runningIdx += b.lines.length;
+    const bSum = blockSum(b);
+    drawText(c, doc, `Итого по блоку: ${bSum.toLocaleString("ru-RU")} ₽ · гарантия ${b.warrantyDays} дн.`, { font: bold, size: 10, gap: 10 });
+  });
 
-  const sum = totalSum(data.services);
+  const sum = totalSum(data.blocks);
+  ensureSpace(c, 24, doc);
+  c.page.drawRectangle({ x: MARGIN, y: c.y - 20, width: CONTENT_W, height: 20, color: rgb(0.96, 0.97, 1) });
+  c.page.drawText("ИТОГО ПО ДОГОВОРУ", { x: MARGIN + 8, y: c.y - 14, size: 10.5, font: bold });
+  const totalStr = sum.toLocaleString("ru-RU") + " ₽";
+  c.page.drawText(totalStr, { x: PAGE_W - MARGIN - 8 - bold.widthOfTextAtSize(totalStr, 10.5), y: c.y - 14, size: 10.5, font: bold, color: rgb(0.1, 0.2, 0.55) });
+  c.y -= 24;
   drawText(c, doc, `Общая стоимость работ: ${sum.toLocaleString("ru-RU")} ₽ (${rubInWords(sum)}). НДС не облагается (УСН).`, { font, size: 10, gap: 10 });
 
   // 3. Гарантия
   drawText(c, doc, "3. Гарантийные обязательства", { font: bold, size: 11, gap: 4 });
-  drawText(c, doc, `3.1. Исполнитель предоставляет гарантию на выполненные работы сроком ${data.warrantyDays} календарных дней с даты подписания акта.`, { font, size: 10, gap: 2 });
+  const minWar = data.blocks.length ? Math.min(...data.blocks.map((b) => b.warrantyDays)) : 30;
+  drawText(c, doc, `3.1. Гарантия предоставляется по каждому виду обработки с даты подписания акта:`, { font, size: 10, gap: 2 });
+  data.blocks.forEach((b) => {
+    drawText(c, doc, `    — ${b.pestName} (степень ${b.level}): ${b.warrantyDays} календарных дней.`, { font, size: 10, gap: 1 });
+  });
+  drawText(c, doc, `Минимальный срок гарантии по договору: ${minWar} дн.`, { font, size: 10, gap: 4 });
   drawText(c, doc, `3.2. В период гарантии при появлении вредителей того же вида Исполнитель производит повторную обработку бесплатно в течение 3 рабочих дней с момента обращения.`, { font, size: 10, gap: 2 });
   drawText(c, doc, `3.3. Гарантия не распространяется на случаи нарушения Заказчиком рекомендаций (Приложение к памятке клиента), а также на повторное заражение из соседних помещений.`, { font, size: 10, gap: 10 });
 
