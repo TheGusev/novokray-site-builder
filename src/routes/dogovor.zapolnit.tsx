@@ -386,37 +386,155 @@ function DogovorBuilderPage() {
 
             <Block title="3. Услуги">
               <div className="col-span-full space-y-3">
-                {services.map((s, i) => {
-                  const objects = s.pest ? Object.keys(PRICING[s.pest] ?? {}) : [];
+                {blocks.map((b, bi) => {
+                  const pest = getPest(b.pestKey);
+                  if (!pest) return null;
+                  const m = LEVEL_MULTIPLIER[b.level];
+                  const cb = contractBlocks[bi];
+                  const bSum = cb ? blockSum(cb) : 0;
                   return (
-                    <div key={s.id} className="rounded-xl border border-border bg-card p-3">
-                      <div className="flex items-start gap-2">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-secondary text-sm font-bold text-primary">{i + 1}</div>
-                        <div className="grid flex-1 grid-cols-1 gap-2 md:grid-cols-12">
-                          <select className={`${inputCls} md:col-span-3`} value={s.pest ?? ""} onChange={(e) => setPest(s.id, e.target.value)}>
-                            <option value="">— Вредитель —</option>
-                            {PESTS.map((p) => <option key={p} value={p}>{p}</option>)}
-                          </select>
-                          <select className={`${inputCls} md:col-span-3`} value={s.object ?? ""} onChange={(e) => setObject(s.id, e.target.value)} disabled={!s.pest}>
-                            <option value="">— Объект —</option>
-                            {objects.map((o) => <option key={o} value={o}>{o}</option>)}
-                          </select>
-                          <input className={`${inputCls} md:col-span-3`} value={s.name} onChange={(e) => updateService(s.id, { name: e.target.value })} placeholder="Наименование (можно править)" />
-                          <input type="number" min={1} className={`${inputCls} md:col-span-1`} value={s.qty} onChange={(e) => updateService(s.id, { qty: Number(e.target.value) || 0 })} />
-                          <input type="number" min={0} className={`${inputCls} md:col-span-2`} value={s.price} onChange={(e) => updateService(s.id, { price: Number(e.target.value) || 0 })} placeholder="Цена, ₽" />
+                    <div key={b.id} className="rounded-2xl border border-border bg-background p-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-secondary text-sm font-bold text-primary">{bi + 1}</div>
+                          <div className="text-sm font-bold">Блок обработки</div>
                         </div>
-                        <button type="button" onClick={() => removeService(s.id)} className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label="Удалить строку">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {blocks.length > 1 && (
+                          <button type="button" onClick={() => removeBlock(b.id)} className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label="Удалить блок">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
-                      <div className="mt-2 pl-10 text-xs text-muted-foreground">
-                        Сумма строки: <span className="font-semibold text-foreground">{formatRub(s.qty * s.price)}</span>
+
+                      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Вредитель</span>
+                          <select className={inputCls} value={b.pestKey} onChange={(e) => changePest(b.id, e.target.value)}>
+                            {CATALOG.map((p) => <option key={p.key} value={p.key}>{p.name}</option>)}
+                          </select>
+                        </label>
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Степень заражения</span>
+                          <select className={inputCls} value={b.level} onChange={(e) => changeLevel(b.id, e.target.value as InfestationLevel)}>
+                            {(Object.keys(LEVEL_MULTIPLIER) as InfestationLevel[]).map((lv) => (
+                              <option key={lv} value={lv}>{LEVEL_LABEL[lv]} · ×{LEVEL_MULTIPLIER[lv]}</option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Гарантия (дней)</span>
+                          <input type="number" min={1} className={inputCls} value={b.warrantyDays} onChange={(e) => updateBlock(b.id, { warrantyDays: Number(e.target.value) || 0 })} />
+                        </label>
+                      </div>
+
+                      {/* Препараты */}
+                      <div className="mt-4">
+                        <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Препараты</div>
+                        <div className="flex flex-wrap gap-2">
+                          {pest.preparations.map((p) => {
+                            const on = b.preparations.includes(p);
+                            return (
+                              <button
+                                key={p}
+                                type="button"
+                                onClick={() => togglePrep(b.id, p)}
+                                className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground hover:border-primary hover:text-primary"}`}
+                              >
+                                {on ? "✓ " : ""}{p}
+                              </button>
+                            );
+                          })}
+                          {b.preparations.filter((p) => !pest.preparations.includes(p)).map((p) => (
+                            <button key={p} type="button" onClick={() => togglePrep(b.id, p)} className="rounded-full border border-primary bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                              ✓ {p}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="mt-2 flex gap-2">
+                          <input
+                            className={inputCls}
+                            placeholder="Свой препарат…"
+                            value={b.customPrep}
+                            onChange={(e) => updateBlock(b.id, { customPrep: e.target.value })}
+                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomPrep(b.id); } }}
+                          />
+                          <button type="button" onClick={() => addCustomPrep(b.id)} className="shrink-0 rounded-md border border-border px-3 text-sm font-semibold hover:border-primary hover:text-primary">
+                            Добавить
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Работы */}
+                      <div className="mt-4">
+                        <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Работы (отметьте нужные)</div>
+                        <div className="space-y-2">
+                          {pest.elements.map((el) => {
+                            const pick = b.picks.find((p) => p.elementId === el.id);
+                            const checked = !!pick;
+                            const finalPrice = Math.round(el.basePrice * m);
+                            return (
+                              <div key={el.id} className="rounded-lg border border-border bg-card p-2">
+                                <label className="flex cursor-pointer items-center gap-2">
+                                  <input type="checkbox" checked={checked} onChange={(e) => toggleElement(b.id, el, e.target.checked)} />
+                                  <span className="flex-1 text-sm">{el.name} <span className="text-xs text-muted-foreground">· {finalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span></span>
+                                </label>
+                                {checked && pick && (
+                                  <div className="mt-2 grid grid-cols-3 items-center gap-2 pl-6">
+                                    <label className="col-span-1 text-xs text-muted-foreground">
+                                      Кол-во ({el.unit})
+                                      <input type="number" min={1} className={`${inputCls} mt-1`} value={pick.qty} onChange={(e) => updatePick(b.id, pick.rowId, { qty: Number(e.target.value) || 0 })} />
+                                    </label>
+                                    <div className="col-span-2 text-right text-sm">
+                                      = <span className="font-semibold">{formatRub(pick.qty * finalPrice)}</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                          {/* кастомные строки */}
+                          {b.picks.filter((p) => p.elementId.startsWith("custom-")).map((p) => (
+                            <div key={p.rowId} className="rounded-lg border border-dashed border-border bg-card p-2">
+                              <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
+                                <input className={`${inputCls} md:col-span-5`} placeholder="Своя работа" value={p.name} onChange={(e) => updatePick(b.id, p.rowId, { name: e.target.value })} />
+                                <input className={`${inputCls} md:col-span-2`} placeholder="ед." value={p.unit} onChange={(e) => updatePick(b.id, p.rowId, { unit: e.target.value })} />
+                                <input type="number" min={1} className={`${inputCls} md:col-span-2`} value={p.qty} onChange={(e) => updatePick(b.id, p.rowId, { qty: Number(e.target.value) || 0 })} />
+                                <input type="number" min={0} className={`${inputCls} md:col-span-2`} placeholder="Цена, ₽" value={p.basePrice} onChange={(e) => updatePick(b.id, p.rowId, { basePrice: Number(e.target.value) || 0 })} />
+                                <button type="button" onClick={() => removePick(b.id, p.rowId)} className="md:col-span-1 rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label="Удалить">
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
+                              <div className="mt-1 pl-1 text-xs text-muted-foreground">
+                                Базовая цена × коэффициент {m} = {Math.round(p.basePrice * m).toLocaleString("ru-RU")} ₽/{p.unit || "ед."}
+                              </div>
+                            </div>
+                          ))}
+                          <button type="button" onClick={() => addCustomPick(b.id)} className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-1.5 text-xs font-semibold text-primary hover:bg-secondary">
+                            <Plus className="h-3.5 w-3.5" /> Своя работа
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Барьер */}
+                      {pest.barrier && (
+                        <label className="mt-4 flex cursor-pointer items-center justify-between rounded-lg border border-border bg-card p-3">
+                          <span className="flex items-center gap-2 text-sm">
+                            <input type="checkbox" checked={b.withBarrier} onChange={(e) => updateBlock(b.id, { withBarrier: e.target.checked })} />
+                            <span>{pest.barrier.name}</span>
+                          </span>
+                          <span className="text-sm font-semibold">+ {Math.round(pest.barrier.basePrice * m).toLocaleString("ru-RU")} ₽</span>
+                        </label>
+                      )}
+
+                      <div className="mt-4 flex items-center justify-between rounded-lg bg-secondary px-3 py-2 text-sm">
+                        <span className="text-muted-foreground">Итого по блоку (коэф. ×{m})</span>
+                        <span className="font-bold text-primary">{formatRub(bSum)}</span>
                       </div>
                     </div>
                   );
                 })}
-                <button type="button" onClick={addService} className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-sm font-semibold text-primary hover:bg-secondary">
-                  <Plus className="h-4 w-4" /> Добавить услугу
+                <button type="button" onClick={addBlock} className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-sm font-semibold text-primary hover:bg-secondary">
+                  <Plus className="h-4 w-4" /> Добавить вредителя (блок)
                 </button>
               </div>
             </Block>
@@ -424,11 +542,6 @@ function DogovorBuilderPage() {
             <Block title="4. Исполнитель и условия">
               <Field label="ФИО мастера" full>
                 <input className={inputCls} value={masterFio} onChange={(e) => setMasterFio(e.target.value)} placeholder="Сидоров С.С." />
-              </Field>
-              <Field label="Гарантия (дней)">
-                <select className={inputCls} value={warrantyDays} onChange={(e) => setWarrantyDays(Number(e.target.value))}>
-                  {[30, 60, 90, 180, 365].map((d) => <option key={d} value={d}>{d}</option>)}
-                </select>
               </Field>
               <Field label="Способ оплаты">
                 <select className={inputCls} value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
@@ -455,10 +568,15 @@ function DogovorBuilderPage() {
               <div className="mt-1 text-xs text-muted-foreground">{total > 0 ? rubInWords(total) : "Добавьте услуги"}</div>
 
               <div className="mt-5 space-y-1.5 text-sm">
-                {services.filter((s) => s.name && s.price > 0).map((s) => (
-                  <div key={s.id} className="flex justify-between gap-3">
-                    <span className="truncate text-muted-foreground">{s.name} × {s.qty}</span>
-                    <span className="shrink-0 font-semibold">{formatRub(s.qty * s.price)}</span>
+                {contractBlocks.map((cb, i) => cb.lines.length > 0 && (
+                  <div key={i} className="border-t border-border pt-2 first:border-0 first:pt-0">
+                    <div className="mb-1 text-xs font-bold uppercase tracking-wider text-primary">{cb.pestName} · ст. {cb.level}</div>
+                    {cb.lines.map((ln, j) => (
+                      <div key={j} className="flex justify-between gap-3">
+                        <span className="truncate text-muted-foreground">{ln.name} × {ln.qty}</span>
+                        <span className="shrink-0 font-semibold">{formatRub(ln.qty * ln.price)}</span>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
