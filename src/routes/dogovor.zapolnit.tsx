@@ -10,6 +10,8 @@ import {
   LEVEL_MULTIPLIER,
   LEVEL_WARRANTY_DAYS,
   LEVEL_LABEL,
+  getElementLimits,
+  clampQty,
   type InfestationLevel,
   type TreatmentElement,
 } from "@/data/treatmentCatalog";
@@ -105,6 +107,64 @@ function buildBlockLines(b: UiBlock) {
   return lines;
 }
 
+// === Валидация блока: ошибки блокируют PDF, предупреждения — мягкие ===
+function validateBlock(b: UiBlock): { errors: string[]; warnings: string[] } {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const p = getPest(b.pestKey);
+  if (!p) return { errors: ["Не выбран вредитель"], warnings };
+
+  if (b.picks.length === 0 && !b.withBarrier) {
+    errors.push("Выберите хотя бы одну работу или барьерную защиту");
+  }
+  if (b.preparations.length === 0) {
+    warnings.push("Не выбран ни один препарат");
+  }
+  if (b.preparations.length > 5) {
+    warnings.push("Слишком много препаратов (рекомендуем не более 5)");
+  }
+  if (b.warrantyDays < 1 || b.warrantyDays > 365) {
+    errors.push("Срок гарантии должен быть от 1 до 365 дней");
+  }
+
+  // Проверка работ
+  for (const pick of b.picks) {
+    const isCustom = pick.elementId.startsWith("custom-");
+    if (isCustom) {
+      if (!pick.name.trim()) errors.push("Заполните название своей работы");
+      if (!pick.unit.trim()) errors.push(`«${pick.name || "Своя работа"}»: укажите единицу измерения`);
+      if (pick.qty <= 0) errors.push(`«${pick.name || "Своя работа"}»: количество должно быть больше 0`);
+      if (pick.basePrice <= 0) errors.push(`«${pick.name || "Своя работа"}»: укажите цену больше 0`);
+      continue;
+    }
+    const el = p.elements.find((e) => e.id === pick.elementId);
+    if (!el) continue;
+    const { min, max } = getElementLimits(el);
+    if (pick.qty < min || pick.qty > max) {
+      errors.push(`«${el.name}»: укажите количество ${min}-${max} ${el.unit}`);
+    }
+    if (el.levelLock && !el.levelLock.includes(b.level)) {
+      const okLevels = el.levelLock.join("/");
+      warnings.push(`«${el.name}» обычно применяется при степени ${okLevels} — проверьте необходимость`);
+    }
+  }
+
+  // Степень 4-5: рекомендуем барьер
+  if (b.level === "4-5" && p.barrier && !b.withBarrier) {
+    warnings.push("При сильном заражении (4-5) рекомендуем добавить барьерную защиту");
+  }
+
+  // Уличные виды — должны иметь хотя бы одну позицию по площади участка
+  if (p.outdoor && b.picks.length > 0) {
+    const hasAreaUnit = b.picks.some((pk) => ["сотка", "м²", "м.п."].includes(pk.unit));
+    if (!hasAreaUnit) {
+      warnings.push("Для участка обычно указывают площадь (сотки/м²) или периметр (м.п.)");
+    }
+  }
+
+  return { errors, warnings };
+}
+
 function toContractBlock(b: UiBlock): ContractBlock {
   const p = getPest(b.pestKey)!;
   return {
@@ -149,6 +209,8 @@ function DogovorBuilderPage() {
 
   const contractBlocks = useMemo(() => blocks.map(toContractBlock), [blocks]);
   const total = useMemo(() => totalSum(contractBlocks), [contractBlocks]);
+  const validations = useMemo(() => blocks.map(validateBlock), [blocks]);
+  const totalErrors = validations.reduce((s, v) => s + v.errors.length, 0);
 
   const updateBlock = (id: string, patch: Partial<UiBlock>) => {
     setBlocks((rows) => rows.map((b) => (b.id === id ? { ...b, ...patch } : b)));
@@ -260,6 +322,10 @@ function DogovorBuilderPage() {
 
   const onGenerate = async () => {
     setError(null);
+    if (totalErrors > 0) {
+      setError(`Исправьте ошибки в блоках услуг (${totalErrors}) перед формированием PDF.`);
+      return;
+    }
     const cBlocks = contractBlocks.filter((b) => b.lines.length > 0);
     if (!cBlocks.length) { setError("Добавьте хотя бы одну услугу с ценой и количеством."); return; }
     if (clientType === "person" && !personFio.trim()) { setError("Укажите ФИО заказчика."); return; }
@@ -392,12 +458,15 @@ function DogovorBuilderPage() {
                   const m = LEVEL_MULTIPLIER[b.level];
                   const cb = contractBlocks[bi];
                   const bSum = cb ? blockSum(cb) : 0;
+                  const v = validations[bi];
                   return (
                     <div key={b.id} className="rounded-2xl border border-border bg-background p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-secondary text-sm font-bold text-primary">{bi + 1}</div>
-                          <div className="text-sm font-bold">Блок обработки</div>
+                          <div className="text-sm font-bold">
+                            Блок обработки {pest.outdoor && <span className="ml-1 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">участок</span>}
+                          </div>
                         </div>
                         {blocks.length > 1 && (
                           <button type="button" onClick={() => removeBlock(b.id)} className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label="Удалить блок">
@@ -472,21 +541,48 @@ function DogovorBuilderPage() {
                             const pick = b.picks.find((p) => p.elementId === el.id);
                             const checked = !!pick;
                             const finalPrice = Math.round(el.basePrice * m);
+                            const lim = getElementLimits(el);
+                            const outOfRange = !!pick && (pick.qty < lim.min || pick.qty > lim.max);
+                            const wrongLevel = !!el.levelLock && !el.levelLock.includes(b.level);
                             return (
                               <div key={el.id} className="rounded-lg border border-border bg-card p-2">
                                 <label className="flex cursor-pointer items-center gap-2">
                                   <input type="checkbox" checked={checked} onChange={(e) => toggleElement(b.id, el, e.target.checked)} />
-                                  <span className="flex-1 text-sm">{el.name} <span className="text-xs text-muted-foreground">· {finalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span></span>
+                                  <span className="flex-1 text-sm">
+                                    {el.name}
+                                    <span className="ml-1 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">{el.unit}</span>
+                                    <span className="ml-1 text-xs text-muted-foreground">· {finalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span>
+                                  </span>
                                 </label>
+                                {(el.hint || lim.hint) && (
+                                  <p className="mt-1 pl-6 text-[11px] text-muted-foreground">{el.hint || lim.hint}</p>
+                                )}
+                                {checked && wrongLevel && (
+                                  <p className="mt-1 pl-6 text-[11px] text-amber-600">
+                                    Эта работа обычно нужна при степени {el.levelLock!.join("/")}.
+                                  </p>
+                                )}
                                 {checked && pick && (
                                   <div className="mt-2 grid grid-cols-3 items-center gap-2 pl-6">
                                     <label className="col-span-1 text-xs text-muted-foreground">
                                       Кол-во ({el.unit})
-                                      <input type="number" min={1} className={`${inputCls} mt-1`} value={pick.qty} onChange={(e) => updatePick(b.id, pick.rowId, { qty: Number(e.target.value) || 0 })} />
+                                      <input
+                                        type="number"
+                                        min={lim.min}
+                                        max={lim.max}
+                                        step={lim.step}
+                                        className={`${inputCls} mt-1 ${outOfRange ? "border-destructive" : ""}`}
+                                        value={pick.qty}
+                                        onChange={(e) => updatePick(b.id, pick.rowId, { qty: Number(e.target.value) || 0 })}
+                                        onBlur={(e) => updatePick(b.id, pick.rowId, { qty: clampQty(Number(e.target.value) || 0, el) })}
+                                      />
                                     </label>
                                     <div className="col-span-2 text-right text-sm">
                                       = <span className="font-semibold">{formatRub(pick.qty * finalPrice)}</span>
                                     </div>
+                                    {outOfRange && (
+                                      <p className="col-span-3 text-[11px] text-destructive">Допустимо {lim.min}–{lim.max} {el.unit}</p>
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -530,6 +626,23 @@ function DogovorBuilderPage() {
                         <span className="text-muted-foreground">Итого по блоку (коэф. ×{m})</span>
                         <span className="font-bold text-primary">{formatRub(bSum)}</span>
                       </div>
+
+                      {v.errors.length > 0 && (
+                        <div className="mt-3 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+                          <div className="mb-1 font-bold">Нужно исправить:</div>
+                          <ul className="list-disc space-y-0.5 pl-4">
+                            {v.errors.map((er, i) => <li key={i}>{er}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                      {v.warnings.length > 0 && (
+                        <div className="mt-3 rounded-md border border-amber-400/40 bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+                          <div className="mb-1 font-bold">Рекомендации:</div>
+                          <ul className="list-disc space-y-0.5 pl-4">
+                            {v.warnings.map((wr, i) => <li key={i}>{wr}</li>)}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -588,11 +701,16 @@ function DogovorBuilderPage() {
               <button
                 type="button"
                 onClick={onGenerate}
-                disabled={busy}
+                disabled={busy || totalErrors > 0}
                 className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100"
               >
                 {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Готовлю PDF…</> : <><Download className="h-4 w-4" /> Сформировать PDF</>}
               </button>
+              {totalErrors > 0 && (
+                <p className="mt-2 text-center text-[11px] text-destructive">
+                  Ошибок в блоках: {totalErrors}. Исправьте, чтобы сформировать PDF.
+                </p>
+              )}
 
               <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
                 PDF собирается у вас в браузере. Шрифт — PT Sans, формат А4, страницы добавляются автоматически.
