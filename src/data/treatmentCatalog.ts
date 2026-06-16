@@ -177,6 +177,75 @@ export const CATALOG: PestCatalog[] = [
   },
 ];
 
+// ====== Уличные / участковые вредители ======
+CATALOG.push(
+  {
+    key: "kleshchi",
+    name: "Клещи (участок)",
+    outdoor: true,
+    methodNote:
+      "Акарицидная обработка участка методом мелкокапельного опрыскивания (травы, кустарники, тропы). Барьерная защита по периметру — до 21 дня.",
+    preparations: ["Медилис-Ципер", "Таран", "Сипаз-Супер", "Цифокс", "Бриз 25% э.к."],
+    elements: [
+      { id: "uchastok", name: "Обработка участка (травы, кусты)", unit: "сотка", basePrice: 350, defaultQty: 6, hint: "Площадь участка в сотках (1 сотка = 100 м²)" },
+      { id: "perimetr", name: "Периметр / барьер по забору", unit: "м.п.", basePrice: 40, defaultQty: 50 },
+      { id: "tropy", name: "Тропы и зоны отдыха", unit: "м²", basePrice: 30, defaultQty: 30 },
+      { id: "kustarniki", name: "Кустарники / низкие деревья", unit: "шт", basePrice: 150, defaultQty: 5 },
+    ],
+    barrier: { name: "Барьер по периметру (21 дн.)", basePrice: 2000 },
+  },
+  {
+    key: "komary",
+    name: "Комары (участок)",
+    outdoor: true,
+    methodNote:
+      "Имагоцидная обработка территории и мест дневной концентрации (тенистые зоны, кустарники, водоёмы). Барьерная защита периметра.",
+    preparations: ["Медилис-Ципер", "Сипаз-Супер", "Биоцифен", "Цифокс"],
+    elements: [
+      { id: "uchastok", name: "Обработка участка", unit: "сотка", basePrice: 350, defaultQty: 6, hint: "Площадь участка в сотках (1 сотка = 100 м²)" },
+      { id: "kusty", name: "Кустарники / деревья", unit: "шт", basePrice: 120, defaultQty: 8 },
+      { id: "vodoyom", name: "Водоём / низина (ларвицид)", unit: "точка", basePrice: 500, defaultQty: 1 },
+      { id: "besedka", name: "Беседка / зона отдыха", unit: "шт", basePrice: 600, defaultQty: 1 },
+    ],
+    barrier: { name: "Барьер периметра (30 дн.)", basePrice: 2000 },
+  },
+  {
+    key: "moshka",
+    name: "Мошка / гнус (участок)",
+    outdoor: true,
+    methodNote:
+      "Барьерная обработка прибрежных и тенистых зон, кустарников. Эффективна перед массовым вылетом и в течение сезона.",
+    preparations: ["Медилис-Ципер", "Сипаз-Супер", "Цифокс"],
+    elements: [
+      { id: "uchastok", name: "Обработка участка", unit: "сотка", basePrice: 400, defaultQty: 6 },
+      { id: "pribreg", name: "Прибрежная зона / низина", unit: "м.п.", basePrice: 50, defaultQty: 30 },
+      { id: "kusty", name: "Кустарники", unit: "шт", basePrice: 120, defaultQty: 5 },
+    ],
+    barrier: { name: "Барьер периметра (14 дн.)", basePrice: 1800 },
+  },
+  {
+    key: "muhi",
+    name: "Мухи",
+    methodNote:
+      "Обработка мест выплода и концентрации (мусорные зоны, оконные/дверные проёмы) контактным инсектицидом. Дополнительно — клеевые ловушки.",
+    preparations: ["Агита", "Лямбда-Зона", "Сольфак", "Get"],
+    elements: [
+      { id: "musor", name: "Мусорная зона / контейнер", unit: "шт", basePrice: 500, defaultQty: 1 },
+      { id: "okna", name: "Оконные / дверные проёмы", unit: "шт", basePrice: 150, defaultQty: 4 },
+      { id: "tuman", name: "Обработка туманом", unit: "комн.", basePrice: 800, defaultQty: 1 },
+      { id: "lovushki", name: "Клеевые ловушки", unit: "шт", basePrice: 200, defaultQty: 3 },
+    ],
+  },
+);
+
+// Дополним пометки levelLock для существующих позиций
+for (const p of CATALOG) {
+  for (const el of p.elements) {
+    if (el.id === "kontroll") el.levelLock = ["4-5"];
+    if (el.id === "gel" || el.id === "primanka") el.levelLock = ["1", "2-3"];
+  }
+}
+
 export function getPest(key: string): PestCatalog | undefined {
   return CATALOG.find((p) => p.key === key);
 }
