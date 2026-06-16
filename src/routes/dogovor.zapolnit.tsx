@@ -209,6 +209,8 @@ function DogovorBuilderPage() {
 
   const contractBlocks = useMemo(() => blocks.map(toContractBlock), [blocks]);
   const total = useMemo(() => totalSum(contractBlocks), [contractBlocks]);
+  const validations = useMemo(() => blocks.map(validateBlock), [blocks]);
+  const totalErrors = validations.reduce((s, v) => s + v.errors.length, 0);
 
   const updateBlock = (id: string, patch: Partial<UiBlock>) => {
     setBlocks((rows) => rows.map((b) => (b.id === id ? { ...b, ...patch } : b)));
