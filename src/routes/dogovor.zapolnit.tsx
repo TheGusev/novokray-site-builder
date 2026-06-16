@@ -458,12 +458,15 @@ function DogovorBuilderPage() {
                   const m = LEVEL_MULTIPLIER[b.level];
                   const cb = contractBlocks[bi];
                   const bSum = cb ? blockSum(cb) : 0;
+                  const v = validations[bi];
                   return (
                     <div key={b.id} className="rounded-2xl border border-border bg-background p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-secondary text-sm font-bold text-primary">{bi + 1}</div>
-                          <div className="text-sm font-bold">Блок обработки</div>
+                          <div className="text-sm font-bold">
+                            Блок обработки {pest.outdoor && <span className="ml-1 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">участок</span>}
+                          </div>
                         </div>
                         {blocks.length > 1 && (
                           <button type="button" onClick={() => removeBlock(b.id)} className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label="Удалить блок">
@@ -538,21 +541,48 @@ function DogovorBuilderPage() {
                             const pick = b.picks.find((p) => p.elementId === el.id);
                             const checked = !!pick;
                             const finalPrice = Math.round(el.basePrice * m);
+                            const lim = getElementLimits(el);
+                            const outOfRange = !!pick && (pick.qty < lim.min || pick.qty > lim.max);
+                            const wrongLevel = !!el.levelLock && !el.levelLock.includes(b.level);
                             return (
                               <div key={el.id} className="rounded-lg border border-border bg-card p-2">
                                 <label className="flex cursor-pointer items-center gap-2">
                                   <input type="checkbox" checked={checked} onChange={(e) => toggleElement(b.id, el, e.target.checked)} />
-                                  <span className="flex-1 text-sm">{el.name} <span className="text-xs text-muted-foreground">· {finalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span></span>
+                                  <span className="flex-1 text-sm">
+                                    {el.name}
+                                    <span className="ml-1 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">{el.unit}</span>
+                                    <span className="ml-1 text-xs text-muted-foreground">· {finalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span>
+                                  </span>
                                 </label>
+                                {(el.hint || lim.hint) && (
+                                  <p className="mt-1 pl-6 text-[11px] text-muted-foreground">{el.hint || lim.hint}</p>
+                                )}
+                                {checked && wrongLevel && (
+                                  <p className="mt-1 pl-6 text-[11px] text-amber-600">
+                                    Эта работа обычно нужна при степени {el.levelLock!.join("/")}.
+                                  </p>
+                                )}
                                 {checked && pick && (
                                   <div className="mt-2 grid grid-cols-3 items-center gap-2 pl-6">
                                     <label className="col-span-1 text-xs text-muted-foreground">
                                       Кол-во ({el.unit})
-                                      <input type="number" min={1} className={`${inputCls} mt-1`} value={pick.qty} onChange={(e) => updatePick(b.id, pick.rowId, { qty: Number(e.target.value) || 0 })} />
+                                      <input
+                                        type="number"
+                                        min={lim.min}
+                                        max={lim.max}
+                                        step={lim.step}
+                                        className={`${inputCls} mt-1 ${outOfRange ? "border-destructive" : ""}`}
+                                        value={pick.qty}
+                                        onChange={(e) => updatePick(b.id, pick.rowId, { qty: Number(e.target.value) || 0 })}
+                                        onBlur={(e) => updatePick(b.id, pick.rowId, { qty: clampQty(Number(e.target.value) || 0, el) })}
+                                      />
                                     </label>
                                     <div className="col-span-2 text-right text-sm">
                                       = <span className="font-semibold">{formatRub(pick.qty * finalPrice)}</span>
                                     </div>
+                                    {outOfRange && (
+                                      <p className="col-span-3 text-[11px] text-destructive">Допустимо {lim.min}–{lim.max} {el.unit}</p>
+                                    )}
                                   </div>
                                 )}
                               </div>
