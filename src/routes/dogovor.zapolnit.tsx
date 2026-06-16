@@ -701,11 +701,16 @@ function DogovorBuilderPage() {
               <button
                 type="button"
                 onClick={onGenerate}
-                disabled={busy}
+                disabled={busy || totalErrors > 0}
                 className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100"
               >
                 {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Готовлю PDF…</> : <><Download className="h-4 w-4" /> Сформировать PDF</>}
               </button>
+              {totalErrors > 0 && (
+                <p className="mt-2 text-center text-[11px] text-destructive">
+                  Ошибок в блоках: {totalErrors}. Исправьте, чтобы сформировать PDF.
+                </p>
+              )}
 
               <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
                 PDF собирается у вас в браузере. Шрифт — PT Sans, формат А4, страницы добавляются автоматически.
