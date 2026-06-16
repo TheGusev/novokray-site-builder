@@ -626,6 +626,23 @@ function DogovorBuilderPage() {
                         <span className="text-muted-foreground">Итого по блоку (коэф. ×{m})</span>
                         <span className="font-bold text-primary">{formatRub(bSum)}</span>
                       </div>
+
+                      {v.errors.length > 0 && (
+                        <div className="mt-3 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+                          <div className="mb-1 font-bold">Нужно исправить:</div>
+                          <ul className="list-disc space-y-0.5 pl-4">
+                            {v.errors.map((er, i) => <li key={i}>{er}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                      {v.warnings.length > 0 && (
+                        <div className="mt-3 rounded-md border border-amber-400/40 bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+                          <div className="mb-1 font-bold">Рекомендации:</div>
+                          <ul className="list-disc space-y-0.5 pl-4">
+                            {v.warnings.map((wr, i) => <li key={i}>{wr}</li>)}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
