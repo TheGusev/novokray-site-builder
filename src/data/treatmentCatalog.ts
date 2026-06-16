@@ -27,6 +27,11 @@ export interface TreatmentElement {
   unit: string; // шт, м.п., м², комплект, точка
   basePrice: number; // ₽ за единицу при степени 1
   defaultQty?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  hint?: string;
+  levelLock?: InfestationLevel[]; // мягкая рекомендация — где имеет смысл
 }
 
 export interface PestCatalog {
@@ -36,6 +41,34 @@ export interface PestCatalog {
   preparations: string[]; // доступные препараты
   elements: TreatmentElement[];
   barrier?: { name: string; basePrice: number }; // отдельная опция «барьерная защита»
+  outdoor?: boolean; // обработка участка/улицы
+}
+
+// Дефолтные границы по единице измерения (используется как fallback)
+export const UNIT_LIMITS: Record<string, { min: number; max: number; step: number; hint: string }> = {
+  "шт": { min: 1, max: 50, step: 1, hint: "Штуки — целое число от 1 до 50" },
+  "м.п.": { min: 1, max: 500, step: 1, hint: "Погонные метры (по периметру) — от 1 до 500" },
+  "м²": { min: 1, max: 10000, step: 1, hint: "Квадратные метры площади — от 1 до 10 000" },
+  "комн.": { min: 1, max: 20, step: 1, hint: "Количество комнат — от 1 до 20" },
+  "точка": { min: 1, max: 50, step: 1, hint: "Точки раскладки/обработки — от 1 до 50" },
+  "комплект": { min: 1, max: 10, step: 1, hint: "Комплект работ — обычно 1" },
+  "сотка": { min: 1, max: 200, step: 1, hint: "Сотка (100 м²) — от 1 до 200" },
+};
+
+export function getElementLimits(el: TreatmentElement) {
+  const fallback = UNIT_LIMITS[el.unit] ?? { min: 1, max: 9999, step: 1, hint: "" };
+  return {
+    min: el.min ?? fallback.min,
+    max: el.max ?? fallback.max,
+    step: el.step ?? fallback.step,
+    hint: el.hint ?? fallback.hint,
+  };
+}
+
+export function clampQty(qty: number, el: TreatmentElement): number {
+  const { min, max } = getElementLimits(el);
+  if (!Number.isFinite(qty)) return min;
+  return Math.min(max, Math.max(min, Math.round(qty)));
 }
 
 export const CATALOG: PestCatalog[] = [
