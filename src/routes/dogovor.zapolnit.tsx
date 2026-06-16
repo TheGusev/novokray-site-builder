@@ -10,6 +10,8 @@ import {
   LEVEL_MULTIPLIER,
   LEVEL_WARRANTY_DAYS,
   LEVEL_LABEL,
+  getElementLimits,
+  clampQty,
   type InfestationLevel,
   type TreatmentElement,
 } from "@/data/treatmentCatalog";
@@ -103,6 +105,64 @@ function buildBlockLines(b: UiBlock) {
     });
   }
   return lines;
+}
+
+// === Валидация блока: ошибки блокируют PDF, предупреждения — мягкие ===
+function validateBlock(b: UiBlock): { errors: string[]; warnings: string[] } {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const p = getPest(b.pestKey);
+  if (!p) return { errors: ["Не выбран вредитель"], warnings };
+
+  if (b.picks.length === 0 && !b.withBarrier) {
+    errors.push("Выберите хотя бы одну работу или барьерную защиту");
+  }
+  if (b.preparations.length === 0) {
+    warnings.push("Не выбран ни один препарат");
+  }
+  if (b.preparations.length > 5) {
+    warnings.push("Слишком много препаратов (рекомендуем не более 5)");
+  }
+  if (b.warrantyDays < 1 || b.warrantyDays > 365) {
+    errors.push("Срок гарантии должен быть от 1 до 365 дней");
+  }
+
+  // Проверка работ
+  for (const pick of b.picks) {
+    const isCustom = pick.elementId.startsWith("custom-");
+    if (isCustom) {
+      if (!pick.name.trim()) errors.push("Заполните название своей работы");
+      if (!pick.unit.trim()) errors.push(`«${pick.name || "Своя работа"}»: укажите единицу измерения`);
+      if (pick.qty <= 0) errors.push(`«${pick.name || "Своя работа"}»: количество должно быть больше 0`);
+      if (pick.basePrice <= 0) errors.push(`«${pick.name || "Своя работа"}»: укажите цену больше 0`);
+      continue;
+    }
+    const el = p.elements.find((e) => e.id === pick.elementId);
+    if (!el) continue;
+    const { min, max } = getElementLimits(el);
+    if (pick.qty < min || pick.qty > max) {
+      errors.push(`«${el.name}»: укажите количество ${min}-${max} ${el.unit}`);
+    }
+    if (el.levelLock && !el.levelLock.includes(b.level)) {
+      const okLevels = el.levelLock.join("/");
+      warnings.push(`«${el.name}» обычно применяется при степени ${okLevels} — проверьте необходимость`);
+    }
+  }
+
+  // Степень 4-5: рекомендуем барьер
+  if (b.level === "4-5" && p.barrier && !b.withBarrier) {
+    warnings.push("При сильном заражении (4-5) рекомендуем добавить барьерную защиту");
+  }
+
+  // Уличные виды — должны иметь хотя бы одну позицию по площади участка
+  if (p.outdoor && b.picks.length > 0) {
+    const hasAreaUnit = b.picks.some((pk) => ["сотка", "м²", "м.п."].includes(pk.unit));
+    if (!hasAreaUnit) {
+      warnings.push("Для участка обычно указывают площадь (сотки/м²) или периметр (м.п.)");
+    }
+  }
+
+  return { errors, warnings };
 }
 
 function toContractBlock(b: UiBlock): ContractBlock {
