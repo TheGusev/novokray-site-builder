@@ -322,6 +322,10 @@ function DogovorBuilderPage() {
 
   const onGenerate = async () => {
     setError(null);
+    if (totalErrors > 0) {
+      setError(`Исправьте ошибки в блоках услуг (${totalErrors}) перед формированием PDF.`);
+      return;
+    }
     const cBlocks = contractBlocks.filter((b) => b.lines.length > 0);
     if (!cBlocks.length) { setError("Добавьте хотя бы одну услугу с ценой и количеством."); return; }
     if (clientType === "person" && !personFio.trim()) { setError("Укажите ФИО заказчика."); return; }
