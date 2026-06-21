@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Link } from "@tanstack/react-router";
 import {
   Send, Phone, Loader2, ChevronLeft, Check, Bug, Rat, SprayCan, Bird,
@@ -13,6 +14,17 @@ import { sendLeadViaWhatsapp } from "@/lib/sendLead";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
+
+const leadSchema = z.object({
+  pest: z.string().trim().min(1, "Выберите услугу").max(80),
+  object: z.string().trim().min(1, "Выберите объект").max(80),
+  name: z.string().trim().max(60, "Имя слишком длинное").optional().or(z.literal("")),
+  phone: z
+    .string()
+    .transform((v) => v.replace(/\D/g, ""))
+    .refine((d) => d.length === 11, "Укажите телефон полностью (11 цифр)"),
+  agree: z.literal(true, { errorMap: () => ({ message: "Нужно согласие с политикой" }) }),
+});
 
 interface Props {
   defaultService?: string;
