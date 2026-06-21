@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Link } from "@tanstack/react-router";
 import {
   Send, Phone, Loader2, ChevronLeft, Check, Bug, Rat, SprayCan, Bird,
@@ -13,6 +14,17 @@ import { sendLeadViaWhatsapp } from "@/lib/sendLead";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
+
+const leadSchema = z.object({
+  pest: z.string().trim().min(1, "Выберите услугу").max(80),
+  object: z.string().trim().min(1, "Выберите объект").max(80),
+  name: z.string().trim().max(60, "Имя слишком длинное").optional().or(z.literal("")),
+  phone: z
+    .string()
+    .transform((v) => v.replace(/\D/g, ""))
+    .refine((d) => d.length === 11, "Укажите телефон полностью (11 цифр)"),
+  agree: z.literal(true, { errorMap: () => ({ message: "Нужно согласие с политикой" }) }),
+});
 
 interface Props {
   defaultService?: string;
@@ -138,10 +150,11 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pest) return toast.error("Выберите, что обрабатываем");
-    if (!object) return toast.error("Выберите объект");
-    if (phoneDigits < 11) return toast.error("Укажите телефон полностью");
-    if (!agree) return toast.error("Нужно согласие с политикой");
+    const parsed = leadSchema.safeParse({ pest, object, name, phone, agree });
+    if (!parsed.success) {
+      const first = parsed.error.issues[0]?.message ?? "Проверьте поля формы";
+      return toast.error(first);
+    }
     setLoading(true);
     const sent = sendLeadViaWhatsapp({
       type: "Заявка на обработку",
