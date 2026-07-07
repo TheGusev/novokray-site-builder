@@ -58,6 +58,7 @@ interface UiElementPick {
   unit: string;
   qty: number;
   basePrice: number; // цена при степени 1
+  manual?: boolean; // если true — цена не умножается на коэффициент степени
 }
 
 interface UiBlock {
@@ -68,6 +69,7 @@ interface UiBlock {
   preparations: string[]; // выбранные
   customPrep: string; // ввод нового
   withBarrier: boolean;
+  barrierPriceOverride?: number; // ручная цена барьера, если задана
   picks: UiElementPick[];
 }
 
@@ -95,13 +97,16 @@ function buildBlockLines(b: UiBlock) {
     .map((x) => ({
       name: `${x.name} (${x.unit})`,
       qty: x.qty,
-      price: Math.round(x.basePrice * m),
+      price: x.manual ? Math.round(x.basePrice) : Math.round(x.basePrice * m),
     }));
   if (b.withBarrier && p.barrier) {
+    const barPrice = b.barrierPriceOverride != null
+      ? Math.round(b.barrierPriceOverride)
+      : Math.round(p.barrier.basePrice * m);
     lines.push({
       name: p.barrier.name,
       qty: 1,
-      price: Math.round(p.barrier.basePrice * m),
+      price: barPrice,
     });
   }
   return lines;
@@ -135,6 +140,7 @@ function validateBlock(b: UiBlock): { errors: string[]; warnings: string[] } {
       if (!pick.unit.trim()) errors.push(`«${pick.name || "Своя работа"}»: укажите единицу измерения`);
       if (pick.qty <= 0) errors.push(`«${pick.name || "Своя работа"}»: количество должно быть больше 0`);
       if (pick.basePrice <= 0) errors.push(`«${pick.name || "Своя работа"}»: укажите цену больше 0`);
+      if (pick.basePrice > 1_000_000) errors.push(`«${pick.name || "Своя работа"}»: цена слишком большая (макс. 1 000 000 ₽)`);
       continue;
     }
     const el = p.elements.find((e) => e.id === pick.elementId);
@@ -142,6 +148,12 @@ function validateBlock(b: UiBlock): { errors: string[]; warnings: string[] } {
     const { min, max } = getElementLimits(el);
     if (pick.qty < min || pick.qty > max) {
       errors.push(`«${el.name}»: укажите количество ${min}-${max} ${el.unit}`);
+    }
+    if (pick.basePrice <= 0) {
+      errors.push(`«${el.name}»: цена должна быть больше 0`);
+    }
+    if (pick.basePrice > 1_000_000) {
+      errors.push(`«${el.name}»: цена слишком большая (макс. 1 000 000 ₽)`);
     }
     if (el.levelLock && !el.levelLock.includes(b.level)) {
       const okLevels = el.levelLock.join("/");
