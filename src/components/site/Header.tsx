@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Phone, ChevronDown, MessageCircle, Clock } from "lucide-react";
+import { Menu, Phone, ChevronDown, MessageCircle, Clock, Send } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
 import { Logo } from "@/components/site/Logo";
@@ -174,6 +174,15 @@ export function Header() {
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{SITE.hours}</div>
           </a>
           <a
+            href={SITE.telegramHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Telegram ${SITE.telegramHandle}`}
+            className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:border-primary hover:text-primary"
+          >
+            <Send className="h-4 w-4" />
+          </a>
+          <a
             href={SITE.phoneHref}
             className="hidden md:inline-flex items-center gap-2 rounded-xl bg-cta-gradient px-4 py-2.5 text-sm font-semibold text-accent-foreground shadow-cta cta-shine transition hover:scale-[1.02]"
           >
@@ -222,6 +231,15 @@ export function Header() {
               className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 font-semibold"
             >
               <MessageCircle className="h-5 w-5 text-success" /> Написать в WhatsApp
+            </a>
+            <a
+              href={SITE.telegramHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 font-semibold"
+            >
+              <Send className="h-5 w-5 text-primary" /> Telegram · {SITE.telegramHandle}
             </a>
           </div>
 
