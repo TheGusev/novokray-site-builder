@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Download, Plus, Trash2, ArrowLeft, FileText, Loader2 } from "lucide-react";
+import { Download, Plus, Trash2, ArrowLeft, FileText, Loader2, Send } from "lucide-react";
 import { SITE } from "@/data/site";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { formatRub } from "@/data/leadPricing";
@@ -383,10 +383,26 @@ function DogovorBuilderPage() {
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
               Заполните данные клиента, услуги и реквизиты мастера — получите готовый PDF договора. Данные обрабатываются только в браузере, на сервер ничего не отправляется.
             </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Не получилось скачать? Напишите нам в Telegram{" "}
+              <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">
+                {SITE.telegramHandle}
+              </a>{" "}или позвоните <a href={SITE.phoneHref} className="font-semibold text-primary hover:underline">{SITE.phone}</a>.
+            </p>
           </div>
-          <Link to="/garantii" className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary">
-            <ArrowLeft className="h-4 w-4" /> К гарантиям
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={SITE.telegramHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
+            >
+              <Send className="h-4 w-4" /> {SITE.telegramHandle}
+            </a>
+            <Link to="/garantii" className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary">
+              <ArrowLeft className="h-4 w-4" /> К гарантиям
+            </Link>
+          </div>
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
