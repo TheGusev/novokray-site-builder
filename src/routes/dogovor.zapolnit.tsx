@@ -281,7 +281,7 @@ function DogovorBuilderPage() {
               ...b,
               picks: [
                 ...b.picks,
-                { rowId: uid(), elementId: "custom-" + uid(), name: "", unit: "шт", qty: 1, basePrice: 0 },
+                { rowId: uid(), elementId: "custom-" + uid(), name: "", unit: "шт", qty: 1, basePrice: 0, manual: true },
               ],
             }
           : b
