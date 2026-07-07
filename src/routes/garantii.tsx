@@ -175,12 +175,22 @@ function GuaranteesPage() {
           <div>
             <h2 className="font-display text-2xl font-bold md:text-3xl">Образец договора и журнал СанПиН</h2>
             <p className="mt-3 text-muted-foreground">Скачайте образцы PDF — договор, журнал по СанПиН, акт и сертификат. Для юрлиц и УК запросим договор под ваши реквизиты.</p>
-            <Link
-              to="/dogovor/zapolnit"
-              className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-cta-gradient px-5 font-bold text-accent-foreground shadow-cta hover:scale-[1.01]"
-            >
-              <FileSignature className="h-4 w-4" /> Заполнить договор и скачать PDF
-            </Link>
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <Link
+                to="/dogovor/zapolnit"
+                className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-cta-gradient px-4 text-sm font-bold text-accent-foreground shadow-cta transition hover:scale-[1.01]"
+              >
+                <FileSignature className="h-4 w-4" /> Заполнить и скачать PDF
+              </Link>
+              <a
+                href={SITE.telegramHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-border bg-background px-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
+              >
+                Telegram {SITE.telegramHandle}
+              </a>
+            </div>
           </div>
           <DocsRequest />
         </div>
