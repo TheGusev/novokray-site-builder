@@ -329,6 +329,14 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
           >
             <Phone className="h-4 w-4" /> Позвонить: {SITE.phone}
           </a>
+          <a
+            href={SITE.telegramHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-background text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
+          >
+            <Send className="h-4 w-4" /> Написать в Telegram: {SITE.telegramHandle}
+          </a>
 
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <Check className="h-3 w-3 text-success" /> Без спама. Звонок только по вашей заявке.

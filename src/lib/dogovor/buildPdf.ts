@@ -29,9 +29,6 @@ export interface ContractData {
   clientType: ClientType;
   // person
   personFio?: string;
-  personPassport?: string;
-  personIssuedBy?: string;
-  personIssuedDate?: string;
   // company
   companyName?: string;
   companyInn?: string;
@@ -192,7 +189,7 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
   // Преамбула
   const clientBlock = data.clientType === "company"
     ? `${data.companyName ?? ""}, ИНН ${data.companyInn ?? ""}${data.companyKpp ? `, КПП ${data.companyKpp}` : ""}, юр. адрес: ${data.companyLegalAddress ?? ""}, в лице ${data.contactPerson ?? "уполномоченного представителя"}`
-    : `${data.personFio ?? ""}${data.personPassport ? `, паспорт ${data.personPassport}` : ""}${data.personIssuedBy ? `, выдан ${data.personIssuedBy}` : ""}${data.personIssuedDate ? ` ${formatDateRu(data.personIssuedDate)}` : ""}`;
+    : `${data.personFio ?? ""}, тел. ${data.phone}`;
 
   drawText(c, doc, `${SITE.legal.fullName} (ИНН ${SITE.legal.inn}, ОГРН ${SITE.legal.ogrn}), бренд «${SITE.shortName}», именуемое в дальнейшем «Исполнитель», в лице руководителя, действующего на основании Устава, с одной стороны, и ${clientBlock}, именуемый(ая) в дальнейшем «Заказчик», с другой стороны, заключили настоящий Договор о нижеследующем:`, { font, size: 10, gap: 10 });
 
@@ -297,10 +294,8 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
     : [
         { t: "ЗАКАЗЧИК", bold: true, size: 10 },
         { t: data.personFio ?? "—", bold: true },
-        { t: data.personPassport ? `Паспорт ${data.personPassport}` : "" },
-        { t: data.personIssuedBy ? `Выдан: ${data.personIssuedBy}` : "" },
-        { t: data.personIssuedDate ? `Дата выдачи: ${formatDateRu(data.personIssuedDate)}` : "" },
         { t: `Тел.: ${data.phone}` },
+        { t: `Адрес: ${data.objectAddress}` },
       ].filter((l) => l.t);
 
   const rightEnd = drawBlock(rightX, rightLines as Array<{ t: string; bold?: boolean; size?: number }>);

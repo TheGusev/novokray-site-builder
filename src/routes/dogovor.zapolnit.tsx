@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Download, Plus, Trash2, ArrowLeft, FileText, Loader2 } from "lucide-react";
+import { Download, Plus, Trash2, ArrowLeft, FileText, Loader2, Send } from "lucide-react";
 import { SITE } from "@/data/site";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { formatRub } from "@/data/leadPricing";
@@ -58,6 +58,7 @@ interface UiElementPick {
   unit: string;
   qty: number;
   basePrice: number; // цена при степени 1
+  manual?: boolean; // если true — цена не умножается на коэффициент степени
 }
 
 interface UiBlock {
@@ -68,6 +69,7 @@ interface UiBlock {
   preparations: string[]; // выбранные
   customPrep: string; // ввод нового
   withBarrier: boolean;
+  barrierPriceOverride?: number; // ручная цена барьера, если задана
   picks: UiElementPick[];
 }
 
@@ -95,13 +97,16 @@ function buildBlockLines(b: UiBlock) {
     .map((x) => ({
       name: `${x.name} (${x.unit})`,
       qty: x.qty,
-      price: Math.round(x.basePrice * m),
+      price: x.manual ? Math.round(x.basePrice) : Math.round(x.basePrice * m),
     }));
   if (b.withBarrier && p.barrier) {
+    const barPrice = b.barrierPriceOverride != null
+      ? Math.round(b.barrierPriceOverride)
+      : Math.round(p.barrier.basePrice * m);
     lines.push({
       name: p.barrier.name,
       qty: 1,
-      price: Math.round(p.barrier.basePrice * m),
+      price: barPrice,
     });
   }
   return lines;
@@ -135,6 +140,7 @@ function validateBlock(b: UiBlock): { errors: string[]; warnings: string[] } {
       if (!pick.unit.trim()) errors.push(`«${pick.name || "Своя работа"}»: укажите единицу измерения`);
       if (pick.qty <= 0) errors.push(`«${pick.name || "Своя работа"}»: количество должно быть больше 0`);
       if (pick.basePrice <= 0) errors.push(`«${pick.name || "Своя работа"}»: укажите цену больше 0`);
+      if (pick.basePrice > 1_000_000) errors.push(`«${pick.name || "Своя работа"}»: цена слишком большая (макс. 1 000 000 ₽)`);
       continue;
     }
     const el = p.elements.find((e) => e.id === pick.elementId);
@@ -142,6 +148,12 @@ function validateBlock(b: UiBlock): { errors: string[]; warnings: string[] } {
     const { min, max } = getElementLimits(el);
     if (pick.qty < min || pick.qty > max) {
       errors.push(`«${el.name}»: укажите количество ${min}-${max} ${el.unit}`);
+    }
+    if (pick.basePrice <= 0) {
+      errors.push(`«${el.name}»: цена должна быть больше 0`);
+    }
+    if (pick.basePrice > 1_000_000) {
+      errors.push(`«${el.name}»: цена слишком большая (макс. 1 000 000 ₽)`);
     }
     if (el.levelLock && !el.levelLock.includes(b.level)) {
       const okLevels = el.levelLock.join("/");
@@ -184,9 +196,6 @@ function DogovorBuilderPage() {
   const [date, setDate] = useState(todayIso);
 
   const [personFio, setPersonFio] = useState("");
-  const [personPassport, setPersonPassport] = useState("");
-  const [personIssuedBy, setPersonIssuedBy] = useState("");
-  const [personIssuedDate, setPersonIssuedDate] = useState("");
 
   const [companyName, setCompanyName] = useState("");
   const [companyInn, setCompanyInn] = useState("");
@@ -272,7 +281,7 @@ function DogovorBuilderPage() {
               ...b,
               picks: [
                 ...b.picks,
-                { rowId: uid(), elementId: "custom-" + uid(), name: "", unit: "шт", qty: 1, basePrice: 0 },
+                { rowId: uid(), elementId: "custom-" + uid(), name: "", unit: "шт", qty: 1, basePrice: 0, manual: true },
               ],
             }
           : b
@@ -339,9 +348,6 @@ function DogovorBuilderPage() {
       date,
       clientType,
       personFio: clientType === "person" ? personFio.trim() : undefined,
-      personPassport: clientType === "person" ? personPassport.trim() || undefined : undefined,
-      personIssuedBy: clientType === "person" ? personIssuedBy.trim() || undefined : undefined,
-      personIssuedDate: clientType === "person" ? personIssuedDate || undefined : undefined,
       companyName: clientType === "company" ? companyName.trim() : undefined,
       companyInn: clientType === "company" ? companyInn.trim() : undefined,
       companyKpp: clientType === "company" ? companyKpp.trim() || undefined : undefined,
@@ -377,10 +383,26 @@ function DogovorBuilderPage() {
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
               Заполните данные клиента, услуги и реквизиты мастера — получите готовый PDF договора. Данные обрабатываются только в браузере, на сервер ничего не отправляется.
             </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Не получилось скачать? Напишите нам в Telegram{" "}
+              <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">
+                {SITE.telegramHandle}
+              </a>{" "}или позвоните <a href={SITE.phoneHref} className="font-semibold text-primary hover:underline">{SITE.phone}</a>.
+            </p>
           </div>
-          <Link to="/garantii" className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary">
-            <ArrowLeft className="h-4 w-4" /> К гарантиям
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={SITE.telegramHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
+            >
+              <Send className="h-4 w-4" /> {SITE.telegramHandle}
+            </a>
+            <Link to="/garantii" className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary">
+              <ArrowLeft className="h-4 w-4" /> К гарантиям
+            </Link>
+          </div>
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
@@ -412,20 +434,9 @@ function DogovorBuilderPage() {
               </div>
 
               {clientType === "person" ? (
-                <>
-                  <Field label="ФИО заказчика" full>
-                    <input className={inputCls} value={personFio} onChange={(e) => setPersonFio(e.target.value)} placeholder="Иванов Иван Иванович" />
-                  </Field>
-                  <Field label="Паспорт (серия, номер)">
-                    <input className={inputCls} value={personPassport} onChange={(e) => setPersonPassport(e.target.value)} placeholder="50 14 123456" />
-                  </Field>
-                  <Field label="Кем выдан">
-                    <input className={inputCls} value={personIssuedBy} onChange={(e) => setPersonIssuedBy(e.target.value)} placeholder="ОУФМС России по НСО…" />
-                  </Field>
-                  <Field label="Дата выдачи">
-                    <input type="date" className={inputCls} value={personIssuedDate} onChange={(e) => setPersonIssuedDate(e.target.value)} />
-                  </Field>
-                </>
+                <Field label="ФИО заказчика" full>
+                  <input className={inputCls} value={personFio} onChange={(e) => setPersonFio(e.target.value)} placeholder="Иванов Иван Иванович" />
+                </Field>
               ) : (
                 <>
                   <Field label="Наименование организации" full>
@@ -540,7 +551,10 @@ function DogovorBuilderPage() {
                           {pest.elements.map((el) => {
                             const pick = b.picks.find((p) => p.elementId === el.id);
                             const checked = !!pick;
-                            const finalPrice = Math.round(el.basePrice * m);
+                            const catalogFinalPrice = Math.round(el.basePrice * m);
+                            const finalPrice = pick
+                              ? (pick.manual ? Math.round(pick.basePrice) : Math.round(pick.basePrice * m))
+                              : catalogFinalPrice;
                             const lim = getElementLimits(el);
                             const outOfRange = !!pick && (pick.qty < lim.min || pick.qty > lim.max);
                             const wrongLevel = !!el.levelLock && !el.levelLock.includes(b.level);
@@ -551,7 +565,7 @@ function DogovorBuilderPage() {
                                   <span className="flex-1 text-sm">
                                     {el.name}
                                     <span className="ml-1 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">{el.unit}</span>
-                                    <span className="ml-1 text-xs text-muted-foreground">· {finalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span>
+                                    <span className="ml-1 text-xs text-muted-foreground">· {catalogFinalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span>
                                   </span>
                                 </label>
                                 {(el.hint || lim.hint) && (
@@ -563,8 +577,8 @@ function DogovorBuilderPage() {
                                   </p>
                                 )}
                                 {checked && pick && (
-                                  <div className="mt-2 grid grid-cols-3 items-center gap-2 pl-6">
-                                    <label className="col-span-1 text-xs text-muted-foreground">
+                                  <div className="mt-2 grid grid-cols-6 items-end gap-2 pl-6">
+                                    <label className="col-span-3 md:col-span-2 text-xs text-muted-foreground">
                                       Кол-во ({el.unit})
                                       <input
                                         type="number"
@@ -577,11 +591,35 @@ function DogovorBuilderPage() {
                                         onBlur={(e) => updatePick(b.id, pick.rowId, { qty: clampQty(Number(e.target.value) || 0, el) })}
                                       />
                                     </label>
-                                    <div className="col-span-2 text-right text-sm">
+                                    <label className="col-span-3 md:col-span-2 text-xs text-muted-foreground">
+                                      Цена, ₽/{el.unit}
+                                      <input
+                                        type="number"
+                                        min={0}
+                                        step={1}
+                                        className={`${inputCls} mt-1`}
+                                        value={pick.basePrice}
+                                        onChange={(e) => updatePick(b.id, pick.rowId, { basePrice: Number(e.target.value) || 0 })}
+                                      />
+                                    </label>
+                                    <div className="col-span-6 md:col-span-2 text-right text-sm">
                                       = <span className="font-semibold">{formatRub(pick.qty * finalPrice)}</span>
                                     </div>
+                                    <label className="col-span-6 flex cursor-pointer items-center gap-2 text-[11px] text-muted-foreground">
+                                      <input
+                                        type="checkbox"
+                                        checked={!!pick.manual}
+                                        onChange={(e) => updatePick(b.id, pick.rowId, { manual: e.target.checked })}
+                                      />
+                                      <span>
+                                        Ручная цена (не умножать на коэф. степени ×{m})
+                                        {!pick.manual && (
+                                          <span className="ml-1 text-muted-foreground">· базовая {pick.basePrice.toLocaleString("ru-RU")} ₽ × {m} = <b>{Math.round(pick.basePrice * m).toLocaleString("ru-RU")} ₽</b></span>
+                                        )}
+                                      </span>
+                                    </label>
                                     {outOfRange && (
-                                      <p className="col-span-3 text-[11px] text-destructive">Допустимо {lim.min}–{lim.max} {el.unit}</p>
+                                      <p className="col-span-6 text-[11px] text-destructive">Допустимо {lim.min}–{lim.max} {el.unit}</p>
                                     )}
                                   </div>
                                 )}
@@ -600,8 +638,18 @@ function DogovorBuilderPage() {
                                   <Trash2 className="h-4 w-4" />
                                 </button>
                               </div>
-                              <div className="mt-1 pl-1 text-xs text-muted-foreground">
-                                Базовая цена × коэффициент {m} = {Math.round(p.basePrice * m).toLocaleString("ru-RU")} ₽/{p.unit || "ед."}
+                              <div className="mt-1 flex flex-wrap items-center justify-between gap-2 pl-1 text-xs text-muted-foreground">
+                                <label className="flex cursor-pointer items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={!!p.manual}
+                                    onChange={(e) => updatePick(b.id, p.rowId, { manual: e.target.checked })}
+                                  />
+                                  <span>Ручная цена (не умножать на ×{m})</span>
+                                </label>
+                                <span>
+                                  = <b>{formatRub(p.qty * (p.manual ? Math.round(p.basePrice) : Math.round(p.basePrice * m)))}</b>
+                                </span>
                               </div>
                             </div>
                           ))}
@@ -613,13 +661,36 @@ function DogovorBuilderPage() {
 
                       {/* Барьер */}
                       {pest.barrier && (
-                        <label className="mt-4 flex cursor-pointer items-center justify-between rounded-lg border border-border bg-card p-3">
-                          <span className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={b.withBarrier} onChange={(e) => updateBlock(b.id, { withBarrier: e.target.checked })} />
-                            <span>{pest.barrier.name}</span>
-                          </span>
-                          <span className="text-sm font-semibold">+ {Math.round(pest.barrier.basePrice * m).toLocaleString("ru-RU")} ₽</span>
-                        </label>
+                        <div className="mt-4 rounded-lg border border-border bg-card p-3">
+                          <label className="flex cursor-pointer items-center justify-between gap-2">
+                            <span className="flex items-center gap-2 text-sm">
+                              <input type="checkbox" checked={b.withBarrier} onChange={(e) => updateBlock(b.id, { withBarrier: e.target.checked })} />
+                              <span>{pest.barrier.name}</span>
+                            </span>
+                            <span className="text-sm font-semibold">+ {(b.barrierPriceOverride ?? Math.round(pest.barrier.basePrice * m)).toLocaleString("ru-RU")} ₽</span>
+                          </label>
+                          {b.withBarrier && (
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                              <span>Цена, ₽:</span>
+                              <input
+                                type="number"
+                                min={0}
+                                className={`${inputCls} h-8 w-32`}
+                                value={b.barrierPriceOverride ?? Math.round(pest.barrier.basePrice * m)}
+                                onChange={(e) => updateBlock(b.id, { barrierPriceOverride: Number(e.target.value) || 0 })}
+                              />
+                              {b.barrierPriceOverride != null && (
+                                <button
+                                  type="button"
+                                  onClick={() => updateBlock(b.id, { barrierPriceOverride: undefined })}
+                                  className="text-primary hover:underline"
+                                >
+                                  Сбросить к базовой
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       <div className="mt-4 flex items-center justify-between rounded-lg bg-secondary px-3 py-2 text-sm">
