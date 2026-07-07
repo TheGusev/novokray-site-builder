@@ -128,7 +128,7 @@ export function DocsRequest() {
           </span>
         </label>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-[1fr,auto]">
+        <div className="mt-4 grid gap-2 sm:grid-cols-[1fr,auto,auto]">
           <button
             type="submit"
             disabled={loading || !canSubmit}
@@ -142,6 +142,15 @@ export function DocsRequest() {
             className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
           >
             <Phone className="h-4 w-4" /> {SITE.phone}
+          </a>
+          <a
+            href={SITE.telegramHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Telegram ${SITE.telegramHandle}`}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
+          >
+            <Send className="h-4 w-4" /> {SITE.telegramHandle}
           </a>
         </div>
       </form>
