@@ -196,9 +196,6 @@ function DogovorBuilderPage() {
   const [date, setDate] = useState(todayIso);
 
   const [personFio, setPersonFio] = useState("");
-  const [personPassport, setPersonPassport] = useState("");
-  const [personIssuedBy, setPersonIssuedBy] = useState("");
-  const [personIssuedDate, setPersonIssuedDate] = useState("");
 
   const [companyName, setCompanyName] = useState("");
   const [companyInn, setCompanyInn] = useState("");
@@ -351,9 +348,6 @@ function DogovorBuilderPage() {
       date,
       clientType,
       personFio: clientType === "person" ? personFio.trim() : undefined,
-      personPassport: clientType === "person" ? personPassport.trim() || undefined : undefined,
-      personIssuedBy: clientType === "person" ? personIssuedBy.trim() || undefined : undefined,
-      personIssuedDate: clientType === "person" ? personIssuedDate || undefined : undefined,
       companyName: clientType === "company" ? companyName.trim() : undefined,
       companyInn: clientType === "company" ? companyInn.trim() : undefined,
       companyKpp: clientType === "company" ? companyKpp.trim() || undefined : undefined,
@@ -424,20 +418,9 @@ function DogovorBuilderPage() {
               </div>
 
               {clientType === "person" ? (
-                <>
-                  <Field label="ФИО заказчика" full>
-                    <input className={inputCls} value={personFio} onChange={(e) => setPersonFio(e.target.value)} placeholder="Иванов Иван Иванович" />
-                  </Field>
-                  <Field label="Паспорт (серия, номер)">
-                    <input className={inputCls} value={personPassport} onChange={(e) => setPersonPassport(e.target.value)} placeholder="50 14 123456" />
-                  </Field>
-                  <Field label="Кем выдан">
-                    <input className={inputCls} value={personIssuedBy} onChange={(e) => setPersonIssuedBy(e.target.value)} placeholder="ОУФМС России по НСО…" />
-                  </Field>
-                  <Field label="Дата выдачи">
-                    <input type="date" className={inputCls} value={personIssuedDate} onChange={(e) => setPersonIssuedDate(e.target.value)} />
-                  </Field>
-                </>
+                <Field label="ФИО заказчика" full>
+                  <input className={inputCls} value={personFio} onChange={(e) => setPersonFio(e.target.value)} placeholder="Иванов Иван Иванович" />
+                </Field>
               ) : (
                 <>
                   <Field label="Наименование организации" full>
