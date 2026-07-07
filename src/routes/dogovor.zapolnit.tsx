@@ -622,8 +622,18 @@ function DogovorBuilderPage() {
                                   <Trash2 className="h-4 w-4" />
                                 </button>
                               </div>
-                              <div className="mt-1 pl-1 text-xs text-muted-foreground">
-                                Базовая цена × коэффициент {m} = {Math.round(p.basePrice * m).toLocaleString("ru-RU")} ₽/{p.unit || "ед."}
+                              <div className="mt-1 flex flex-wrap items-center justify-between gap-2 pl-1 text-xs text-muted-foreground">
+                                <label className="flex cursor-pointer items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={!!p.manual}
+                                    onChange={(e) => updatePick(b.id, p.rowId, { manual: e.target.checked })}
+                                  />
+                                  <span>Ручная цена (не умножать на ×{m})</span>
+                                </label>
+                                <span>
+                                  = <b>{formatRub(p.qty * (p.manual ? Math.round(p.basePrice) : Math.round(p.basePrice * m)))}</b>
+                                </span>
                               </div>
                             </div>
                           ))}
@@ -635,13 +645,36 @@ function DogovorBuilderPage() {
 
                       {/* Барьер */}
                       {pest.barrier && (
-                        <label className="mt-4 flex cursor-pointer items-center justify-between rounded-lg border border-border bg-card p-3">
-                          <span className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={b.withBarrier} onChange={(e) => updateBlock(b.id, { withBarrier: e.target.checked })} />
-                            <span>{pest.barrier.name}</span>
-                          </span>
-                          <span className="text-sm font-semibold">+ {Math.round(pest.barrier.basePrice * m).toLocaleString("ru-RU")} ₽</span>
-                        </label>
+                        <div className="mt-4 rounded-lg border border-border bg-card p-3">
+                          <label className="flex cursor-pointer items-center justify-between gap-2">
+                            <span className="flex items-center gap-2 text-sm">
+                              <input type="checkbox" checked={b.withBarrier} onChange={(e) => updateBlock(b.id, { withBarrier: e.target.checked })} />
+                              <span>{pest.barrier.name}</span>
+                            </span>
+                            <span className="text-sm font-semibold">+ {(b.barrierPriceOverride ?? Math.round(pest.barrier.basePrice * m)).toLocaleString("ru-RU")} ₽</span>
+                          </label>
+                          {b.withBarrier && (
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                              <span>Цена, ₽:</span>
+                              <input
+                                type="number"
+                                min={0}
+                                className={`${inputCls} h-8 w-32`}
+                                value={b.barrierPriceOverride ?? Math.round(pest.barrier.basePrice * m)}
+                                onChange={(e) => updateBlock(b.id, { barrierPriceOverride: Number(e.target.value) || 0 })}
+                              />
+                              {b.barrierPriceOverride != null && (
+                                <button
+                                  type="button"
+                                  onClick={() => updateBlock(b.id, { barrierPriceOverride: undefined })}
+                                  className="text-primary hover:underline"
+                                >
+                                  Сбросить к базовой
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       <div className="mt-4 flex items-center justify-between rounded-lg bg-secondary px-3 py-2 text-sm">
