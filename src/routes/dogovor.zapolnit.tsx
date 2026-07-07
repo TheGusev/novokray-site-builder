@@ -535,7 +535,10 @@ function DogovorBuilderPage() {
                           {pest.elements.map((el) => {
                             const pick = b.picks.find((p) => p.elementId === el.id);
                             const checked = !!pick;
-                            const finalPrice = Math.round(el.basePrice * m);
+                            const catalogFinalPrice = Math.round(el.basePrice * m);
+                            const finalPrice = pick
+                              ? (pick.manual ? Math.round(pick.basePrice) : Math.round(pick.basePrice * m))
+                              : catalogFinalPrice;
                             const lim = getElementLimits(el);
                             const outOfRange = !!pick && (pick.qty < lim.min || pick.qty > lim.max);
                             const wrongLevel = !!el.levelLock && !el.levelLock.includes(b.level);
@@ -546,7 +549,7 @@ function DogovorBuilderPage() {
                                   <span className="flex-1 text-sm">
                                     {el.name}
                                     <span className="ml-1 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">{el.unit}</span>
-                                    <span className="ml-1 text-xs text-muted-foreground">· {finalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span>
+                                    <span className="ml-1 text-xs text-muted-foreground">· {catalogFinalPrice.toLocaleString("ru-RU")} ₽/{el.unit}</span>
                                   </span>
                                 </label>
                                 {(el.hint || lim.hint) && (
@@ -558,8 +561,8 @@ function DogovorBuilderPage() {
                                   </p>
                                 )}
                                 {checked && pick && (
-                                  <div className="mt-2 grid grid-cols-3 items-center gap-2 pl-6">
-                                    <label className="col-span-1 text-xs text-muted-foreground">
+                                  <div className="mt-2 grid grid-cols-6 items-end gap-2 pl-6">
+                                    <label className="col-span-3 md:col-span-2 text-xs text-muted-foreground">
                                       Кол-во ({el.unit})
                                       <input
                                         type="number"
@@ -572,11 +575,35 @@ function DogovorBuilderPage() {
                                         onBlur={(e) => updatePick(b.id, pick.rowId, { qty: clampQty(Number(e.target.value) || 0, el) })}
                                       />
                                     </label>
-                                    <div className="col-span-2 text-right text-sm">
+                                    <label className="col-span-3 md:col-span-2 text-xs text-muted-foreground">
+                                      Цена, ₽/{el.unit}
+                                      <input
+                                        type="number"
+                                        min={0}
+                                        step={1}
+                                        className={`${inputCls} mt-1`}
+                                        value={pick.basePrice}
+                                        onChange={(e) => updatePick(b.id, pick.rowId, { basePrice: Number(e.target.value) || 0 })}
+                                      />
+                                    </label>
+                                    <div className="col-span-6 md:col-span-2 text-right text-sm">
                                       = <span className="font-semibold">{formatRub(pick.qty * finalPrice)}</span>
                                     </div>
+                                    <label className="col-span-6 flex cursor-pointer items-center gap-2 text-[11px] text-muted-foreground">
+                                      <input
+                                        type="checkbox"
+                                        checked={!!pick.manual}
+                                        onChange={(e) => updatePick(b.id, pick.rowId, { manual: e.target.checked })}
+                                      />
+                                      <span>
+                                        Ручная цена (не умножать на коэф. степени ×{m})
+                                        {!pick.manual && (
+                                          <span className="ml-1 text-muted-foreground">· базовая {pick.basePrice.toLocaleString("ru-RU")} ₽ × {m} = <b>{Math.round(pick.basePrice * m).toLocaleString("ru-RU")} ₽</b></span>
+                                        )}
+                                      </span>
+                                    </label>
                                     {outOfRange && (
-                                      <p className="col-span-3 text-[11px] text-destructive">Допустимо {lim.min}–{lim.max} {el.unit}</p>
+                                      <p className="col-span-6 text-[11px] text-destructive">Допустимо {lim.min}–{lim.max} {el.unit}</p>
                                     )}
                                   </div>
                                 )}
