@@ -212,6 +212,7 @@ function DogovorBuilderPage() {
   const [signatureName, setSignatureName] = useState<string>("");
 
   const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
+  const selectedPests = useMemo(() => new Set(blocks.map((b) => b.pestKey)), [blocks]);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -224,13 +225,25 @@ function DogovorBuilderPage() {
   const updateBlock = (id: string, patch: Partial<UiBlock>) => {
     setBlocks((rows) => rows.map((b) => (b.id === id ? { ...b, ...patch } : b)));
   };
-  const addBlock = () => setBlocks((rows) => [...rows, makeBlock()]);
   const removeBlock = (id: string) => setBlocks((rows) => rows.filter((b) => b.id !== id));
 
-  const changePest = (id: string, pestKey: string) => {
-    const p = getPest(pestKey);
-    if (!p) return;
-    updateBlock(id, { pestKey, preparations: p.preparations.slice(0, 1), picks: [], withBarrier: false });
+  const togglePest = (pestKey: string) => {
+    const existing = blocks.filter((b) => b.pestKey === pestKey);
+    if (existing.length === 0) {
+      setBlocks((rows) => [...rows, makeBlock(pestKey)]);
+      return;
+    }
+    const hasWork = existing.some((b) => b.picks.length > 0 || b.withBarrier);
+    if (hasWork) {
+      const label = getPest(pestKey)?.name ?? "вредитель";
+      const ok = typeof window === "undefined" ? true : window.confirm(`Удалить блок «${label}»? Отмеченные работы будут потеряны.`);
+      if (!ok) return;
+    }
+    setBlocks((rows) => rows.filter((b) => b.pestKey !== pestKey));
+  };
+
+  const duplicateBlock = (pestKey: string) => {
+    setBlocks((rows) => [...rows, makeBlock(pestKey)]);
   };
 
   const changeLevel = (id: string, level: InfestationLevel) => {
