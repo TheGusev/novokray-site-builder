@@ -212,6 +212,7 @@ function DogovorBuilderPage() {
   const [signatureName, setSignatureName] = useState<string>("");
 
   const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
+  const selectedPests = useMemo(() => new Set(blocks.map((b) => b.pestKey)), [blocks]);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -224,13 +225,25 @@ function DogovorBuilderPage() {
   const updateBlock = (id: string, patch: Partial<UiBlock>) => {
     setBlocks((rows) => rows.map((b) => (b.id === id ? { ...b, ...patch } : b)));
   };
-  const addBlock = () => setBlocks((rows) => [...rows, makeBlock()]);
   const removeBlock = (id: string) => setBlocks((rows) => rows.filter((b) => b.id !== id));
 
-  const changePest = (id: string, pestKey: string) => {
-    const p = getPest(pestKey);
-    if (!p) return;
-    updateBlock(id, { pestKey, preparations: p.preparations.slice(0, 1), picks: [], withBarrier: false });
+  const togglePest = (pestKey: string) => {
+    const existing = blocks.filter((b) => b.pestKey === pestKey);
+    if (existing.length === 0) {
+      setBlocks((rows) => [...rows, makeBlock(pestKey)]);
+      return;
+    }
+    const hasWork = existing.some((b) => b.picks.length > 0 || b.withBarrier);
+    if (hasWork) {
+      const label = getPest(pestKey)?.name ?? "вредитель";
+      const ok = typeof window === "undefined" ? true : window.confirm(`Удалить блок «${label}»? Отмеченные работы будут потеряны.`);
+      if (!ok) return;
+    }
+    setBlocks((rows) => rows.filter((b) => b.pestKey !== pestKey));
+  };
+
+  const duplicateBlock = (pestKey: string) => {
+    setBlocks((rows) => [...rows, makeBlock(pestKey)]);
   };
 
   const changeLevel = (id: string, level: InfestationLevel) => {
@@ -463,6 +476,12 @@ function DogovorBuilderPage() {
 
             <Block title="3. Услуги">
               <div className="col-span-full space-y-3">
+                <PestMultiSelect selected={selectedPests} onToggle={togglePest} />
+                {blocks.length === 0 && (
+                  <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+                    Выберите хотя бы одного вредителя — отметьте чипы выше.
+                  </div>
+                )}
                 {blocks.map((b, bi) => {
                   const pest = getPest(b.pestKey);
                   if (!pest) return null;
@@ -486,13 +505,8 @@ function DogovorBuilderPage() {
                         )}
                       </div>
 
-                      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <label className="block">
-                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Вредитель</span>
-                          <select className={inputCls} value={b.pestKey} onChange={(e) => changePest(b.id, e.target.value)}>
-                            {CATALOG.map((p) => <option key={p.key} value={p.key}>{p.name}</option>)}
-                          </select>
-                        </label>
+                      <div className="mt-2 text-base font-bold">{pest.name}</div>
+                      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
                         <label className="block">
                           <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Степень заражения</span>
                           <select className={inputCls} value={b.level} onChange={(e) => changeLevel(b.id, e.target.value as InfestationLevel)}>
@@ -717,9 +731,20 @@ function DogovorBuilderPage() {
                     </div>
                   );
                 })}
-                <button type="button" onClick={addBlock} className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-sm font-semibold text-primary hover:bg-secondary">
-                  <Plus className="h-4 w-4" /> Добавить вредителя (блок)
-                </button>
+                {blocks.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1 text-xs text-muted-foreground">
+                    <span>Нужен ещё один блок для того же вредителя?</span>
+                    {Array.from(new Set(blocks.map((b) => b.pestKey))).map((pk) => {
+                      const p = getPest(pk);
+                      if (!p) return null;
+                      return (
+                        <button key={pk} type="button" onClick={() => duplicateBlock(pk)} className="inline-flex items-center gap-1 rounded-md border border-dashed border-border px-2 py-1 font-semibold text-primary hover:bg-secondary">
+                          <Plus className="h-3 w-3" /> ещё «{p.name}»
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </Block>
 
@@ -811,5 +836,34 @@ function Field({ label, children, full = false }: { label: string; children: Rea
       <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
       {children}
     </label>
+  );
+}
+
+function PestMultiSelect({ selected, onToggle }: { selected: Set<string>; onToggle: (key: string) => void }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-border bg-secondary/30 p-3">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        Вредители <span className="normal-case text-[10px] font-normal">(можно выбрать несколько)</span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {CATALOG.map((p) => {
+          const on = selected.has(p.key);
+          return (
+            <button
+              key={p.key}
+              type="button"
+              onClick={() => onToggle(p.key)}
+              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground hover:border-primary hover:text-primary"}`}
+            >
+              <span>{on ? "✓" : "+"}</span>
+              <span>{p.name}</span>
+              {p.outdoor && (
+                <span className={`rounded px-1 py-0.5 text-[9px] uppercase ${on ? "bg-primary-foreground/20" : "bg-primary/10 text-primary"}`}>участок</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
