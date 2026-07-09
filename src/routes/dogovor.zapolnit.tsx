@@ -476,6 +476,12 @@ function DogovorBuilderPage() {
 
             <Block title="3. Услуги">
               <div className="col-span-full space-y-3">
+                <PestMultiSelect selected={selectedPests} onToggle={togglePest} />
+                {blocks.length === 0 && (
+                  <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+                    Выберите хотя бы одного вредителя — отметьте чипы выше.
+                  </div>
+                )}
                 {blocks.map((b, bi) => {
                   const pest = getPest(b.pestKey);
                   if (!pest) return null;
@@ -499,13 +505,8 @@ function DogovorBuilderPage() {
                         )}
                       </div>
 
-                      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <label className="block">
-                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Вредитель</span>
-                          <select className={inputCls} value={b.pestKey} onChange={(e) => changePest(b.id, e.target.value)}>
-                            {CATALOG.map((p) => <option key={p.key} value={p.key}>{p.name}</option>)}
-                          </select>
-                        </label>
+                      <div className="mt-2 text-base font-bold">{pest.name}</div>
+                      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
                         <label className="block">
                           <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Степень заражения</span>
                           <select className={inputCls} value={b.level} onChange={(e) => changeLevel(b.id, e.target.value as InfestationLevel)}>
@@ -730,9 +731,20 @@ function DogovorBuilderPage() {
                     </div>
                   );
                 })}
-                <button type="button" onClick={addBlock} className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-sm font-semibold text-primary hover:bg-secondary">
-                  <Plus className="h-4 w-4" /> Добавить вредителя (блок)
-                </button>
+                {blocks.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1 text-xs text-muted-foreground">
+                    <span>Нужен ещё один блок для того же вредителя?</span>
+                    {Array.from(new Set(blocks.map((b) => b.pestKey))).map((pk) => {
+                      const p = getPest(pk);
+                      if (!p) return null;
+                      return (
+                        <button key={pk} type="button" onClick={() => duplicateBlock(pk)} className="inline-flex items-center gap-1 rounded-md border border-dashed border-border px-2 py-1 font-semibold text-primary hover:bg-secondary">
+                          <Plus className="h-3 w-3" /> ещё «{p.name}»
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </Block>
 
