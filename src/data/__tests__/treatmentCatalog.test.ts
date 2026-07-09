@@ -10,6 +10,7 @@ import {
   type InfestationLevel,
   type TreatmentElement,
 } from "../treatmentCatalog";
+import { blockSum, totalSum, type ContractBlock } from "@/lib/dogovor/buildPdf";
 
 const ALL_LEVELS: InfestationLevel[] = ["1", "2-3", "4-5"];
 const ALLOWED_UNITS = new Set(Object.keys(UNIT_LIMITS));
@@ -291,5 +292,132 @@ describe("Расчёт стоимости блока (фикстуры)", () => 
         ],
       }),
     ).toBe(4100);
+  });
+});
+
+describe("Мульти-вредители: blockSum / totalSum и правила цен", () => {
+  // Хелпер — собирает ContractBlock по логике UI (multiplier применён к price)
+  function makeCB(opts: {
+    pestKey: string;
+    level: InfestationLevel;
+    items: Array<{ id: string; qty: number; manualPrice?: number }>;
+    withBarrier?: boolean;
+    barrierPriceOverride?: number;
+  }): ContractBlock {
+    const p = getPest(opts.pestKey)!;
+    const mult = LEVEL_MULTIPLIER[opts.level];
+    const lines = opts.items.map((it) => {
+      const el = p.elements.find((e) => e.id === it.id)!;
+      return {
+        name: `${el.name} (${el.unit})`,
+        qty: it.qty,
+        price:
+          it.manualPrice != null
+            ? Math.round(it.manualPrice)
+            : Math.round(el.basePrice * mult),
+      };
+    });
+    if (opts.withBarrier && p.barrier) {
+      lines.push({
+        name: p.barrier.name,
+        qty: 1,
+        price:
+          opts.barrierPriceOverride != null
+            ? Math.round(opts.barrierPriceOverride)
+            : Math.round(p.barrier.basePrice * mult),
+      });
+    }
+    return {
+      pestName: p.name,
+      level: opts.level,
+      multiplier: mult,
+      warrantyDays: LEVEL_WARRANTY_DAYS[opts.level],
+      preparations: p.preparations.slice(0, 1),
+      methodNote: p.methodNote,
+      lines,
+    };
+  }
+
+  it("blockSum суммирует qty×price по строкам блока", () => {
+    const cb = makeCB({
+      pestKey: "klopy",
+      level: "1",
+      items: [
+        { id: "krovat", qty: 2 },
+        { id: "plintus_pol", qty: 10 },
+      ],
+    });
+    expect(blockSum(cb)).toBe(2 * 600 + 10 * 50);
+  });
+
+  it("totalSum складывает несколько вредителей независимо", () => {
+    const klopy = makeCB({
+      pestKey: "klopy",
+      level: "2-3",
+      items: [{ id: "krovat", qty: 1 }],
+    });
+    const tarakany = makeCB({
+      pestKey: "tarakany",
+      level: "1",
+      items: [{ id: "kuhnya", qty: 1 }],
+    });
+    expect(totalSum([klopy, tarakany])).toBe(blockSum(klopy) + blockSum(tarakany));
+  });
+
+  it("два блока одного вредителя суммируются независимо (мульти-блок)", () => {
+    const b1 = makeCB({
+      pestKey: "klopy",
+      level: "1",
+      items: [{ id: "krovat", qty: 1 }],
+    });
+    const b2 = makeCB({
+      pestKey: "klopy",
+      level: "4-5",
+      items: [{ id: "krovat", qty: 1 }],
+    });
+    // 600·1 + 600·2 = 1800
+    expect(totalSum([b1, b2])).toBe(1800);
+  });
+
+  it("ручная цена (manual) не умножается на коэффициент степени", () => {
+    const cb = makeCB({
+      pestKey: "klopy",
+      level: "4-5", // ×2
+      items: [
+        { id: "krovat", qty: 1, manualPrice: 900 }, // manual → берём как есть
+        { id: "plintus_pol", qty: 10 }, // 50·2 = 100
+      ],
+    });
+    expect(blockSum(cb)).toBe(900 + 10 * 100);
+  });
+
+  it("барьер учитывается один раз на блок и подчиняется overrid'у", () => {
+    const base = makeCB({
+      pestKey: "klopy",
+      level: "1",
+      items: [{ id: "krovat", qty: 1 }],
+      withBarrier: true,
+    });
+    const override = makeCB({
+      pestKey: "klopy",
+      level: "1",
+      items: [{ id: "krovat", qty: 1 }],
+      withBarrier: true,
+      barrierPriceOverride: 2000,
+    });
+    // базовая: 600 + 1500 (барьер ×1) = 2100
+    expect(blockSum(base)).toBe(2100);
+    // с ручной ценой барьера: 600 + 2000 = 2600
+    expect(blockSum(override)).toBe(2600);
+  });
+
+  it("totalSum по трём разным вредителям сходится с суммой blockSum", () => {
+    const blocks = [
+      makeCB({ pestKey: "klopy", level: "2-3", items: [{ id: "krovat", qty: 1 }], withBarrier: true }),
+      makeCB({ pestKey: "tarakany", level: "1", items: [{ id: "kuhnya", qty: 1 }] }),
+      makeCB({ pestKey: "kleshchi", level: "1", items: [{ id: "uchastok", qty: 6 }] }),
+    ];
+    const expected = blocks.reduce((s, b) => s + blockSum(b), 0);
+    expect(totalSum(blocks)).toBe(expected);
   });
 });
