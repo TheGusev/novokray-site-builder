@@ -838,3 +838,32 @@ function Field({ label, children, full = false }: { label: string; children: Rea
     </label>
   );
 }
+
+function PestMultiSelect({ selected, onToggle }: { selected: Set<string>; onToggle: (key: string) => void }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-border bg-secondary/30 p-3">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        Вредители <span className="normal-case text-[10px] font-normal">(можно выбрать несколько)</span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {CATALOG.map((p) => {
+          const on = selected.has(p.key);
+          return (
+            <button
+              key={p.key}
+              type="button"
+              onClick={() => onToggle(p.key)}
+              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground hover:border-primary hover:text-primary"}`}
+            >
+              <span>{on ? "✓" : "+"}</span>
+              <span>{p.name}</span>
+              {p.outdoor && (
+                <span className={`rounded px-1 py-0.5 text-[9px] uppercase ${on ? "bg-primary-foreground/20" : "bg-primary/10 text-primary"}`}>участок</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
