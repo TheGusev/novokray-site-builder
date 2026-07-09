@@ -502,7 +502,7 @@ function DogovorBuilderPage() {
 
             <Block title="3. Услуги">
               <div className="col-span-full space-y-3">
-                <PestMultiSelect selected={selectedPests} onToggle={togglePest} />
+                <PestMultiSelect selected={selectedPests} counts={pestCounts} onToggle={togglePest} />
                 {blocks.length === 0 && (
                   <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
                     Выберите хотя бы одного вредителя — отметьте чипы выше.
@@ -805,7 +805,11 @@ function DogovorBuilderPage() {
               <div className="mt-5 space-y-1.5 text-sm">
                 {contractBlocks.map((cb, i) => cb.lines.length > 0 && (
                   <div key={i} className="border-t border-border pt-2 first:border-0 first:pt-0">
-                    <div className="mb-1 text-xs font-bold uppercase tracking-wider text-primary">{cb.pestName} · ст. {cb.level}</div>
+                    <div className="mb-1 text-xs font-bold uppercase tracking-wider text-primary">
+                      {cb.pestName}
+                      {pestCounts[blocks[i]?.pestKey] > 1 && <> · блок {blocks.slice(0, i + 1).filter((b) => b.pestKey === blocks[i].pestKey).length}</>}
+                      {" "}· ст. {cb.level}
+                    </div>
                     {cb.lines.map((ln, j) => (
                       <div key={j} className="flex justify-between gap-3">
                         <span className="truncate text-muted-foreground">{ln.name} × {ln.qty}</span>
@@ -814,6 +818,11 @@ function DogovorBuilderPage() {
                     ))}
                   </div>
                 ))}
+                {blocks.length > 0 && contractBlocks.every((cb) => cb.lines.length === 0) && (
+                  <div className="rounded-md border border-dashed border-border p-2 text-xs text-muted-foreground">
+                    Отметьте хотя бы одну работу в блоках выше.
+                  </div>
+                )}
               </div>
 
               {error && (
@@ -865,7 +874,7 @@ function Field({ label, children, full = false }: { label: string; children: Rea
   );
 }
 
-function PestMultiSelect({ selected, onToggle }: { selected: Set<string>; onToggle: (key: string) => void }) {
+function PestMultiSelect({ selected, counts, onToggle }: { selected: Set<string>; counts: Record<string, number>; onToggle: (key: string) => void }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-secondary/30 p-3">
       <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -874,6 +883,7 @@ function PestMultiSelect({ selected, onToggle }: { selected: Set<string>; onTogg
       <div className="flex flex-wrap gap-2">
         {CATALOG.map((p) => {
           const on = selected.has(p.key);
+          const cnt = counts[p.key] ?? 0;
           return (
             <button
               key={p.key}
@@ -883,6 +893,9 @@ function PestMultiSelect({ selected, onToggle }: { selected: Set<string>; onTogg
             >
               <span>{on ? "✓" : "+"}</span>
               <span>{p.name}</span>
+              {cnt > 1 && (
+                <span className={`rounded px-1 py-0.5 text-[9px] ${on ? "bg-primary-foreground/20" : "bg-primary/10 text-primary"}`}>×{cnt}</span>
+              )}
               {p.outdoor && (
                 <span className={`rounded px-1 py-0.5 text-[9px] uppercase ${on ? "bg-primary-foreground/20" : "bg-primary/10 text-primary"}`}>участок</span>
               )}
