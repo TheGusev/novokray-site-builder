@@ -212,7 +212,13 @@ function DogovorBuilderPage() {
   const [signatureName, setSignatureName] = useState<string>("");
 
   const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
+  const [graveyard, setGraveyard] = useState<Record<string, UiBlock[]>>({});
   const selectedPests = useMemo(() => new Set(blocks.map((b) => b.pestKey)), [blocks]);
+  const pestCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const b of blocks) m[b.pestKey] = (m[b.pestKey] ?? 0) + 1;
+    return m;
+  }, [blocks]);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -225,20 +231,40 @@ function DogovorBuilderPage() {
   const updateBlock = (id: string, patch: Partial<UiBlock>) => {
     setBlocks((rows) => rows.map((b) => (b.id === id ? { ...b, ...patch } : b)));
   };
-  const removeBlock = (id: string) => setBlocks((rows) => rows.filter((b) => b.id !== id));
+  const stash = (b: UiBlock) => {
+    setGraveyard((g) => ({ ...g, [b.pestKey]: [...(g[b.pestKey] ?? []), { ...b, id: uid() }] }));
+  };
+  const popStash = (pestKey: string): UiBlock | null => {
+    const arr = graveyard[pestKey];
+    if (!arr || arr.length === 0) return null;
+    const next = arr[arr.length - 1];
+    setGraveyard((g) => ({ ...g, [pestKey]: arr.slice(0, -1) }));
+    return { ...next, id: uid() };
+  };
+  const removeBlock = (id: string) =>
+    setBlocks((rows) => {
+      const target = rows.find((b) => b.id === id);
+      if (target) stash(target);
+      return rows.filter((b) => b.id !== id);
+    });
 
   const togglePest = (pestKey: string) => {
     const existing = blocks.filter((b) => b.pestKey === pestKey);
     if (existing.length === 0) {
-      setBlocks((rows) => [...rows, makeBlock(pestKey)]);
+      const restored = popStash(pestKey);
+      setBlocks((rows) => [...rows, restored ?? makeBlock(pestKey)]);
       return;
     }
     const hasWork = existing.some((b) => b.picks.length > 0 || b.withBarrier);
     if (hasWork) {
       const label = getPest(pestKey)?.name ?? "вредитель";
-      const ok = typeof window === "undefined" ? true : window.confirm(`Удалить блок «${label}»? Отмеченные работы будут потеряны.`);
+      const msg = existing.length > 1
+        ? `Скрыть все блоки «${label}» (${existing.length} шт.)? Состояние сохранится — можно вернуть повторным кликом по чипу.`
+        : `Скрыть блок «${label}»? Состояние сохранится — можно вернуть повторным кликом по чипу.`;
+      const ok = typeof window === "undefined" ? true : window.confirm(msg);
       if (!ok) return;
     }
+    existing.forEach(stash);
     setBlocks((rows) => rows.filter((b) => b.pestKey !== pestKey));
   };
 
