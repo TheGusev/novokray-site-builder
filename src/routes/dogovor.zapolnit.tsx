@@ -212,7 +212,13 @@ function DogovorBuilderPage() {
   const [signatureName, setSignatureName] = useState<string>("");
 
   const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
+  const [graveyard, setGraveyard] = useState<Record<string, UiBlock[]>>({});
   const selectedPests = useMemo(() => new Set(blocks.map((b) => b.pestKey)), [blocks]);
+  const pestCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const b of blocks) m[b.pestKey] = (m[b.pestKey] ?? 0) + 1;
+    return m;
+  }, [blocks]);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -225,20 +231,40 @@ function DogovorBuilderPage() {
   const updateBlock = (id: string, patch: Partial<UiBlock>) => {
     setBlocks((rows) => rows.map((b) => (b.id === id ? { ...b, ...patch } : b)));
   };
-  const removeBlock = (id: string) => setBlocks((rows) => rows.filter((b) => b.id !== id));
+  const stash = (b: UiBlock) => {
+    setGraveyard((g) => ({ ...g, [b.pestKey]: [...(g[b.pestKey] ?? []), { ...b, id: uid() }] }));
+  };
+  const popStash = (pestKey: string): UiBlock | null => {
+    const arr = graveyard[pestKey];
+    if (!arr || arr.length === 0) return null;
+    const next = arr[arr.length - 1];
+    setGraveyard((g) => ({ ...g, [pestKey]: arr.slice(0, -1) }));
+    return { ...next, id: uid() };
+  };
+  const removeBlock = (id: string) =>
+    setBlocks((rows) => {
+      const target = rows.find((b) => b.id === id);
+      if (target) stash(target);
+      return rows.filter((b) => b.id !== id);
+    });
 
   const togglePest = (pestKey: string) => {
     const existing = blocks.filter((b) => b.pestKey === pestKey);
     if (existing.length === 0) {
-      setBlocks((rows) => [...rows, makeBlock(pestKey)]);
+      const restored = popStash(pestKey);
+      setBlocks((rows) => [...rows, restored ?? makeBlock(pestKey)]);
       return;
     }
     const hasWork = existing.some((b) => b.picks.length > 0 || b.withBarrier);
     if (hasWork) {
       const label = getPest(pestKey)?.name ?? "вредитель";
-      const ok = typeof window === "undefined" ? true : window.confirm(`Удалить блок «${label}»? Отмеченные работы будут потеряны.`);
+      const msg = existing.length > 1
+        ? `Скрыть все блоки «${label}» (${existing.length} шт.)? Состояние сохранится — можно вернуть повторным кликом по чипу.`
+        : `Скрыть блок «${label}»? Состояние сохранится — можно вернуть повторным кликом по чипу.`;
+      const ok = typeof window === "undefined" ? true : window.confirm(msg);
       if (!ok) return;
     }
+    existing.forEach(stash);
     setBlocks((rows) => rows.filter((b) => b.pestKey !== pestKey));
   };
 
@@ -476,7 +502,7 @@ function DogovorBuilderPage() {
 
             <Block title="3. Услуги">
               <div className="col-span-full space-y-3">
-                <PestMultiSelect selected={selectedPests} onToggle={togglePest} />
+                <PestMultiSelect selected={selectedPests} counts={pestCounts} onToggle={togglePest} />
                 {blocks.length === 0 && (
                   <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
                     Выберите хотя бы одного вредителя — отметьте чипы выше.
@@ -779,7 +805,11 @@ function DogovorBuilderPage() {
               <div className="mt-5 space-y-1.5 text-sm">
                 {contractBlocks.map((cb, i) => cb.lines.length > 0 && (
                   <div key={i} className="border-t border-border pt-2 first:border-0 first:pt-0">
-                    <div className="mb-1 text-xs font-bold uppercase tracking-wider text-primary">{cb.pestName} · ст. {cb.level}</div>
+                    <div className="mb-1 text-xs font-bold uppercase tracking-wider text-primary">
+                      {cb.pestName}
+                      {pestCounts[blocks[i]?.pestKey] > 1 && <> · блок {blocks.slice(0, i + 1).filter((b) => b.pestKey === blocks[i].pestKey).length}</>}
+                      {" "}· ст. {cb.level}
+                    </div>
                     {cb.lines.map((ln, j) => (
                       <div key={j} className="flex justify-between gap-3">
                         <span className="truncate text-muted-foreground">{ln.name} × {ln.qty}</span>
@@ -788,6 +818,11 @@ function DogovorBuilderPage() {
                     ))}
                   </div>
                 ))}
+                {blocks.length > 0 && contractBlocks.every((cb) => cb.lines.length === 0) && (
+                  <div className="rounded-md border border-dashed border-border p-2 text-xs text-muted-foreground">
+                    Отметьте хотя бы одну работу в блоках выше.
+                  </div>
+                )}
               </div>
 
               {error && (
@@ -839,7 +874,7 @@ function Field({ label, children, full = false }: { label: string; children: Rea
   );
 }
 
-function PestMultiSelect({ selected, onToggle }: { selected: Set<string>; onToggle: (key: string) => void }) {
+function PestMultiSelect({ selected, counts, onToggle }: { selected: Set<string>; counts: Record<string, number>; onToggle: (key: string) => void }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-secondary/30 p-3">
       <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -848,6 +883,7 @@ function PestMultiSelect({ selected, onToggle }: { selected: Set<string>; onTogg
       <div className="flex flex-wrap gap-2">
         {CATALOG.map((p) => {
           const on = selected.has(p.key);
+          const cnt = counts[p.key] ?? 0;
           return (
             <button
               key={p.key}
@@ -857,6 +893,9 @@ function PestMultiSelect({ selected, onToggle }: { selected: Set<string>; onTogg
             >
               <span>{on ? "✓" : "+"}</span>
               <span>{p.name}</span>
+              {cnt > 1 && (
+                <span className={`rounded px-1 py-0.5 text-[9px] ${on ? "bg-primary-foreground/20" : "bg-primary/10 text-primary"}`}>×{cnt}</span>
+              )}
               {p.outdoor && (
                 <span className={`rounded px-1 py-0.5 text-[9px] uppercase ${on ? "bg-primary-foreground/20" : "bg-primary/10 text-primary"}`}>участок</span>
               )}
