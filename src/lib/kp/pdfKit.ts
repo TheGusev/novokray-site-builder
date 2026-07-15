@@ -25,8 +25,8 @@ export async function initPdf(): Promise<{ doc: PDFDocument; fonts: Fonts; curso
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
   const [regBytes, boldBytes] = await Promise.all([
-    loadFontBytes((regAsset as { src: string }).src),
-    loadFontBytes((boldAsset as { src: string }).src),
+    loadFontBytes(regAsset.url),
+    loadFontBytes(boldAsset.url),
   ]);
   const reg = await doc.embedFont(regBytes, { subset: true });
   const bold = await doc.embedFont(boldBytes, { subset: true });
