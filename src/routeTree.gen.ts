@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PriceRouteImport } from './routes/price'
 import { Route as OKompaniiRouteImport } from './routes/o-kompanii'
+import { Route as KpRouteImport } from './routes/kp'
 import { Route as KartaSaytaRouteImport } from './routes/karta-sayta'
 import { Route as GarantiiRouteImport } from './routes/garantii'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -53,6 +54,11 @@ const PriceRoute = PriceRouteImport.update({
 const OKompaniiRoute = OKompaniiRouteImport.update({
   id: '/o-kompanii',
   path: '/o-kompanii',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KpRoute = KpRouteImport.update({
+  id: '/kp',
+  path: '/kp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KartaSaytaRoute = KartaSaytaRouteImport.update({
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
   '/karta-sayta': typeof KartaSaytaRoute
+  '/kp': typeof KpRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
   '/karta-sayta': typeof KartaSaytaRoute
+  '/kp': typeof KpRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
   '/karta-sayta': typeof KartaSaytaRoute
+  '/kp': typeof KpRoute
   '/o-kompanii': typeof OKompaniiRoute
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/garantii'
     | '/karta-sayta'
+    | '/kp'
     | '/o-kompanii'
     | '/price'
     | '/privacy'
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/garantii'
     | '/karta-sayta'
+    | '/kp'
     | '/o-kompanii'
     | '/price'
     | '/privacy'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/garantii'
     | '/karta-sayta'
+    | '/kp'
     | '/o-kompanii'
     | '/price'
     | '/privacy'
@@ -274,6 +286,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   GarantiiRoute: typeof GarantiiRoute
   KartaSaytaRoute: typeof KartaSaytaRoute
+  KpRoute: typeof KpRoute
   OKompaniiRoute: typeof OKompaniiRoute
   PriceRoute: typeof PriceRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -326,6 +339,13 @@ declare module '@tanstack/react-router' {
       path: '/o-kompanii'
       fullPath: '/o-kompanii'
       preLoaderRoute: typeof OKompaniiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kp': {
+      id: '/kp'
+      path: '/kp'
+      fullPath: '/kp'
+      preLoaderRoute: typeof KpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/karta-sayta': {
@@ -442,6 +462,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   GarantiiRoute: GarantiiRoute,
   KartaSaytaRoute: KartaSaytaRoute,
+  KpRoute: KpRoute,
   OKompaniiRoute: OKompaniiRoute,
   PriceRoute: PriceRoute,
   PrivacyRoute: PrivacyRoute,
