@@ -38,7 +38,7 @@ export async function buildKpPdf(d: KpData): Promise<Uint8Array> {
   drawText(cursor, doc, `ИНН ${SITE.legal.inn} · ОГРН ${SITE.legal.ogrn}`, { font: reg, size: 9 });
   drawText(cursor, doc, SITE.legal.legalAddress, { font: reg, size: 9 });
   drawText(cursor, doc, `Лицензия ЕРУЛ ${SITE.legal.licenseErul} · Роспотребнадзор № ${SITE.legal.licenseNo} от ${SITE.legal.licenseDate}`, { font: reg, size: 9, color: [0.3, 0.35, 0.45] });
-  drawText(cursor, doc, `Тел.: ${SITE.phone} · Telegram: ${SITE.telegram}`, { font: reg, size: 9, gap: 6 });
+  drawText(cursor, doc, `Тел.: ${SITE.phone} · Telegram: ${SITE.telegramHandle}`, { font: reg, size: 9, gap: 6 });
   hr(cursor, doc);
 
   // Заголовок
