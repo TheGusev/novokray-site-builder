@@ -182,6 +182,12 @@ function GuaranteesPage() {
               >
                 <FileSignature className="h-4 w-4" /> Заполнить и скачать PDF
               </Link>
+              <Link
+                to="/kp"
+                className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-primary bg-background px-4 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                <FileSignature className="h-4 w-4" /> КП для юрлиц по ИНН
+              </Link>
               <a
                 href={SITE.telegramHref}
                 target="_blank"
