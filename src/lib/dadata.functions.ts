@@ -1,5 +1,6 @@
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
+// Клиентский вызов DaData Suggestions через PHP-прокси на Beget (public/api/dadata.php).
+// Токен DaData хранится ТОЛЬКО на сервере (public/api/config.php), в клиент не попадает.
+// В dev-режиме прокси нет — функция мягко возвращает null, форма работает в ручном режиме.
 
 export interface DadataParty {
   name: string;
@@ -13,8 +14,6 @@ export interface DadataParty {
   branchType?: string;
   status?: string;
 }
-
-const InnSchema = z.object({ inn: z.string().regex(/^\d{10}(\d{2})?$/u, "ИНН должен содержать 10 или 12 цифр.") });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function pickParty(raw: any): DadataParty | null {
@@ -36,30 +35,23 @@ function pickParty(raw: any): DadataParty | null {
 }
 
 /**
- * Автоподстановка реквизитов по ИНН через DaData Suggestions API.
- * Возвращает `null`, если реквизиты не найдены или ключ не настроен —
- * форма продолжает работать в ручном режиме.
+ * Автоподстановка реквизитов по ИНН.
+ * Возвращает `null`, если прокси недоступен или ИНН не найден — форма работает вручную.
+ * Сигнатура сохранена под ранее использовавшийся серверный вызов: lookupInnParty({ data: { inn } }).
  */
-export const lookupInnParty = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => InnSchema.parse(data))
-  .handler(async ({ data }): Promise<DadataParty | null> => {
-    const token = process.env.DADATA_API_KEY;
-    if (!token) return null;
-
-    try {
-      const res = await fetch("https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Token ${token}`,
-        },
-        body: JSON.stringify({ query: data.inn, count: 1 }),
-      });
-      if (!res.ok) return null;
-      const json = await res.json();
-      return pickParty(json);
-    } catch {
-      return null;
-    }
-  });
+export async function lookupInnParty(args: { data: { inn: string } }): Promise<DadataParty | null> {
+  const inn = String(args?.data?.inn ?? "").trim();
+  if (!/^\d{10}(\d{2})?$/.test(inn)) return null;
+  try {
+    const res = await fetch("/api/dadata.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ inn }),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return pickParty(json);
+  } catch {
+    return null;
+  }
+}

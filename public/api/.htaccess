@@ -1,0 +1,4 @@
+<FilesMatch "^(config\.php|config\.sample\.php|\.env)$">
+    Require all denied
+</FilesMatch>
+Options -Indexes
