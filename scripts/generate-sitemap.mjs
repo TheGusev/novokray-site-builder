@@ -10,8 +10,8 @@ async function load(p) {
   return (await import(resolve(__dirname, "..", p))).default ?? await import(resolve(__dirname, "..", p));
 }
 
-const { services } = await import("../src/data/services.ts").catch(() => ({ services: [] }));
-const { BLOG_POSTS } = await import("../src/data/blog.ts").catch(() => ({ BLOG_POSTS: [] }));
+const { SERVICES: services } = await import("../src/data/services.ts").catch(() => ({ services: [] }));
+const { POSTS: BLOG_POSTS } = await import("../src/data/blog.ts").catch(() => ({ BLOG_POSTS: [] }));
 const { CITIES } = await import("../src/data/cities.ts").catch(() => ({ CITIES: [] }));
 const { DISTRICTS } = await import("../src/data/districts.ts").catch(() => ({ DISTRICTS: [] }));
 const { DOCS } = await import("../src/data/docs.ts").catch(() => ({ DOCS: [] }));
