@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as YandexRecrawlDottxtRouteImport } from './routes/yandex-recrawl[.]txt'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -31,6 +32,11 @@ import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
+const YandexRecrawlDottxtRoute = YandexRecrawlDottxtRouteImport.update({
+  id: '/yandex-recrawl.txt',
+  path: '/yandex-recrawl.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/yandex-recrawl.txt': typeof YandexRecrawlDottxtRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/yandex-recrawl.txt': typeof YandexRecrawlDottxtRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/yandex-recrawl.txt': typeof YandexRecrawlDottxtRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/sitemap.xml'
     | '/terms'
+    | '/yandex-recrawl.txt'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/sitemap.xml'
     | '/terms'
+    | '/yandex-recrawl.txt'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/sitemap.xml'
     | '/terms'
+    | '/yandex-recrawl.txt'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
@@ -292,6 +304,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  YandexRecrawlDottxtRoute: typeof YandexRecrawlDottxtRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CategoryDezinfekciyaNovosibirskRoute: typeof CategoryDezinfekciyaNovosibirskRoute
   DocsSlugRoute: typeof DocsSlugRoute
@@ -306,6 +319,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/yandex-recrawl.txt': {
+      id: '/yandex-recrawl.txt'
+      path: '/yandex-recrawl.txt'
+      fullPath: '/yandex-recrawl.txt'
+      preLoaderRoute: typeof YandexRecrawlDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -468,6 +488,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  YandexRecrawlDottxtRoute: YandexRecrawlDottxtRoute,
   BlogSlugRoute: BlogSlugRoute,
   CategoryDezinfekciyaNovosibirskRoute: CategoryDezinfekciyaNovosibirskRoute,
   DocsSlugRoute: DocsSlugRoute,
@@ -482,3 +503,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
