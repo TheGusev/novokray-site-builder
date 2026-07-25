@@ -88,7 +88,7 @@ function KpPage() {
     }
     setLookupState("loading");
     try {
-      const p: DadataParty | null = await lookupInnParty({ data: { inn } });
+      const p: DadataParty | null = await lookupInnParty(inn);
       if (!p) {
         setLookupState("no_key");
         return;
