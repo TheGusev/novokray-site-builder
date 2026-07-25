@@ -1,8 +1,9 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { getAllPaths } from "./src/lib/all-routes";
+import routesJson from "./src/generated/routes.json" with { type: "json" };
 
 // Все маршруты для prerender в статический HTML (для shared hosting без Node.js).
-const pages = getAllPaths().map((path) => ({ path }));
+// Файл src/generated/routes.json обновляется скриптом scripts/build-routes-json.ts (prebuild).
+const pages = (routesJson.paths as string[]).map((path) => ({ path }));
 
 export default defineConfig({
   tanstackStart: {
