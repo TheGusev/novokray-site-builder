@@ -1,8 +1,8 @@
-import { SERVICES } from "@/data/services";
-import { CITIES } from "@/data/cities";
-import { DISTRICTS } from "@/data/districts";
-import { POSTS } from "@/data/blog";
-import { DOCS } from "@/data/docs";
+import { SERVICES } from "../data/services";
+import { CITIES } from "../data/cities";
+import { DISTRICTS } from "../data/districts";
+import { POSTS } from "../data/blog";
+import { DOCS } from "../data/docs";
 
 export const HUB_SLUGS = [
   "unichtozhenie-vrediteley",
