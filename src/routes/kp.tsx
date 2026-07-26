@@ -12,10 +12,7 @@ import {
   type Periodicity,
 } from "@/data/b2bPricing";
 import { lookupInnParty, type DadataParty } from "@/lib/dadata.functions";
-import { buildKpPdf } from "@/lib/kp/buildKpPdf";
-import { buildInvoicePdf } from "@/lib/kp/buildInvoicePdf";
-import { buildContractPdf, type ContractBlock } from "@/lib/dogovor/buildPdf";
-import { downloadPdf } from "@/lib/kp/pdfKit";
+import type { ContractBlock } from "@/lib/dogovor/buildPdf";
 
 export const Route = createFileRoute("/kp")({
   head: () => ({
@@ -111,6 +108,8 @@ function KpPage() {
   async function makeKp() {
     setBusy("kp"); setErr(null);
     try {
+      const { buildKpPdf } = await import("@/lib/kp/buildKpPdf");
+      const { downloadPdf } = await import("@/lib/kp/pdfKit");
       const bytes = await buildKpPdf({
         number: kpNumber, date,
         companyName, companyInn: inn || undefined, companyKpp: companyKpp || undefined,
@@ -127,6 +126,8 @@ function KpPage() {
   async function makeInvoice() {
     setBusy("invoice"); setErr(null);
     try {
+      const { buildInvoicePdf } = await import("@/lib/kp/buildInvoicePdf");
+      const { downloadPdf } = await import("@/lib/kp/pdfKit");
       const lines = price.lines
         .filter((l) => l.sum > 0 && !l.name.startsWith("Минимальный выезд"))
         .map((l) => ({ name: l.name, qty: 1, unit: "усл.", price: l.sum }));
@@ -148,6 +149,8 @@ function KpPage() {
   async function makeContract() {
     setBusy("contract"); setErr(null);
     try {
+      const { buildContractPdf } = await import("@/lib/dogovor/buildPdf");
+      const { downloadPdf } = await import("@/lib/kp/pdfKit");
       // Формируем один блок из расчёта
       const contractLines = price.lines
         .filter((l) => l.sum > 0)
