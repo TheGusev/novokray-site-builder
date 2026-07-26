@@ -1,0 +1,41 @@
+name: Deploy dez-federation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /root
+
+            if [ ! -d /root/novokray-site-builder ]; then
+              git clone https://github.com/TheGusev/novokray-site-builder.git
+            fi
+
+            cd /root/novokray-site-builder
+            git fetch --all
+            git reset --hard origin/main || git reset --hard origin/master
+
+            export BUN_INSTALL="/root/.bun"
+            export PATH="/root/.bun/bin:$PATH"
+
+            bun install
+            bun run build
+
+            rm -rf /var/www/dez-federation.ru/*
+            cp -r /root/novokray-site-builder/dist/client/* /var/www/dez-federation.ru/
+
+            systemctl reload nginx
