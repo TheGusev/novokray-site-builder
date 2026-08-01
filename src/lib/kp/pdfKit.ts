@@ -4,8 +4,9 @@
 
 import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import regAsset from "@/assets/fonts/PTSans-Regular.ttf.asset.json";
-import boldAsset from "@/assets/fonts/PTSans-Bold.ttf.asset.json";
+// Шрифты лежат в public/fonts — статикой, чтобы работали на любом хостинге (nginx/shared).
+const FONT_REGULAR_URL = "/fonts/PTSans-Regular.ttf";
+const FONT_BOLD_URL = "/fonts/PTSans-Bold.ttf";
 
 export const PAGE_W = 595.28;
 export const PAGE_H = 841.89;
@@ -25,8 +26,8 @@ export async function initPdf(): Promise<{ doc: PDFDocument; fonts: Fonts; curso
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
   const [regBytes, boldBytes] = await Promise.all([
-    loadFontBytes(regAsset.url),
-    loadFontBytes(boldAsset.url),
+    loadFontBytes(FONT_REGULAR_URL),
+    loadFontBytes(FONT_BOLD_URL),
   ]);
   const reg = await doc.embedFont(regBytes, { subset: true });
   const bold = await doc.embedFont(boldBytes, { subset: true });
