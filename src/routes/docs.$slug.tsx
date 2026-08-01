@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Download, Phone, FileSignature } from "lucide-react";
+import { ArrowLeft, Download, Phone, FileSignature, ExternalLink, AlertTriangle } from "lucide-react";
 import { SITE } from "@/data/site";
 import { DOCS, getDoc } from "@/data/docs";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -43,6 +44,24 @@ export const Route = createFileRoute("/docs/$slug")({
 function DocViewerPage() {
   const { doc } = Route.useLoaderData();
   const router = useRouter();
+  const [status, setStatus] = useState<"checking" | "ok" | "error">("checking");
+
+  useEffect(() => {
+    let cancelled = false;
+    setStatus("checking");
+    fetch(doc.url, { method: "GET", headers: { Range: "bytes=0-0" } })
+      .then((res) => {
+        const type = res.headers.get("content-type") ?? "";
+        const ok = res.ok && type.includes("pdf");
+        if (!cancelled) setStatus(ok ? "ok" : "error");
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [doc.url]);
 
   const goBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -79,6 +98,14 @@ function DocViewerPage() {
             >
               <Download className="h-4 w-4" /> Скачать PDF
             </a>
+            <a
+              href={doc.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
+            >
+              <ExternalLink className="h-4 w-4" /> Открыть
+            </a>
             {doc.slug === "dogovor" && (
               <Link
                 to="/dogovor/zapolnit"
@@ -104,20 +131,53 @@ function DocViewerPage() {
 
         {/* PDF embed */}
         <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-          <object data={doc.url} type="application/pdf" className="h-[70vh] w-full md:h-[80vh]">
-            <div className="flex flex-col items-center justify-center gap-3 p-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Ваш браузер не отображает PDF встроенно. Скачайте файл, чтобы посмотреть.
-              </p>
-              <a
-                href={doc.url}
-                download={doc.file}
-                className="inline-flex h-11 items-center gap-2 rounded-lg bg-cta-gradient px-5 font-bold text-accent-foreground shadow-cta"
-              >
-                <Download className="h-4 w-4" /> Скачать PDF
-              </a>
+          {status === "checking" && (
+            <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
+              Загружаем документ…
             </div>
-          </object>
+          )}
+          {status === "error" && (
+            <div className="flex flex-col items-center justify-center gap-3 p-8 text-center">
+              <AlertTriangle className="h-6 w-6 text-primary" aria-hidden />
+              <p className="text-sm font-semibold text-foreground">Не удалось открыть документ во встроенном просмотрщике</p>
+              <p className="max-w-md text-sm text-muted-foreground">
+                Скачайте файл или откройте его в новой вкладке — образец доступен по прямой ссылке.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <a
+                  href={doc.url}
+                  download={doc.file}
+                  className="inline-flex h-11 items-center gap-2 rounded-lg bg-cta-gradient px-5 font-bold text-accent-foreground shadow-cta"
+                >
+                  <Download className="h-4 w-4" /> Скачать PDF
+                </a>
+                <a
+                  href={doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-11 items-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
+                >
+                  <ExternalLink className="h-4 w-4" /> Открыть в новой вкладке
+                </a>
+              </div>
+            </div>
+          )}
+          {status === "ok" && (
+            <object data={doc.url} type="application/pdf" className="h-[70vh] w-full md:h-[80vh]">
+              <div className="flex flex-col items-center justify-center gap-3 p-8 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Ваш браузер не отображает PDF встроенно. Скачайте файл, чтобы посмотреть.
+                </p>
+                <a
+                  href={doc.url}
+                  download={doc.file}
+                  className="inline-flex h-11 items-center gap-2 rounded-lg bg-cta-gradient px-5 font-bold text-accent-foreground shadow-cta"
+                >
+                  <Download className="h-4 w-4" /> Скачать PDF
+                </a>
+              </div>
+            </object>
+          )}
         </div>
 
         {/* Bottom back row — duplicate for convenience on mobile */}
