@@ -35,7 +35,7 @@ jobs:
             bun install
             bun run build
 
-            rm -rf /var/www/dez-federation.ru/*
-            cp -r /root/novokray-site-builder/dist/client/* /var/www/dez-federation.ru/
+            rm -rf /var/www/dez-federation.ru/* /var/www/dez-federation.ru/.[!.]*
+            cp -a /root/novokray-site-builder/dist/client/. /var/www/dez-federation.ru/
 
             systemctl reload nginx
