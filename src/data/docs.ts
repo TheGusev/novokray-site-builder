@@ -1,8 +1,4 @@
-import dogovorAsset from "@/assets/docs/dogovor-obrazec.pdf.asset.json";
-import zhurnalAsset from "@/assets/docs/zhurnal-sanpin.pdf.asset.json";
-import aktAsset from "@/assets/docs/akt-vypolnennyh-rabot.pdf.asset.json";
-import sertAsset from "@/assets/docs/sertifikat-dezinfekcii.pdf.asset.json";
-
+// PDF-образцы лежат в public/docs — статикой, чтобы отдавались любым хостингом напрямую.
 export interface DocItem {
   slug: string;
   title: string;
@@ -17,7 +13,7 @@ export const DOCS: DocItem[] = [
     slug: "dogovor",
     title: "Договор",
     note: "Разовая обработка · 2 стр.",
-    url: dogovorAsset.url,
+    url: "/docs/dogovor-obrazec.pdf",
     file: "dogovor-obrazec.pdf",
     description: "Типовой договор на оказание дезинсекционных и дератизационных услуг с прописанными сроками гарантии.",
   },
@@ -25,7 +21,7 @@ export const DOCS: DocItem[] = [
     slug: "zhurnal-sanpin",
     title: "Журнал СанПиН",
     note: "Учёт мероприятий · форма",
-    url: zhurnalAsset.url,
+    url: "/docs/zhurnal-sanpin.pdf",
     file: "zhurnal-sanpin.pdf",
     description: "Форма журнала учёта санитарно-эпидемиологических мероприятий для юрлиц и УК.",
   },
@@ -33,7 +29,7 @@ export const DOCS: DocItem[] = [
     slug: "akt",
     title: "Акт выполненных работ",
     note: "Образец акта приёмки",
-    url: aktAsset.url,
+    url: "/docs/akt-vypolnennyh-rabot.pdf",
     file: "akt-vypolnennyh-rabot.pdf",
     description: "Образец акта приёмки оказанных услуг с указанием объёма работ и гарантийного срока.",
   },
@@ -41,7 +37,7 @@ export const DOCS: DocItem[] = [
     slug: "sertifikat",
     title: "Сертификат дезинфекции",
     note: "Подтверждение работ",
-    url: sertAsset.url,
+    url: "/docs/sertifikat-dezinfekcii.pdf",
     file: "sertifikat-dezinfekcii.pdf",
     description: "Сертификат, подтверждающий проведение дезинфекционных работ — для УК, ТСЖ и проверяющих органов.",
   },
