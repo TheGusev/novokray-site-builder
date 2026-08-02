@@ -5,10 +5,11 @@ import { useMemo, useState } from "react";
 import { Calendar, Clock, ChevronLeft, ChevronRight, Search, Library, MapPin, Download, FileText, BookOpen } from "lucide-react";
 import { SITE } from "@/data/site";
 import {
-  POSTS, POSTS_PER_PAGE, BLOG_CATEGORIES, POSTS_BY_CATEGORY,
+  POSTS, BLOG_CATEGORIES, POSTS_BY_CATEGORY,
   ALL_TAGS, PILLAR_SLUGS, CATEGORY_BY_SLUG,
   type BlogPost, type BlogCategory, type BlogFreq, type BlogGeo,
 } from "@/data/blog";
+import { POSTS_PER_PAGE, TOTAL_POSTS } from "@/data/blogConst";
 import { BLOG_COVERS, COMMON, BLOG_IMAGE_META } from "@/data/images";
 import { DOCS } from "@/data/docs";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/blog/")({
     const search = (match as unknown as { search?: { page?: number; cat?: BlogCategory; geo?: string; hf?: string; tag?: string; q?: string } })?.search;
     const page = Math.max(1, search?.page ?? 1);
     const hasFilter = !!(search?.cat || search?.geo || search?.hf || search?.tag || search?.q || page > 1);
-    const totalPages = Math.max(1, Math.ceil(POSTS.length / POSTS_PER_PAGE));
+    const totalPages = Math.max(1, Math.ceil(TOTAL_POSTS / POSTS_PER_PAGE));
     const base = "Библиотека санитарной службы Дез-Федерация — 50 статей о вредителях, плесени, СанПиН в Новосибирске";
     const title = page > 1 ? `${base} — стр. ${page}` : base;
     const canonical = `${SITE.domain}/blog`;
