@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
-import { SERVICES_BY_SLUG, type Service } from "@/data/services";
+import { type Service } from "@/data/services";
 import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META } from "@/data/images";
 import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
@@ -29,10 +29,13 @@ const WARRANTY_BY_SLUG: Record<string, string> = {
 };
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }): { service: Service } => {
+  // Каталог услуг (68 КБ) грузится отдельным чанком, а не в общем бандле сайта.
+  loader: async ({ params }): Promise<{ service: Service; related: Service[] }> => {
+    const { SERVICES_BY_SLUG } = await import("@/data/services");
     const service = SERVICES_BY_SLUG[params.slug];
     if (!service) throw notFound();
-    return { service };
+    const related = service.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
+    return { service, related };
   },
   head: ({ loaderData, params }) => {
     const s = loaderData?.service;
@@ -134,10 +137,10 @@ export const Route = createFileRoute("/services/$slug")({
 });
 
 function ServicePage() {
-  const data = Route.useLoaderData() as { service: Service };
+  const data = Route.useLoaderData() as { service: Service; related: Service[] };
   const s = data.service;
   const Icon = s.icon;
-  const related = s.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
+  const related = data.related;
   const hero = SERVICE_IMAGES[s.slug];
   const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
   const imgMeta = SERVICE_IMAGE_META[s.slug];
