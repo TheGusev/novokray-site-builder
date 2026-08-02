@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES, type Service } from "@/data/services";
+import { SERVICES_INDEX } from "@/data/servicesIndex";
 import { COMMON } from "@/data/images";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -74,7 +75,7 @@ export const Route = createFileRoute("/uslugi/$slug")({
   head: ({ loaderData, params }) => {
     const h = loaderData?.hub;
     if (!h) return { meta: [{ title: "Раздел не найден" }] };
-    const items = SERVICES.filter((s) => s.category === h.category);
+    const items = SERVICES_INDEX.filter((s) => s.category === h.category);
     return {
       meta: [
         { title: h.metaTitle },
