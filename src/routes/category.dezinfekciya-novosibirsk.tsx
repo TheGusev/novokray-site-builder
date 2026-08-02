@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { SERVICES_INDEX } from "@/data/servicesIndex";
 import { COMMON } from "@/data/images";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -35,8 +36,8 @@ export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
           {
             "@type": "ItemList",
             name: "Услуги дезинфекции в Новосибирске",
-            numberOfItems: SERVICES.length,
-            itemListElement: SERVICES.map((s, i) => ({
+            numberOfItems: SERVICES_INDEX.length,
+            itemListElement: SERVICES_INDEX.map((s, i) => ({
               "@type": "ListItem",
               position: i + 1,
               url: `${SITE.domain}/services/${s.slug}`,
