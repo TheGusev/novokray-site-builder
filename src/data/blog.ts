@@ -1945,7 +1945,7 @@ export const POSTS: BlogPost[] = [
 ];
 
 export const POSTS_BY_SLUG: Record<string, BlogPost> = Object.fromEntries(POSTS.map((p) => [p.slug, p]));
-export const POSTS_PER_PAGE = 12;
+export { POSTS_PER_PAGE } from "./blogConst";
 
 export const POSTS_BY_CATEGORY: Record<BlogCategory, BlogPost[]> =
   BLOG_CATEGORIES.reduce((acc, c) => {
