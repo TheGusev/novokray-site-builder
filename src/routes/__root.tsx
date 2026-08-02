@@ -21,8 +21,8 @@ import { SITE } from "@/data/site";
 const TOP_SERVICES = [
   { slug: "unichtozhenie-klopov", title: "Уничтожение клопов", priceFrom: 1900 },
   { slug: "unichtozhenie-tarakanov", title: "Уничтожение тараканов", priceFrom: 1900 },
-  { slug: "deratizaciya", title: "Дератизация (грызуны)", priceFrom: 2000 },
-  { slug: "dezinfekciya", title: "Дезинфекция помещений", priceFrom: 2500 },
+  { slug: "deratizaciya", title: "Дератизация (мыши, крысы)", priceFrom: 2500 },
+  { slug: "dezinfekciya", title: "Дезинфекция помещений", priceFrom: 1500 },
 ];
 
 const ORG_GRAPH = {
