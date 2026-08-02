@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
+import { SERVICES_INDEX } from "@/data/servicesIndex";
 import { CITIES } from "@/data/cities";
 import { DISTRICTS } from "@/data/districts";
 import { COMMON, GALLERY, GALLERY_META } from "@/data/images";
@@ -106,7 +107,7 @@ export const Route = createFileRoute("/")({
           {
             "@type": "ItemList",
             name: "Услуги санитарной службы Дез-Федерация",
-            itemListElement: SERVICES.map((s, i) => ({
+            itemListElement: SERVICES_INDEX.map((s, i) => ({
               "@type": "ListItem",
               position: i + 1,
               url: `${SITE.domain}/services/${s.slug}`,

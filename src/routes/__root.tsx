@@ -15,7 +15,15 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { SITE } from "@/data/site";
-import { SERVICES } from "@/data/services";
+
+// Короткий статичный список — чтобы 404-страница не тянула весь каталог услуг
+// (68 КБ) в бандл, который грузится на каждой странице.
+const TOP_SERVICES = [
+  { slug: "unichtozhenie-klopov", title: "Уничтожение клопов", priceFrom: 1900 },
+  { slug: "unichtozhenie-tarakanov", title: "Уничтожение тараканов", priceFrom: 1900 },
+  { slug: "deratizaciya", title: "Дератизация (мыши, крысы)", priceFrom: 2500 },
+  { slug: "dezinfekciya", title: "Дезинфекция помещений", priceFrom: 1500 },
+];
 
 const ORG_GRAPH = {
   "@context": "https://schema.org",
@@ -113,7 +121,7 @@ const ORG_GRAPH = {
 };
 
 function NotFoundComponent() {
-  const top = [...SERVICES].sort((a, b) => b.priority - a.priority).slice(0, 4);
+  const top = TOP_SERVICES;
   return (
     <div className="container-x flex min-h-[70vh] flex-col items-center justify-center py-12 text-center">
       <div className="max-w-md">

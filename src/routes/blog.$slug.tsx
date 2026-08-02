@@ -1,20 +1,25 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Calendar, Clock, ArrowLeft, MapPin, Download, FileText, ExternalLink, ListTree } from "lucide-react";
 import { SITE } from "@/data/site";
-import { POSTS_BY_SLUG, POSTS, CATEGORY_BY_SLUG, type BlogPost, type BlogCategory } from "@/data/blog";
+import { POSTS, CATEGORY_BY_SLUG, type BlogPost, type BlogCategory } from "@/data/blog";
 import { SERVICES_BY_SLUG } from "@/data/services";
 import { BLOG_COVERS, BLOG_IMAGE_META } from "@/data/images";
 import { DOCS } from "@/data/docs";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
-import { renderBody, extractToc, wordCount } from "@/lib/mdx-lite";
+import { renderBody, extractToc } from "@/lib/mdx-lite";
 
 export const Route = createFileRoute("/blog/$slug")({
-  loader: ({ params }): { post: BlogPost } => {
+  // Статьи грузятся отдельным чанком — они не нужны на остальных страницах.
+  loader: async ({ params }): Promise<{ post: BlogPost; section: string; words: number }> => {
+    const [{ POSTS_BY_SLUG, CATEGORY_BY_SLUG: cats }, { wordCount }] = await Promise.all([
+      import("@/data/blog"),
+      import("@/lib/mdx-lite"),
+    ]);
     const post = POSTS_BY_SLUG[params.slug];
     if (!post) throw notFound();
-    return { post };
+    return { post, section: cats[post.category].title, words: wordCount(post.body) };
   },
   notFoundComponent: () => (
     <div className="container-x py-16 text-center">
@@ -31,8 +36,8 @@ export const Route = createFileRoute("/blog/$slug")({
   head: ({ loaderData, params }) => {
     const p = loaderData?.post;
     if (!p) return { meta: [{ title: "Статья не найдена" }] };
-    const cat = CATEGORY_BY_SLUG[p.category];
-    const wc = wordCount(p.body);
+    const section = loaderData.section;
+    const wc = loaderData.words;
     const cover = BLOG_COVERS[p.slug];
     const ogImage = typeof cover === "string" ? `${SITE.domain}${cover}` : `${SITE.domain}/og/default.jpg`;
     const graph: unknown[] = [
@@ -46,7 +51,7 @@ export const Route = createFileRoute("/blog/$slug")({
         author: { "@type": "Person", name: "Алексей Дроздов", jobTitle: "Главный дезинфектор, Дез-Федерация", worksFor: { "@id": `${SITE.domain}#organization` } },
         publisher: { "@type": "Organization", "@id": `${SITE.domain}#organization`, name: SITE.name, logo: { "@type": "ImageObject", url: `${SITE.domain}/logo.png` } },
         mainEntityOfPage: `${SITE.domain}/blog/${params.slug}`,
-        articleSection: cat.title,
+        articleSection: section,
         keywords: p.tags.join(", "),
         wordCount: wc,
         inLanguage: "ru-RU",
@@ -57,7 +62,7 @@ export const Route = createFileRoute("/blog/$slug")({
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
           { "@type": "ListItem", position: 2, name: "Библиотека", item: SITE.domain + "/blog" },
-          { "@type": "ListItem", position: 3, name: cat.title, item: `${SITE.domain}/blog?cat=${p.category}` },
+          { "@type": "ListItem", position: 3, name: section, item: `${SITE.domain}/blog?cat=${p.category}` },
           { "@type": "ListItem", position: 4, name: p.title, item: `${SITE.domain}/blog/${params.slug}` },
         ],
       },
@@ -86,7 +91,7 @@ export const Route = createFileRoute("/blog/$slug")({
         { property: "og:image", content: ogImage },
         { property: "article:published_time", content: p.date },
         { property: "article:modified_time", content: p.updatedAt ?? p.date },
-        { property: "article:section", content: cat.title },
+        { property: "article:section", content: section },
       ],
       links: [{ rel: "canonical", href: `${SITE.domain}/blog/${params.slug}` }],
       scripts: [{ type: "application/ld+json", children: JSON.stringify({ "@context": "https://schema.org", "@graph": graph }) }],

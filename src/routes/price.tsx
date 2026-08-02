@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BadgeCheck, CreditCard, Percent, Calculator, Phone } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { SERVICES_INDEX } from "@/data/servicesIndex";
 import { COMMON, SERVICE_IMAGES, SERVICE_IMAGE_META } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/price")({
             name: `Прайс-лист санитарной службы ${SITE.name}`,
             url: `${SITE.domain}/price`,
             provider: { "@id": `${SITE.domain}#organization` },
-            itemListElement: SERVICES.map((s, i) => ({
+            itemListElement: SERVICES_INDEX.map((s, i) => ({
               "@type": "Offer",
               position: i + 1,
               name: s.title,
@@ -42,8 +43,8 @@ export const Route = createFileRoute("/price")({
           },
           {
             "@type": "AggregateOffer",
-            offerCount: SERVICES.length,
-            lowPrice: Math.min(...SERVICES.map((s) => s.priceFrom)),
+            offerCount: SERVICES_INDEX.length,
+            lowPrice: Math.min(...SERVICES_INDEX.map((s) => s.priceFrom)),
             highPrice: 25000,
             priceCurrency: "RUB",
             url: `${SITE.domain}/price`,
