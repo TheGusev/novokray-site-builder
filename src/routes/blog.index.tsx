@@ -24,10 +24,35 @@ const searchSchema = z.object({
   tag: fallback(z.string().max(40).optional(), undefined),
 });
 
+interface BlogListItem {
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  updatedAt?: string;
+  section: string;
+}
+
 export const Route = createFileRoute("/blog/")({
   validateSearch: zodValidator(searchSchema),
-  head: ({ match }) => {
+  // Данные блога подгружаются отдельным чанком: так 170 КБ текста статей
+  // не попадают в критичный бандл, который грузится на каждой странице сайта.
+  loader: async (): Promise<{ list: BlogListItem[] }> => {
+    const { POSTS: all, CATEGORY_BY_SLUG: cats } = await import("@/data/blog");
+    return {
+      list: all.map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt,
+        date: p.date,
+        updatedAt: p.updatedAt,
+        section: cats[p.category].title,
+      })),
+    };
+  },
+  head: ({ match, loaderData }) => {
     const search = (match as unknown as { search?: { page?: number; cat?: BlogCategory; geo?: string; hf?: string; tag?: string; q?: string } })?.search;
+    const list: BlogListItem[] = loaderData?.list ?? [];
     const page = Math.max(1, search?.page ?? 1);
     const hasFilter = !!(search?.cat || search?.geo || search?.hf || search?.tag || search?.q || page > 1);
     const totalPages = Math.max(1, Math.ceil(TOTAL_POSTS / POSTS_PER_PAGE));
@@ -61,21 +86,21 @@ export const Route = createFileRoute("/blog/")({
               url: `${SITE.domain}/blog`,
               inLanguage: "ru-RU",
               publisher: { "@id": `${SITE.domain}#organization` },
-              blogPost: POSTS.map((p) => ({
+              blogPost: list.map((p) => ({
                 "@type": "BlogPosting",
                 headline: p.title,
                 url: `${SITE.domain}/blog/${p.slug}`,
                 datePublished: p.date,
                 dateModified: p.updatedAt ?? p.date,
                 description: p.excerpt,
-                articleSection: CATEGORY_BY_SLUG[p.category].title,
+                articleSection: p.section,
               })),
             },
             {
               "@type": "ItemList",
               name: "Статьи блога",
-              numberOfItems: POSTS.length,
-              itemListElement: POSTS.map((p, i) => ({
+              numberOfItems: list.length,
+              itemListElement: list.map((p, i) => ({
                 "@type": "ListItem", position: i + 1, url: `${SITE.domain}/blog/${p.slug}`, name: p.title,
               })),
             },
