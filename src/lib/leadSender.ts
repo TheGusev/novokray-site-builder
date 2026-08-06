@@ -12,7 +12,7 @@ export interface LeadPayload {
   company?: string;
 }
 
-export const LEAD_ENDPOINT = "https://dez-federation.ru/api/lead.php";
+export const LEAD_ENDPOINT = "/api/lead";
 const QUEUE_KEY = "offlineQueue";
 const QUEUE_MAX = 20;
 const TIMEOUT_MS = 8000;
