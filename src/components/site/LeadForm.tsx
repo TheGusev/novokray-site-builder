@@ -161,6 +161,8 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
       type: "Заявка на обработку",
       pest, object, name, phone,
       priceFrom: price,
+      formName: title ?? (variant === "hero" ? "Форма в баннере" : "Форма на странице"),
+      priceBasis: price ? `${pest} · ${object} — прайс калькулятора` : undefined,
       company,
     });
     setLoading(false);
