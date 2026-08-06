@@ -15,6 +15,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { SITE } from "@/data/site";
+import { initLeadQueue } from "@/lib/leadSender";
 
 // Короткий статичный список — чтобы 404-страница не тянула весь каталог услуг
 // (68 КБ) в бандл, который грузится на каждой странице.
@@ -236,6 +237,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useEffect(() => {
+    initLeadQueue();
+  }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
