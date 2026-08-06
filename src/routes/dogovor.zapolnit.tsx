@@ -24,6 +24,7 @@ import {
   type ContractData,
   type ClientType,
 } from "@/lib/dogovor/buildPdf";
+import { GOALS, trackGoal } from "@/lib/analytics";
 import { rubInWords } from "@/lib/dogovor/rubInWords";
 
 export const Route = createFileRoute("/dogovor/zapolnit")({
@@ -404,6 +405,11 @@ function DogovorBuilderPage() {
       setBusy(true);
       const bytes = await buildContractPdf(data);
       downloadPdf(bytes, `Договор-${data.number}.pdf`);
+      trackGoal(GOALS.dogovorPdf, {
+        source: "dogovor_form",
+        client_type: clientType,
+        services: cBlocks.map((b) => b.pestName).join(", "),
+      });
     } catch (e) {
       setError((e as Error).message || "Не удалось собрать PDF");
     } finally {
