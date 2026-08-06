@@ -52,10 +52,11 @@ jobs:
 
             systemctl reload nginx
 
-            curl --fail --silent --show-error http://127.0.0.1/ -H 'Host: dez-federation.ru' >/dev/null
-            curl --fail --silent --show-error http://127.0.0.1/blog -H 'Host: dez-federation.ru' >/dev/null
-            curl --fail --silent --show-error http://127.0.0.1/docs/dogovor-obrazec.pdf -H 'Host: dez-federation.ru' >/dev/null
+            curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/ >/dev/null
+            curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/blog >/dev/null
+            curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/docs/dogovor-obrazec.pdf >/dev/null
 
             # Удаление устаревших файлов выполняется только после успешной проверки.
-            rsync -a --delete-after "$release_dir/" /var/www/dez-federation.ru/
+            # Старые хешированные assets сохраняем: открытая до деплоя вкладка может ещё запросить их.
+            rsync -a --delete-after --exclude='assets/' "$release_dir/" /var/www/dez-federation.ru/
             find /var/www/dez-federation-releases -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} +
