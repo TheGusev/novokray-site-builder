@@ -49,17 +49,54 @@ function buildMessage(d: Record<string, unknown>, phone: string): string {
   const f = (v: unknown, max?: number) => escapeHtml(clean(v, max));
   const lines: string[] = [`<b>🔔 ${f(d.type || "Заявка с сайта", 60)}</b>`, ""];
   const add = (label: string, value: string) => { if (value) lines.push(`${label}: ${value}`); };
-  add("Услуга", f(d.pest, 80));
-  add("Объект", f(d.object, 80));
-  add("Организация", f(d.org, 120));
-  add("ИНН", f(d.inn, 12));
+
+  // КТО
+  lines.push("<b>Кто</b>");
   add("Имя", f(d.name, 60));
   lines.push(`Телефон: <a href="tel:${phone}">${phone}</a>`);
+  add("Организация", f(d.org, 120));
+  add("ИНН", f(d.inn, 12));
+
+  // ЧТО
+  const docs = Array.isArray(d.docs)
+    ? (d.docs as unknown[]).map((x) => clean(x, 60)).filter(Boolean).slice(0, 12)
+    : [];
+  if (clean(d.pest) || clean(d.object) || docs.length) {
+    lines.push("", "<b>Что нужно</b>");
+    add("Услуга", f(d.pest, 80));
+    add("Объект", f(d.object, 80));
+    if (docs.length) lines.push(`Документы: ${escapeHtml(docs.join(", "))}`);
+  }
+
+  // ПОЧЕМУ такая цена
   const price = Number(d.priceFrom);
   if (Number.isFinite(price) && price > 0) {
-    lines.push(`Расчётная цена: от ${price.toLocaleString("ru-RU")} ₽`);
+    lines.push("", "<b>Цена</b>", `Расчёт: от ${price.toLocaleString("ru-RU")} ₽`);
+    add("Основание", f(d.priceBasis, 160));
   }
-  add("Страница", f(d.source, 200));
+
+  // ОТКУДА
+  lines.push("", "<b>Источник</b>");
+  add("Форма", f(d.formName, 80));
+  add("Страница", f(d.page || d.source, 200));
+  add("Переход с", f(d.referrer, 200));
+  const utm = d.utm && typeof d.utm === "object" && !Array.isArray(d.utm)
+    ? (d.utm as Record<string, unknown>)
+    : {};
+  const utmLine = Object.entries(utm)
+    .map(([k, v]) => `${clean(k, 20)}=${clean(v, 120)}`)
+    .filter((s) => !s.endsWith("="))
+    .slice(0, 7)
+    .join(", ");
+  if (utmLine) lines.push(`Метки: ${escapeHtml(utmLine)}`);
+  add("Устройство", f(d.device, 20));
+
+  const sentAt = Date.parse(clean(d.sentAt, 40));
+  if (Number.isFinite(sentAt) && Date.now() - sentAt > 5 * 60_000) {
+    lines.push(
+      `⏳ Из офлайн-очереди, создана: ${new Date(sentAt).toLocaleString("ru-RU", { timeZone: "Asia/Novosibirsk" })}`,
+    );
+  }
   lines.push(`Время: ${new Date().toLocaleString("ru-RU", { timeZone: "Asia/Novosibirsk" })}`);
   return lines.join("\n");
 }
