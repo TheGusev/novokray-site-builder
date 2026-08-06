@@ -123,21 +123,46 @@ curl -I https://dez-federation.ru/несуществующий-файл.js
 
 Workflow копирует новую сборку поверх действующей без предварительной очистки, проверяет главную, блог и PDF, и только после успешной проверки удаляет устаревшие файлы. Поэтому во время обновления nginx не должен видеть пустой каталог.
 
-## Приём заявок: /api/lead.php
+## Приём заявок: /api/lead
 
-Формы сайта отправляют заявку POST-запросом на `https://dez-federation.ru/api/lead.php`, скрипт пересылает её в Telegram-группу.
+Формы сайта отправляют заявку POST-запросом на `/api/lead`. nginx проксирует его на локальный сервис `lead-api` (Bun, systemd), который пересылает заявку в Telegram-группу.
 
-### Установка
+```text
+браузер -> POST /api/lead
+  -> nginx (proxy_pass 127.0.0.1:8787)
+     -> lead-api (systemd, читает токен из /etc/dez-federation/lead.env)
+        -> api.telegram.org -> группа -5244841627
+```
 
-1. Скопировать `public-php/lead.php` из репозитория в `public_html/api/lead.php` (файл не входит в сборку сайта и не удаляется при деплое).
-2. Вписать токен бота: либо в переменную окружения `TELEGRAM_BOT_TOKEN`, либо в константу `TELEGRAM_TOKEN_FALLBACK` в начале файла.
-3. Добавить бота в группу `-5244841627` и разрешить ему отправлять сообщения.
-4. Убедиться, что PHP на хостинге включён и в nginx есть обработка `location ~ \.php$` через php-fpm; каталог `/api/` не должен попадать под HTML-fallback.
+### Разовая настройка
+
+1. В GitHub: **Settings → Secrets and variables → Actions → New repository secret**, имя `TELEGRAM_BOT_TOKEN`, значение — токен бота. Деплой сам запишет его в `/etc/dez-federation/lead.env` с правами `600`.
+2. Добавить бота в группу `-5244841627` и разрешить отправку сообщений.
+3. Добавить в nginx server-блок (443) до `location /`:
+
+```nginx
+location = /api/lead {
+    proxy_pass http://127.0.0.1:8787;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_read_timeout 20s;
+}
+```
+
+Затем `nginx -t && systemctl reload nginx`.
+
+Дальше каждый push деплоит и сайт, и сервис заявок автоматически: workflow обновляет `/etc/systemd/system/lead-api.service`, перезапускает сервис и проверяет `/health` до выката HTML.
 
 ### Проверка
 
 ```bash
-curl -X POST https://dez-federation.ru/api/lead.php \
+systemctl status lead-api
+journalctl -u lead-api -n 50
+curl -s http://127.0.0.1:8787/health
+
+curl -s -X POST https://dez-federation.ru/api/lead \
   -H "Content-Type: application/json" \
   -d '{"type":"Заявка на обработку","phone":"89999999999","pest":"Клопы","object":"Студия"}'
 ```
@@ -146,7 +171,9 @@ curl -X POST https://dez-federation.ru/api/lead.php \
 
 ### Поведение
 
+- Сервис слушает только `127.0.0.1:8787`, наружу доступен исключительно через nginx.
 - Honeypot-поле `company`: если заполнено — заявка молча игнорируется.
 - Лимит 5 заявок в минуту с одного IP, иначе `429`.
 - Телефон нормализуется к `+7XXXXXXXXXX`, некорректный — `422`.
-- Если скрипт недоступен, браузер сохраняет заявку в `localStorage` (`offlineQueue`) и отправляет её автоматически при восстановлении связи.
+- Токен нигде не попадает в репозиторий и в бандл фронтенда.
+- Если сервис недоступен, браузер сохраняет заявку в `localStorage` (`offlineQueue`) и отправляет её автоматически при восстановлении связи.
