@@ -45,18 +45,33 @@ jobs:
             test -f dist/client/fonts/PTSans-Regular.ttf
             test -f server/lead-api.ts
             test -f deploy/lead-api.service
+            test -f deploy/lead.env.example
 
-            # Сервис приёма заявок: токен пишем в защищённый env-файл вне репозитория.
-            if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
-              mkdir -p /etc/dez-federation
+            # Сервис приёма заявок: токен живёт только в /etc/dez-federation/lead.env.
+            # Существующий файл деплой не перетирает — значение, вставленное вручную, сохраняется.
+            mkdir -p /etc/dez-federation
+            if [ ! -f /etc/dez-federation/lead.env ]; then
               umask 077
-              printf 'TELEGRAM_BOT_TOKEN=%s\nTELEGRAM_CHAT_ID=%s\nLEAD_API_PORT=8787\n' \
-                "$TELEGRAM_BOT_TOKEN" "-5244841627" > /etc/dez-federation/lead.env
+              cp deploy/lead.env.example /etc/dez-federation/lead.env
               chmod 600 /etc/dez-federation/lead.env
               umask 022
+              echo "Создан /etc/dez-federation/lead.env — вставьте TELEGRAM_BOT_TOKEN вручную."
             fi
 
-            test -f /etc/dez-federation/lead.env
+            # Запасной источник: секрет GitHub подставляется только если токен пуст.
+            if ! grep -qE '^TELEGRAM_BOT_TOKEN=.+' /etc/dez-federation/lead.env; then
+              if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
+                umask 077
+                sed -i "s|^TELEGRAM_BOT_TOKEN=.*|TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}|" \
+                  /etc/dez-federation/lead.env
+                chmod 600 /etc/dez-federation/lead.env
+                umask 022
+              else
+                echo "ВНИМАНИЕ: TELEGRAM_BOT_TOKEN пуст — заявки в Telegram уходить не будут."
+                echo "Вставьте токен в /etc/dez-federation/lead.env и выполните: systemctl restart lead-api"
+              fi
+            fi
+
             install -m 644 deploy/lead-api.service /etc/systemd/system/lead-api.service
             systemctl daemon-reload
             systemctl enable lead-api
