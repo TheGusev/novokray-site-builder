@@ -124,8 +124,8 @@ async function handleLead(req: Request, ip: string): Promise<Response> {
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) {
-    console.error("TELEGRAM_BOT_TOKEN is not configured");
-    return json({ ok: false, error: "token_not_configured" }, 500);
+    console.error("TELEGRAM_BOT_TOKEN не задан в /etc/dez-federation/lead.env");
+    return json({ ok: false, error: "token_not_configured" }, 503);
   }
 
   const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -157,7 +157,8 @@ Bun.serve({
   hostname: "127.0.0.1",
   async fetch(req, server) {
     const url = new URL(req.url);
-    if (url.pathname === "/health") return json({ ok: true });
+    if (url.pathname === "/health")
+      return json({ ok: true, token: Boolean(process.env.TELEGRAM_BOT_TOKEN) });
     if (url.pathname !== "/api/lead") return json({ ok: false, error: "not_found" }, 404);
     if (req.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
 
