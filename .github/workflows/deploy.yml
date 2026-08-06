@@ -17,6 +17,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: TELEGRAM_BOT_TOKEN
           script: |
             set -e
             cd /root
@@ -40,6 +41,44 @@ jobs:
             test -f dist/client/sitemap.xml
             test -f dist/client/docs/dogovor-obrazec.pdf
             test -f dist/client/fonts/PTSans-Regular.ttf
+            test -f server/lead-api.ts
+
+            # Сервис приёма заявок: токен пишем в защищённый env-файл вне репозитория.
+            if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
+              mkdir -p /etc/dez-federation
+              umask 077
+              printf 'TELEGRAM_BOT_TOKEN=%s\nTELEGRAM_CHAT_ID=%s\nLEAD_API_PORT=8787\n' \
+                "$TELEGRAM_BOT_TOKEN" "-5244841627" > /etc/dez-federation/lead.env
+              chmod 600 /etc/dez-federation/lead.env
+              umask 022
+            fi
+
+            cat > /etc/systemd/system/lead-api.service <<'UNIT'
+            [Unit]
+            Description=dez-federation lead API
+            After=network-online.target
+
+            [Service]
+            Type=simple
+            WorkingDirectory=/root/novokray-site-builder
+            EnvironmentFile=/etc/dez-federation/lead.env
+            ExecStart=/root/.bun/bin/bun run server/lead-api.ts
+            Restart=always
+            RestartSec=2
+
+            [Install]
+            WantedBy=multi-user.target
+            UNIT
+
+            systemctl daemon-reload
+            systemctl enable lead-api
+            systemctl restart lead-api
+
+            for i in $(seq 1 15); do
+              curl --fail --silent http://127.0.0.1:8787/health >/dev/null && break
+              sleep 1
+            done
+            curl --fail --silent http://127.0.0.1:8787/health >/dev/null
 
             release_dir="/var/www/dez-federation-releases/$(date +%Y%m%d%H%M%S)-${GITHUB_SHA:-manual}"
             mkdir -p "$release_dir" /var/www/dez-federation.ru
