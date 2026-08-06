@@ -1,3 +1,4 @@
+/** @vitest-environment jsdom */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GOALS, serviceSlug, trackGoal, trackLead, YM_COUNTER_ID } from "@/lib/analytics";
 
