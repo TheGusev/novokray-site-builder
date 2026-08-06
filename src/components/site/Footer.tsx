@@ -75,7 +75,7 @@ export function Footer() {
             <li className="flex gap-2"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />{SITE.address}</li>
             <li className="flex gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />{SITE.hours}</li>
           </ul>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" aria-label={`Telegram ${SITE.telegramHandle}`} className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">
               <Send className="h-3.5 w-3.5" /> Telegram
             </a>
