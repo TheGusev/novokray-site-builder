@@ -1,0 +1,15 @@
+[Unit]
+Description=dez-federation lead API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/novokray-site-builder
+EnvironmentFile=/etc/dez-federation/lead.env
+ExecStart=/root/.bun/bin/bun run server/lead-api.ts
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
