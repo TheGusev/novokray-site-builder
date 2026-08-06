@@ -12,7 +12,6 @@ describe("analytics", () => {
         setItem: (k: string, v: string) => void store.set(k, v),
       },
     };
-    (globalThis as Record<string, unknown>).navigator = { userAgent: "node-test" };
   };
 
   beforeEach(() => {
@@ -22,7 +21,6 @@ describe("analytics", () => {
 
   afterAll(() => {
     delete (globalThis as Record<string, unknown>).window;
-    delete (globalThis as Record<string, unknown>).navigator;
   });
 
   it("не падает, если Метрика не загрузилась", () => {
