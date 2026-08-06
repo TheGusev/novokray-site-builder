@@ -136,7 +136,31 @@ Workflow копирует новую сборку поверх действую�
 
 ### Разовая настройка
 
-1. В GitHub: **Settings → Secrets and variables → Actions → New repository secret**, имя `TELEGRAM_BOT_TOKEN`, значение — токен бота. Деплой сам запишет его в `/etc/dez-federation/lead.env` с правами `600`.
+1. Вставить токен в env-файл на сервере (в репозитории токена нет и быть не должно):
+
+```bash
+mkdir -p /etc/dez-federation
+nano /etc/dez-federation/lead.env
+```
+
+Содержимое (образец лежит в репозитории: `deploy/lead.env.example`):
+
+```text
+TELEGRAM_BOT_TOKEN=сюда_ваш_токен
+TELEGRAM_CHAT_ID=-5244841627
+LEAD_API_PORT=8787
+```
+
+```bash
+chmod 600 /etc/dez-federation/lead.env
+systemctl restart lead-api
+curl -s http://127.0.0.1:8787/health   # ожидается {"ok":true,"token":true}
+```
+
+Деплой этот файл не перетирает: вставленное вручную значение сохраняется при каждом push.
+Если файла нет, деплой создаст заготовку с пустым токеном и напишет об этом в лог.
+Опционально можно задать секрет `TELEGRAM_BOT_TOKEN` в GitHub — он подставится только тогда, когда токен в файле пуст.
+
 2. Добавить бота в группу `-5244841627` и разрешить отправку сообщений.
 3. Добавить в nginx server-блок (443) до `location /`:
 
@@ -154,6 +178,8 @@ location = /api/lead {
 Затем `nginx -t && systemctl reload nginx`.
 
 Дальше каждый push деплоит и сайт, и сервис заявок автоматически: workflow обновляет `/etc/systemd/system/lead-api.service`, перезапускает сервис и проверяет `/health` до выката HTML.
+
+Смена токена: поменять строку в `/etc/dez-federation/lead.env` и выполнить `systemctl restart lead-api`. Передеплой не нужен.
 
 ### Проверка
 
@@ -175,7 +201,8 @@ curl -s -X POST https://dez-federation.ru/api/lead \
 - Honeypot-поле `company`: если заполнено — заявка молча игнорируется.
 - Лимит 5 заявок в минуту с одного IP, иначе `429`.
 - Телефон нормализуется к `+7XXXXXXXXXX`, некорректный — `422`.
-- Токен нигде не попадает в репозиторий и в бандл фронтенда.
+- Токен нигде не попадает в репозиторий и в бандл фронтенда: его читает только systemd через `EnvironmentFile`.
+- Если токен не задан, `/api/lead` отвечает `503 token_not_configured`, а `/health` — `{"ok":true,"token":false}`.
 - Если сервис недоступен, браузер сохраняет заявку в `localStorage` (`offlineQueue`) и отправляет её автоматически при восстановлении связи.
 ## Аналитика: цели Яндекс.Метрики (счётчик 110968995)
 
