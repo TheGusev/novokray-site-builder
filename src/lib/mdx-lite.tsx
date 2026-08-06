@@ -43,7 +43,7 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
   return parts;
 }
 
-type Block =
+export type MarkdownBlock =
   | { kind: "h2"; text: string }
   | { kind: "h3"; text: string }
   | { kind: "p"; text: string }
@@ -52,9 +52,25 @@ type Block =
   | { kind: "table"; head: string[]; rows: string[][] }
   | { kind: "callout"; flavor: "warn" | "info" | "ok"; text: string };
 
-function parse(body: string): Block[] {
+function splitTableRow(line: string): string[] {
+  const trimmed = line.trim();
+  const withoutEdges = trimmed.replace(/^\|/, "").replace(/\|$/, "");
+  return withoutEdges.split("|").map((cell) => cell.trim());
+}
+
+function isTableDelimiter(line: string): boolean {
+  const cells = splitTableRow(line);
+  return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+}
+
+export function parseMarkdownBlocks(body: string): MarkdownBlock[] {
   const lines = body.replace(/\r\n/g, "\n").split("\n");
-  const out: Block[] = [];
+  const out: MarkdownBlock[] = [];
+  const nextContentLine = (from: number): number => {
+    let index = from;
+    while (index < lines.length && !lines[index].trim()) index++;
+    return index;
+  };
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
@@ -80,12 +96,17 @@ function parse(body: string): Block[] {
       else if (raw.startsWith("ℹ️")) { flavor = "info"; text = raw.replace(/^ℹ️\s*/, ""); }
       out.push({ kind: "callout", flavor, text }); i++; continue;
     }
-    if (line.startsWith("|") && i + 1 < lines.length && /^\|[\s:-|]+\|$/.test(lines[i + 1])) {
-      const head = line.split("|").slice(1, -1).map(s => s.trim());
-      i += 2;
+    const delimiterIndex = nextContentLine(i + 1);
+    if (line.includes("|") && delimiterIndex < lines.length && isTableDelimiter(lines[delimiterIndex])) {
+      const head = splitTableRow(line);
+      i = delimiterIndex + 1;
       const rows: string[][] = [];
-      while (i < lines.length && lines[i].startsWith("|")) {
-        rows.push(lines[i].split("|").slice(1, -1).map(s => s.trim())); i++;
+      while (i < lines.length) {
+        i = nextContentLine(i);
+        if (i >= lines.length || !lines[i].includes("|")) break;
+        const cells = splitTableRow(lines[i]);
+        rows.push(head.map((_, index) => cells[index] ?? ""));
+        i++;
       }
       out.push({ kind: "table", head, rows }); continue;
     }
@@ -96,7 +117,7 @@ function parse(body: string): Block[] {
 }
 
 export function renderBody(body: string): ReactNode {
-  const blocks = parse(body);
+  const blocks = parseMarkdownBlocks(body);
   return (
     <>
       {blocks.map((b, idx) => {
@@ -117,11 +138,11 @@ export function renderBody(body: string): ReactNode {
             return <ol key={idx} className="mt-4 list-decimal space-y-1.5 pl-6 text-base leading-relaxed text-foreground/90 marker:text-primary marker:font-semibold">{b.items.map((it, j) => <li key={j}>{renderInline(it, `ol-${idx}-${j}`)}</li>)}</ol>;
           case "table":
             return (
-              <div key={idx} className="mt-5 overflow-x-auto rounded-xl border border-border">
-                <table className="w-full border-collapse text-sm">
-                  <thead className="bg-secondary"><tr>{b.head.map((h, j) => <th key={j} className="px-3 py-2 text-left font-semibold">{renderInline(h, `th-${idx}-${j}`)}</th>)}</tr></thead>
+              <div key={idx} className="mt-5 overflow-x-auto rounded-lg border border-border bg-card shadow-card" role="region" aria-label="Сравнительная таблица" tabIndex={0}>
+                <table className="w-full min-w-[36rem] border-collapse text-sm">
+                  <thead className="bg-secondary"><tr>{b.head.map((h, j) => <th key={j} scope="col" className="px-4 py-3 text-left font-semibold text-secondary-foreground">{renderInline(h, `th-${idx}-${j}`)}</th>)}</tr></thead>
                   <tbody>{b.rows.map((r, ri) => (
-                    <tr key={ri} className="border-t border-border">{r.map((c, ci) => <td key={ci} className="px-3 py-2 align-top text-foreground/90">{renderInline(c, `td-${idx}-${ri}-${ci}`)}</td>)}</tr>
+                    <tr key={ri} className="border-t border-border even:bg-muted/40">{r.map((c, ci) => <td key={ci} className="px-4 py-3 align-top text-foreground/90">{renderInline(c, `td-${idx}-${ri}-${ci}`)}</td>)}</tr>
                   ))}</tbody>
                 </table>
               </div>

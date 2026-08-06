@@ -35,7 +35,28 @@ jobs:
             bun install
             bun run build
 
-            rm -rf /var/www/dez-federation.ru/* /var/www/dez-federation.ru/.[!.]*
-            cp -a /root/novokray-site-builder/dist/client/. /var/www/dez-federation.ru/
+            test -f dist/client/index.html
+            test -f dist/client/robots.txt
+            test -f dist/client/sitemap.xml
+            test -f dist/client/docs/dogovor-obrazec.pdf
+            test -f dist/client/fonts/PTSans-Regular.ttf
+
+            release_dir="/var/www/dez-federation-releases/$(date +%Y%m%d%H%M%S)-${GITHUB_SHA:-manual}"
+            mkdir -p "$release_dir" /var/www/dez-federation.ru
+            cp -a dist/client/. "$release_dir/"
+
+            # Сначала добавляем все файлы новой сборки, затем обновляем HTML.
+            # Действующий сайт не очищается и не остаётся пустым между командами.
+            rsync -a --exclude='*.html' "$release_dir/" /var/www/dez-federation.ru/
+            rsync -a --include='*/' --include='*.html' --exclude='*' "$release_dir/" /var/www/dez-federation.ru/
 
             systemctl reload nginx
+
+            curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/ >/dev/null
+            curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/blog >/dev/null
+            curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/docs/dogovor-obrazec.pdf >/dev/null
+
+            # Удаление устаревших файлов выполняется только после успешной проверки.
+            # Старые хешированные assets сохраняем: открытая до деплоя вкладка может ещё запросить их.
+            rsync -a --delete-after --exclude='assets/' "$release_dir/" /var/www/dez-federation.ru/
+            find /var/www/dez-federation-releases -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} +

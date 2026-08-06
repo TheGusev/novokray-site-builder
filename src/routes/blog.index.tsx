@@ -255,9 +255,9 @@ function BlogIndex() {
       )}
 
       {/* Двухколоночная компоновка: сайдбар + контент */}
-      <section className="container-x mt-10 grid gap-8 pb-16 lg:grid-cols-[260px,1fr]">
+      <section className="container-x mt-10 grid min-w-0 gap-8 pb-16 lg:grid-cols-[260px_minmax(0,1fr)]">
         {/* Сайдбар-«стеллажи» */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+        <aside className="min-w-0 space-y-5 lg:self-start">
           <div className="rounded-2xl border border-[--shelf-line] bg-[--paper] p-5 text-[--paper-foreground] shadow-card">
             <div className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wider">
               <BookOpen className="h-4 w-4" /> Стеллажи
@@ -292,7 +292,7 @@ function BlogIndex() {
           </div>
 
           {/* Документы к скачиванию */}
-          <div className="mt-5 rounded-2xl border border-border bg-card p-5 shadow-card">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
             <div className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wider text-muted-foreground">
               <FileText className="h-4 w-4" /> Скачать документы
             </div>
@@ -310,7 +310,7 @@ function BlogIndex() {
           </div>
 
           {/* Облако тегов */}
-          <div className="mt-5 rounded-2xl border border-border bg-card p-5 shadow-card">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
             <div className="font-display text-sm font-bold uppercase tracking-wider text-muted-foreground">Темы</div>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {ALL_TAGS.map((t) => (
@@ -321,7 +321,7 @@ function BlogIndex() {
         </aside>
 
         {/* Лента */}
-        <div>
+        <div className="min-w-0">
           {/* Активный фильтр */}
           {hasAnyFilter && (
             <div className="mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 text-sm">

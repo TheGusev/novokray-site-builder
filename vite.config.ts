@@ -17,10 +17,5 @@ export default defineConfig({
       failOnError: false,
       concurrency: 4,
     },
-    // SPA-режим: клиентский роутинг после гидратации + fallback для несуществующих статических файлов.
-    spa: {
-      enabled: true,
-      prerender: { enabled: true, outputPath: "/index.html" },
-    },
   },
 });
