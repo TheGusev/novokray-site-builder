@@ -1,7 +1,4 @@
-/**
- * @vitest-environment jsdom
- */
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { normalizePhone, buildLeadBody, collectUtm } from "../leadSender";
 
 describe("normalizePhone", () => {
@@ -46,15 +43,30 @@ describe("buildLeadBody", () => {
 });
 
 describe("collectUtm", () => {
+  const store = new Map<string, string>();
+  const setUrl = (search: string) => {
+    (globalThis as Record<string, unknown>).window = {
+      location: { search },
+      sessionStorage: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => void store.set(k, v),
+      },
+    };
+  };
+
   beforeEach(() => {
-    window.sessionStorage.clear();
-    window.history.replaceState({}, "", "/");
+    store.clear();
+    setUrl("");
+  });
+
+  afterAll(() => {
+    delete (globalThis as Record<string, unknown>).window;
   });
 
   it("читает метки из URL и сохраняет их на сессию", () => {
-    window.history.replaceState({}, "", "/?utm_source=yandex&utm_campaign=klopy&yclid=123");
+    setUrl("?utm_source=yandex&utm_campaign=klopy&yclid=123");
     expect(collectUtm()).toEqual({ utm_source: "yandex", utm_campaign: "klopy", yclid: "123" });
-    window.history.replaceState({}, "", "/contacts");
+    setUrl("");
     expect(collectUtm().utm_source).toBe("yandex");
   });
 
