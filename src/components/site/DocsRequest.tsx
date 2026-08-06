@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
 import { FileText, BookOpenCheck, FileCheck2, BadgeCheck, Loader2, Send, Phone, Eye } from "lucide-react";
 import { SITE } from "@/data/site";
-import { sendLeadViaWhatsapp } from "@/lib/sendLead";
+import { sendLead } from "@/lib/leadSender";
 import { DOCS } from "@/data/docs";
 
 const ICONS: Record<string, typeof FileText> = {
@@ -32,6 +32,7 @@ export function DocsRequest() {
   const [phone, setPhone] = useState("");
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [company, setCompany] = useState("");
 
   const phoneDigits = phone.replace(/\D/g, "").length;
   const canSubmit = phoneDigits >= 11 && agree;
@@ -41,16 +42,15 @@ export function DocsRequest() {
     if (phoneDigits < 11) return toast.error("Укажите телефон полностью");
     if (!agree) return toast.error("Нужно согласие с политикой");
     setLoading(true);
-    const sent = sendLeadViaWhatsapp({
+    const sent = await sendLead({
       type: "Запрос документов",
-      org, inn, phone,
+      org, inn, phone, company,
     });
-    await new Promise((r) => setTimeout(r, 400));
     setLoading(false);
     toast.success(
       sent
-        ? "Заявка отправлена в WhatsApp. Договор пришлём в течение часа."
-        : "Заявка принята. Если WhatsApp не открылся — позвоните нам.",
+        ? "Заявка отправлена. Договор пришлём в течение часа."
+        : "Заявка сохранена — отправим автоматически, как появится связь.",
     );
     setOrg(""); setInn(""); setPhone(""); setAgree(false);
   };
@@ -81,11 +81,21 @@ export function DocsRequest() {
       </div>
 
       <form onSubmit={onSubmit} className="rounded-2xl border border-border bg-card p-5 shadow-card md:p-6">
+        <input
+          type="text"
+          name="company_hp"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute left-[-9999px] h-0 w-0 opacity-0"
+        />
         <div className="font-display text-base font-bold text-foreground md:text-lg">
           Нужен договор под вашу организацию?
         </div>
         <p className="mt-1 text-xs text-muted-foreground md:text-sm">
-          Заполним договор с вашими реквизитами и пришлём в WhatsApp или на e-mail в течение часа.
+          Заполним договор с вашими реквизитами и пришлём на e-mail или в мессенджер в течение часа.
         </p>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">

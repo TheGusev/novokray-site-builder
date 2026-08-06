@@ -10,7 +10,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { SITE } from "@/data/site";
 import { getLeadPrice, formatRub } from "@/data/leadPricing";
-import { sendLeadViaWhatsapp } from "@/lib/sendLead";
+import { sendLead } from "@/lib/leadSender";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
@@ -143,6 +143,7 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
   const [phone, setPhone] = useState("");
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [company, setCompany] = useState("");
 
   const phoneDigits = phone.replace(/\D/g, "").length;
   const canSubmit = phoneDigits >= 11 && agree && pest && object;
@@ -156,17 +157,17 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
       return toast.error(first);
     }
     setLoading(true);
-    const sent = sendLeadViaWhatsapp({
+    const sent = await sendLead({
       type: "Заявка на обработку",
       pest, object, name, phone,
       priceFrom: price,
+      company,
     });
-    await new Promise((r) => setTimeout(r, 400));
     setLoading(false);
     toast.success(
       sent
-        ? "Заявка отправлена в WhatsApp. Перезвоним в течение 10 минут."
-        : "Заявка принята. Если WhatsApp не открылся — позвоните нам.",
+        ? "Заявка отправлена. Перезвоним в течение 10 минут."
+        : "Заявка сохранена — отправим автоматически, как появится связь.",
     );
     setStep(1); setPest(""); setObject(""); setName(""); setPhone(""); setAgree(false);
     onSuccess?.();
@@ -184,6 +185,16 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
       }
     >
       {title && <div className="font-display text-lg font-bold text-foreground md:text-xl">{title}</div>}
+      <input
+        type="text"
+        name="company"
+        value={company}
+        onChange={(e) => setCompany(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
       {subtitle && <p className="mt-1 text-xs text-muted-foreground md:text-sm">{subtitle}</p>}
 
       <div className={`${title ? "mt-4" : ""}`}>
