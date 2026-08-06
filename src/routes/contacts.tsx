@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Reveal } from "@/components/site/Reveal";
 import { WaveText } from "@/components/site/WaveText";
+import { GOALS, trackGoal } from "@/lib/analytics";
 
 export const Route = createFileRoute("/contacts")({
   head: () => ({
