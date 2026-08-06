@@ -114,7 +114,7 @@ function ContactsPage() {
         <div className="grid gap-8 lg:grid-cols-[1.2fr,1fr]">
           <div className="grid gap-4 sm:grid-cols-2">
             <Reveal>
-              <a href={SITE.phoneHref} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
+              <a href={SITE.phoneHref} onClick={() => trackGoal(GOALS.callClick, { place: "contacts" })} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
                 <Phone className="mt-1 h-6 w-6 text-primary" />
                 <div>
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">Телефон</div>
@@ -124,7 +124,7 @@ function ContactsPage() {
               </a>
             </Reveal>
             <Reveal delay={80}>
-              <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
+              <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" onClick={() => trackGoal(GOALS.telegramClick, { place: "contacts" })} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
                 <MessageCircle className="mt-1 h-6 w-6 text-success" />
                 <div>
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">Telegram · MAX · WhatsApp</div>
