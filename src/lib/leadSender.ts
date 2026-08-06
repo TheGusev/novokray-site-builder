@@ -8,14 +8,61 @@ export interface LeadPayload {
   inn?: string;
   priceFrom?: number | null;
   source?: string;
+  /** Название формы/блока, из которого пришла заявка */
+  formName?: string;
+  /** Из чего сложилась цена */
+  priceBasis?: string;
+  /** Какие документы запросили */
+  docs?: string[];
   /** honeypot — заполняется только ботами */
   company?: string;
 }
 
 export const LEAD_ENDPOINT = "/api/lead";
 const QUEUE_KEY = "offlineQueue";
+const UTM_KEY = "leadUtm";
 const QUEUE_MAX = 20;
 const TIMEOUT_MS = 8000;
+
+const UTM_FIELDS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_term",
+  "utm_content",
+  "yclid",
+  "gclid",
+] as const;
+
+/** Собирает рекламные метки: из текущего URL либо из сохранённых при первом заходе. */
+export function collectUtm(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  const params = new URLSearchParams(window.location.search);
+  const fresh: Record<string, string> = {};
+  for (const key of UTM_FIELDS) {
+    const v = params.get(key);
+    if (v) fresh[key] = v.slice(0, 120);
+  }
+  try {
+    if (Object.keys(fresh).length) {
+      window.sessionStorage.setItem(UTM_KEY, JSON.stringify(fresh));
+      return fresh;
+    }
+    const saved = window.sessionStorage.getItem(UTM_KEY);
+    const parsed = saved ? JSON.parse(saved) : null;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, string>;
+    }
+  } catch {
+    /* storage may be unavailable */
+  }
+  return fresh;
+}
+
+function deviceLabel(): string {
+  if (typeof navigator === "undefined") return "";
+  return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "мобильный" : "десктоп";
+}
 
 /** Нормализует российский телефон к виду +7XXXXXXXXXX. */
 export function normalizePhone(raw: string): string {
@@ -33,6 +80,9 @@ export function buildLeadBody(p: LeadPayload) {
     source:
       p.source ?? (typeof window !== "undefined" ? window.location.pathname : ""),
     page: typeof window !== "undefined" ? window.location.href : "",
+    referrer: typeof document !== "undefined" ? document.referrer : "",
+    utm: collectUtm(),
+    device: deviceLabel(),
     sentAt: new Date().toISOString(),
   };
 }
