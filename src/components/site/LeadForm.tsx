@@ -33,6 +33,8 @@ interface Props {
   title?: string;
   subtitle?: string;
   onSuccess?: () => void;
+  /** Переопределяет имя цели формы (например, для модального окна) */
+  goal?: string;
 }
 
 interface Tile { id: string; label: string; icon: LucideIcon }
@@ -135,7 +137,7 @@ function Progress({ step }: { step: 1 | 2 | 3 }) {
   );
 }
 
-export function LeadForm({ defaultService = "", variant = "card", title, subtitle, onSuccess }: Props) {
+export function LeadForm({ defaultService = "", variant = "card", title, subtitle, onSuccess, goal }: Props) {
   const initialPest = PESTS.find((p) => p.id === defaultService)?.id ?? "";
   const [step, setStep] = useState<1 | 2 | 3>(initialPest ? 2 : 1);
   const [pest, setPest] = useState<string>(initialPest);
@@ -159,7 +161,7 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
     }
     setLoading(true);
     const formGoal =
-      variant === "hero" ? GOALS.leadHero : variant === "inline" ? GOALS.leadPrice : GOALS.leadService;
+      goal ?? (variant === "hero" ? GOALS.leadHero : variant === "inline" ? GOALS.leadPrice : GOALS.leadService);
     trackLead(formGoal, pest, { object, price: price ?? 0, form_name: title ?? "" });
     const sent = await sendLead({
       type: "Заявка на обработку",
