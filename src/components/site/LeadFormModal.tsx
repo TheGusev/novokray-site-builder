@@ -22,6 +22,7 @@ export function LeadFormModal({ trigger, title = "Бесплатный расч�
         </VisuallyHidden>
         <LeadForm
           variant="card"
+          goal="lead_modal"
           title={title}
           subtitle={subtitle}
           defaultService={defaultService}

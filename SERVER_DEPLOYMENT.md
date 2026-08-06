@@ -177,3 +177,48 @@ curl -s -X POST https://dez-federation.ru/api/lead \
 - Телефон нормализуется к `+7XXXXXXXXXX`, некорректный — `422`.
 - Токен нигде не попадает в репозиторий и в бандл фронтенда.
 - Если сервис недоступен, браузер сохраняет заявку в `localStorage` (`offlineQueue`) и отправляет её автоматически при восстановлении связи.
+## Аналитика: цели Яндекс.Метрики (счётчик 110968995)
+
+Все цели отправляются через `src/lib/analytics.ts` (`trackGoal` / `trackLead`).
+В коде описаны только атомарные цели — составные собираются в кабинете Метрики.
+
+### 1. Атомарные цели (тип «JavaScript-событие»)
+
+| Идентификатор | Что означает |
+|---|---|
+| `lead_hero` | заявка из формы в первом экране |
+| `lead_modal` | заявка из модального окна |
+| `lead_service` | заявка с карточной формы (услуга, город, район, контакты) |
+| `lead_price` | заявка из встроенной формы (прайс, инлайн-блоки) |
+| `lead_<услуга>` | заявка по конкретной услуге, см. п.2 |
+| `docs_request` | запрос документов/договора |
+| `kp_submit` | сформировано коммерческое предложение на /kp |
+| `kp_pdf` | скачано КП |
+| `invoice_pdf` | скачан счёт |
+| `dogovor_pdf` | скачан договор (форма /dogovor/zapolnit или /kp) |
+| `call_click` | клик по телефону |
+| `telegram_click` | клик по Telegram |
+| `whatsapp_click` | клик по WhatsApp |
+
+### 2. Цели по услугам
+
+Формируются автоматически из названия услуги в форме:
+
+```text
+lead_klopy, lead_tarakany, lead_gryzuny, lead_blohi, lead_muravi,
+lead_osy, lead_kleschi_komary, lead_plesen, lead_ozonirovanie,
+lead_sushka_posle_potopa, lead_borschevik, lead_drugoe
+```
+
+### 3. Составные цели (создать в Метрике → Цели → Составная)
+
+- `all_conversions` = `lead_hero` + `lead_modal` + `lead_service` + `lead_price` + `docs_request` + `kp_submit`
+- `contacts` = `call_click` + `telegram_click` + `whatsapp_click`
+- `documents` = `kp_pdf` + `invoice_pdf` + `dogovor_pdf`
+- по каждой услуге: `conv_klopy` = `lead_klopy` + `call_click`, `conv_tarakany` = `lead_tarakany` + `call_click` и т.д.
+
+### 4. Параметры визита
+
+К каждой цели прикладываются: страница, устройство, utm-метки (`utm_source`,
+`utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `yclid`, `gclid`),
+а для лидов — услуга, объект и расчётная цена.

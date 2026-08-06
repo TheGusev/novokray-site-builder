@@ -5,6 +5,7 @@ import { FileText, BookOpenCheck, FileCheck2, BadgeCheck, Loader2, Send, Phone, 
 import { SITE } from "@/data/site";
 import { sendLead } from "@/lib/leadSender";
 import { DOCS } from "@/data/docs";
+import { GOALS, trackGoal } from "@/lib/analytics";
 
 const ICONS: Record<string, typeof FileText> = {
   dogovor: FileText,
@@ -42,6 +43,7 @@ export function DocsRequest() {
     if (phoneDigits < 11) return toast.error("Укажите телефон полностью");
     if (!agree) return toast.error("Нужно согласие с политикой");
     setLoading(true);
+    trackGoal(GOALS.docsRequest, { org, inn, docs: DOCS.length });
     const sent = await sendLead({
       type: "Запрос документов",
       org, inn, phone, company,
@@ -151,6 +153,7 @@ export function DocsRequest() {
           </button>
           <a
             href={SITE.phoneHref}
+            onClick={() => trackGoal(GOALS.callClick, { place: "docs" })}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
           >
             <Phone className="h-4 w-4" /> {SITE.phone}
@@ -160,6 +163,7 @@ export function DocsRequest() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Telegram ${SITE.telegramHandle}`}
+            onClick={() => trackGoal(GOALS.telegramClick, { place: "docs" })}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
           >
             <Send className="h-4 w-4" /> {SITE.telegramHandle}

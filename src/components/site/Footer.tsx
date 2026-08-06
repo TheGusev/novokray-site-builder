@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Phone, Mail, MapPin, Clock, ShieldCheck, Star, Send, MessageCircle } from "lucide-react";
 import { SITE } from "@/data/site";
+import { GOALS, trackGoal } from "@/lib/analytics";
 import { SERVICES } from "@/data/services";
 import { CITIES } from "@/data/cities";
 import { Logo } from "@/components/site/Logo";
@@ -70,13 +71,13 @@ export function Footer() {
         <div>
           <div className="mb-3 font-display text-sm font-bold uppercase tracking-wider">Контакты</div>
           <ul className="space-y-3 text-sm text-muted-foreground">
-            <li className="flex gap-2"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><a href={SITE.phoneHref} className="hover:text-primary">{SITE.phone}</a></li>
+            <li className="flex gap-2"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><a href={SITE.phoneHref} onClick={() => trackGoal(GOALS.callClick, { place: "footer" })} className="hover:text-primary">{SITE.phone}</a></li>
             <li className="flex gap-2"><Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><a href={SITE.emailHref} className="hover:text-primary">{SITE.email}</a></li>
             <li className="flex gap-2"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />{SITE.address}</li>
             <li className="flex gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />{SITE.hours}</li>
           </ul>
           <div className="mt-4 flex flex-wrap gap-2">
-            <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" aria-label={`Telegram ${SITE.telegramHandle}`} className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">
+            <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" aria-label={`Telegram ${SITE.telegramHandle}`} onClick={() => trackGoal(GOALS.telegramClick, { place: "footer" })} className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">
               <Send className="h-3.5 w-3.5" /> Telegram
             </a>
             <a href={SITE.maxHref} target="_blank" rel="noopener noreferrer" aria-label="MAX мессенджер" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary hover:text-primary">

@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, Phone, ChevronDown, MessageCircle, Clock, Send } from "lucide-react";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { GOALS, trackGoal } from "@/lib/analytics";
 import { Logo } from "@/components/site/Logo";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -169,7 +170,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <a href={SITE.phoneHref} className="hidden text-right md:block">
+          <a href={SITE.phoneHref} onClick={() => trackGoal(GOALS.callClick, { place: "header" })} className="hidden text-right md:block">
             <div className="font-display text-sm font-bold text-foreground">{SITE.phone}</div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{SITE.hours}</div>
           </a>
@@ -178,12 +179,14 @@ export function Header() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Telegram ${SITE.telegramHandle}`}
+            onClick={() => trackGoal(GOALS.telegramClick, { place: "header" })}
             className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:border-primary hover:text-primary"
           >
             <Send className="h-4 w-4" />
           </a>
           <a
             href={SITE.phoneHref}
+            onClick={() => trackGoal(GOALS.callClick, { place: "header_cta" })}
             className="hidden md:inline-flex items-center gap-2 rounded-xl bg-cta-gradient px-4 py-2.5 text-sm font-semibold text-accent-foreground shadow-cta cta-shine transition hover:scale-[1.02]"
           >
             <Phone className="h-4 w-4" /> Вызвать
@@ -211,7 +214,7 @@ export function Header() {
           <div className="space-y-2 p-4">
             <a
               href={SITE.phoneHref}
-              onClick={() => setOpen(false)}
+              onClick={() => { trackGoal(GOALS.callClick, { place: "mobile_menu" }); setOpen(false); }}
               className="flex items-center justify-between gap-3 rounded-2xl bg-cta-gradient p-4 text-accent-foreground shadow-cta cta-shine"
             >
               <span className="flex items-center gap-3">
@@ -227,7 +230,7 @@ export function Header() {
             </a>
             <a
               href={SITE.whatsappHref}
-              onClick={() => setOpen(false)}
+              onClick={() => { trackGoal("whatsapp_click", { place: "mobile_menu" }); setOpen(false); }}
               className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 font-semibold"
             >
               <MessageCircle className="h-5 w-5 text-success" /> Написать в WhatsApp
@@ -236,7 +239,7 @@ export function Header() {
               href={SITE.telegramHref}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
+              onClick={() => { trackGoal(GOALS.telegramClick, { place: "mobile_menu" }); setOpen(false); }}
               className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 font-semibold"
             >
               <Send className="h-5 w-5 text-primary" /> Telegram · {SITE.telegramHandle}

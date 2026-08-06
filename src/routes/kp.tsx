@@ -13,6 +13,7 @@ import {
 } from "@/data/b2bPricing";
 import { lookupInnParty, type DadataParty } from "@/lib/dadata.functions";
 import type { ContractBlock } from "@/lib/dogovor/buildPdf";
+import { GOALS, trackGoal } from "@/lib/analytics";
 
 export const Route = createFileRoute("/kp")({
   head: () => ({
@@ -120,6 +121,8 @@ function KpPage() {
         price,
       });
       downloadPdf(bytes, `КП_${kpNumber}.pdf`);
+      trackGoal(GOALS.kpPdf, { company: companyName, inn, area: areaM2, price: price.perVisitTotal, pests: pestsLabels.join(", ") });
+      trackGoal(GOALS.kpSubmit, { company: companyName, inn, doc: "kp" });
     } catch (e) { setErr((e as Error).message); } finally { setBusy(null); }
   }
 
@@ -143,6 +146,7 @@ function KpPage() {
         contractNumber, contractDate: date,
       });
       downloadPdf(bytes, `Счёт_${invNumber}.pdf`);
+      trackGoal(GOALS.invoicePdf, { company: companyName, inn, price: price.perVisitTotal });
     } catch (e) { setErr((e as Error).message); } finally { setBusy(null); }
   }
 
@@ -178,6 +182,7 @@ function KpPage() {
         paymentMethod: "Безналичный расчёт по счёту",
       });
       downloadPdf(bytes, `Договор_${contractNumber}.pdf`);
+      trackGoal(GOALS.dogovorPdf, { source: "kp", company: companyName, inn });
     } catch (e) { setErr((e as Error).message); } finally { setBusy(null); }
   }
 
