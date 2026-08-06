@@ -11,6 +11,7 @@ import type { LucideIcon } from "lucide-react";
 import { SITE } from "@/data/site";
 import { getLeadPrice, formatRub } from "@/data/leadPricing";
 import { sendLead } from "@/lib/leadSender";
+import { GOALS, trackGoal, trackLead } from "@/lib/analytics";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
@@ -157,6 +158,9 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
       return toast.error(first);
     }
     setLoading(true);
+    const formGoal =
+      variant === "hero" ? GOALS.leadHero : variant === "inline" ? GOALS.leadPrice : GOALS.leadService;
+    trackLead(formGoal, pest, { object, price: price ?? 0, form_name: title ?? "" });
     const sent = await sendLead({
       type: "Заявка на обработку",
       pest, object, name, phone,
@@ -338,6 +342,7 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
 
           <a
             href={SITE.phoneHref}
+            onClick={() => trackGoal(GOALS.callClick, { place: "lead_form", service: pest })}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-background text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
           >
             <Phone className="h-4 w-4" /> Позвонить: {SITE.phone}
@@ -346,6 +351,7 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
             href={SITE.telegramHref}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackGoal(GOALS.telegramClick, { place: "lead_form", service: pest })}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-background text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
           >
             <Send className="h-4 w-4" /> Написать в Telegram: {SITE.telegramHandle}
