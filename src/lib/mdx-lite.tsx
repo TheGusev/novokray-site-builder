@@ -66,6 +66,11 @@ function isTableDelimiter(line: string): boolean {
 export function parseMarkdownBlocks(body: string): MarkdownBlock[] {
   const lines = body.replace(/\r\n/g, "\n").split("\n");
   const out: MarkdownBlock[] = [];
+  const nextContentLine = (from: number): number => {
+    let index = from;
+    while (index < lines.length && !lines[index].trim()) index++;
+    return index;
+  };
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
@@ -91,11 +96,14 @@ export function parseMarkdownBlocks(body: string): MarkdownBlock[] {
       else if (raw.startsWith("ℹ️")) { flavor = "info"; text = raw.replace(/^ℹ️\s*/, ""); }
       out.push({ kind: "callout", flavor, text }); i++; continue;
     }
-    if (line.includes("|") && i + 1 < lines.length && isTableDelimiter(lines[i + 1])) {
+    const delimiterIndex = nextContentLine(i + 1);
+    if (line.includes("|") && delimiterIndex < lines.length && isTableDelimiter(lines[delimiterIndex])) {
       const head = splitTableRow(line);
-      i += 2;
+      i = delimiterIndex + 1;
       const rows: string[][] = [];
-      while (i < lines.length && lines[i].includes("|") && lines[i].trim()) {
+      while (i < lines.length) {
+        i = nextContentLine(i);
+        if (i >= lines.length || !lines[i].includes("|")) break;
         const cells = splitTableRow(lines[i]);
         rows.push(head.map((_, index) => cells[index] ?? ""));
         i++;
