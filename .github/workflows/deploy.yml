@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -42,6 +44,7 @@ jobs:
             test -f dist/client/docs/dogovor-obrazec.pdf
             test -f dist/client/fonts/PTSans-Regular.ttf
             test -f server/lead-api.ts
+            test -f deploy/lead-api.service
 
             # Сервис приёма заявок: токен пишем в защищённый env-файл вне репозитория.
             if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
@@ -53,23 +56,8 @@ jobs:
               umask 022
             fi
 
-            cat > /etc/systemd/system/lead-api.service <<'UNIT'
-            [Unit]
-            Description=dez-federation lead API
-            After=network-online.target
-
-            [Service]
-            Type=simple
-            WorkingDirectory=/root/novokray-site-builder
-            EnvironmentFile=/etc/dez-federation/lead.env
-            ExecStart=/root/.bun/bin/bun run server/lead-api.ts
-            Restart=always
-            RestartSec=2
-
-            [Install]
-            WantedBy=multi-user.target
-            UNIT
-
+            test -f /etc/dez-federation/lead.env
+            install -m 644 deploy/lead-api.service /etc/systemd/system/lead-api.service
             systemctl daemon-reload
             systemctl enable lead-api
             systemctl restart lead-api
