@@ -13,6 +13,7 @@ import {
 } from "@/data/b2bPricing";
 import { lookupInnParty, type DadataParty } from "@/lib/dadata.functions";
 import type { ContractBlock } from "@/lib/dogovor/buildPdf";
+import { GOALS, trackGoal } from "@/lib/analytics";
 
 export const Route = createFileRoute("/kp")({
   head: () => ({
