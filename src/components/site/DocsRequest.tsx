@@ -45,6 +45,8 @@ export function DocsRequest() {
     const sent = await sendLead({
       type: "Запрос документов",
       org, inn, phone, company,
+      formName: "Раздел «Документы»",
+      docs: DOCS.map((d) => d.title),
     });
     setLoading(false);
     toast.success(

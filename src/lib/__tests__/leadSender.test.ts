@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { normalizePhone, buildLeadBody } from "../leadSender";
+import { describe, it, expect, beforeEach, afterAll } from "vitest";
+import { normalizePhone, buildLeadBody, collectUtm } from "../leadSender";
 
 describe("normalizePhone", () => {
   it("нормализует 8XXXXXXXXXX", () => {
@@ -20,5 +20,57 @@ describe("buildLeadBody", () => {
     expect(body.company).toBe("");
     expect(body.pest).toBe("Клопы");
     expect(typeof body.sentAt).toBe("string");
+  });
+
+  it("передаёт контекст заявки: форма, основание цены, документы", () => {
+    const body = buildLeadBody({
+      type: "Заявка на обработку",
+      phone: "89939289488",
+      pest: "Клопы",
+      object: "2-комн. квартира",
+      priceFrom: 2400,
+      formName: "Форма в баннере",
+      priceBasis: "Клопы · 2-комн. квартира — прайс калькулятора",
+      docs: ["Договор", "Акт"],
+    });
+    expect(body.formName).toBe("Форма в баннере");
+    expect(body.priceBasis).toContain("прайс калькулятора");
+    expect(body.docs).toEqual(["Договор", "Акт"]);
+    expect(body).toHaveProperty("referrer");
+    expect(body).toHaveProperty("device");
+    expect(body).toHaveProperty("utm");
+  });
+});
+
+describe("collectUtm", () => {
+  const store = new Map<string, string>();
+  const setUrl = (search: string) => {
+    (globalThis as Record<string, unknown>).window = {
+      location: { search },
+      sessionStorage: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => void store.set(k, v),
+      },
+    };
+  };
+
+  beforeEach(() => {
+    store.clear();
+    setUrl("");
+  });
+
+  afterAll(() => {
+    delete (globalThis as Record<string, unknown>).window;
+  });
+
+  it("читает метки из URL и сохраняет их на сессию", () => {
+    setUrl("?utm_source=yandex&utm_campaign=klopy&yclid=123");
+    expect(collectUtm()).toEqual({ utm_source: "yandex", utm_campaign: "klopy", yclid: "123" });
+    setUrl("");
+    expect(collectUtm().utm_source).toBe("yandex");
+  });
+
+  it("возвращает пустой объект без меток", () => {
+    expect(collectUtm()).toEqual({});
   });
 });
