@@ -11,10 +11,10 @@ import { WaveText } from "@/components/site/WaveText";
 export const Route = createFileRoute("/o-kompanii")({
   head: () => ({
     meta: [
-      { title: `О компании Дез-Федерация — санитарная служба Новосибирска с 2014 года` },
-      { name: "description", content: "Дез-Федерация — санитарная служба №1 в Новосибирске. 12 лет на рынке, 38 000+ обработанных объектов, лицензия Роспотребнадзора, гарантия по договору." },
+      { title: `О компании Дез-Федерация — санитарная служба Новосибирска с 2019 года` },
+      { name: "description", content: "Дез-Федерация — санитарная служба №1 в Новосибирске. 7 лет на рынке, 38 000+ обработанных заявок по России, лицензия Роспотребнадзора, гарантия по договору." },
       { property: "og:title", content: "О компании Дез-Федерация" },
-      { property: "og:description", content: "Санитарная служба №1 в Новосибирске с 2014 года. Лицензия, гарантия, 38 000+ объектов." },
+      { property: "og:description", content: "Санитарная служба №1 в Новосибирске с 2019 года. Лицензия, гарантия, 38 000+ заявок по РФ." },
       { property: "og:url", content: `${SITE.domain}/o-kompanii` },
     ],
     links: [{ rel: "canonical", href: `${SITE.domain}/o-kompanii` }],
@@ -47,11 +47,11 @@ export const Route = createFileRoute("/o-kompanii")({
 
 function AboutPage() {
   const timeline = [
-    { y: "2014", t: "Старт компании", s: "Первая бригада, 2 объекта в день, лицензия Роспотребнадзора." },
-    { y: "2017", t: "5 000 обработок", s: "Запуск направления для юрлиц — кафе, ТСЖ, школы." },
+    { y: "2019", t: "Старт компании", s: "Первая бригада, 2 объекта в день, лицензия Роспотребнадзора." },
+    { y: "2021", t: "5 000 обработок", s: "Запуск направления для юрлиц — кафе, ТСЖ, школы." },
     { y: "2020", t: "Антиковидная дезинфекция", s: "Озонирование и обработка больниц, офисов, ТЦ." },
     { y: "2023", t: "20 000 обработок", s: "Открыли направление сушки после потопов 24/7." },
-    { y: "2026", t: "38 000+ объектов", s: "Команда из 28 человек, 6 бригад, выезд за 60 минут." },
+    { y: "2026", t: "38 000+ заявок по РФ", s: "Команда из 28 человек, 6 бригад, выезд за 60 минут." },
   ];
   const values = [
     { t: "Честность", s: "Цена фиксируется до выезда. Если на месте что-то меняется — пересогласовываем заранее." },
@@ -63,7 +63,7 @@ function AboutPage() {
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "О компании" }]} />
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.heroTeam} alt="Команда из 28 специалистов санитарной службы Дез-Федерация на выезде в Новосибирске" title="Дез-Федерация — с 2014 года в Новосибирске и области" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
+        <img src={COMMON.heroTeam} alt="Команда из 28 специалистов санитарной службы Дез-Федерация на выезде в Новосибирске" title="Дез-Федерация — с 2019 года в Новосибирске и области" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative grid gap-8 py-12 md:py-20 lg:grid-cols-[1.2fr,1fr]">
           <div>
@@ -74,10 +74,10 @@ function AboutPage() {
             </Reveal>
             <h1 className="mt-5 font-display text-3xl font-extrabold leading-tight md:text-5xl"><WaveText className="on-dark" text="О санитарной службе «Дез-Федерация»" duration={4} /></h1>
             <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">
-              Мы — команда из 28 специалистов, работаем в Новосибирске и области с {SITE.founded} года. За 12 лет провели более 38 000 обработок: от однокомнатных квартир до промышленных складов, кафе, школ и экспортных грузов. Лицензия Роспотребнадзора, договоры с УК, ТСЖ, сетевыми ресторанами и образовательными учреждениями.
+              Мы — команда из 28 специалистов, работаем в Новосибирске и области с {SITE.founded} года. За это время по России выполнено более 38 000 заявок: от однокомнатных квартир до промышленных складов, кафе, школ и экспортных грузов. Лицензия Роспотребнадзора, договоры с УК, ТСЖ, сетевыми ресторанами и образовательными учреждениями.
             </p>
             <div className="mt-8 grid max-w-lg grid-cols-3 gap-4 border-t border-white/15 pt-6">
-              <div><div className="font-display text-2xl font-extrabold md:text-3xl"><CountUp value={38000} suffix="+" /></div><div className="text-[11px] uppercase tracking-wider text-white/70">обработок</div></div>
+              <div><div className="font-display text-2xl font-extrabold md:text-3xl"><CountUp value={38000} suffix="+" /></div><div className="text-[11px] uppercase tracking-wider text-white/70">заявок по РФ</div></div>
               <div><div className="font-display text-2xl font-extrabold md:text-3xl"><CountUp value={12} suffix=" лет" /></div><div className="text-[11px] uppercase tracking-wider text-white/70">на рынке</div></div>
               <div><div className="font-display text-2xl font-extrabold md:text-3xl"><CountUp value={28} /></div><div className="text-[11px] uppercase tracking-wider text-white/70">в штате</div></div>
             </div>

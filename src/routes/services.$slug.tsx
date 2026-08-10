@@ -2,7 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
 import { type Service } from "@/data/services";
-import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META } from "@/data/images";
+import { getServiceIcon } from "@/data/serviceIcons";
+import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META, KLOPY_PHOTOS, KLOPY_PHOTO_META } from "@/data/images";
 import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -28,14 +29,18 @@ const WARRANTY_BY_SLUG: Record<string, string> = {
   "dezodoraciya": "до 6 месяцев",
 };
 
+type PlainService = Omit<Service, "icon">;
+const plain = ({ icon: _icon, ...rest }: Service): PlainService => rest;
+
 export const Route = createFileRoute("/services/$slug")({
   // Каталог услуг (68 КБ) грузится отдельным чанком, а не в общем бандле сайта.
-  loader: async ({ params }): Promise<{ service: Service; related: Service[] }> => {
+  loader: async ({ params }): Promise<{ service: PlainService; related: PlainService[] }> => {
     const { SERVICES_BY_SLUG } = await import("@/data/services");
     const service = SERVICES_BY_SLUG[params.slug];
     if (!service) throw notFound();
     const related = service.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
-    return { service, related };
+    // icon — React-компонент, он не сериализуется при передаче лоадера в браузер
+    return { service: plain(service), related: related.map(plain) };
   },
   head: ({ loaderData, params }) => {
     const s = loaderData?.service;
@@ -137,9 +142,9 @@ export const Route = createFileRoute("/services/$slug")({
 });
 
 function ServicePage() {
-  const data = Route.useLoaderData() as { service: Service; related: Service[] };
+  const data = Route.useLoaderData() as { service: PlainService; related: PlainService[] };
   const s = data.service;
-  const Icon = s.icon;
+  const Icon = getServiceIcon(s.slug);
   const related = data.related;
   const hero = SERVICE_IMAGES[s.slug];
   const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
@@ -236,6 +241,21 @@ function ServicePage() {
             </Reveal>
           ))}
         </div>
+        {s.slug === "unichtozhenie-klopov" && (
+          <Reveal className="mt-8 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+            <img
+              src={KLOPY_PHOTOS.naMatrase}
+              alt={KLOPY_PHOTO_META.naMatrase.alt}
+              title={KLOPY_PHOTO_META.naMatrase.title}
+              loading="lazy"
+              decoding="async"
+              width={1440}
+              height={1920}
+              className="max-h-[460px] w-full object-cover"
+            />
+            <div className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.naMatrase.caption}</div>
+          </Reveal>
+        )}
       </section>
 
       {/* Steps */}
@@ -251,6 +271,41 @@ function ServicePage() {
               </Reveal>
             ))}
           </div>
+          {s.slug === "unichtozhenie-klopov" && (
+            <div className="mt-10 grid items-stretch gap-6 lg:grid-cols-2">
+              <Reveal className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+                <img
+                  src={KLOPY_PHOTOS.razborKrovati}
+                  alt={KLOPY_PHOTO_META.razborKrovati.alt}
+                  title={KLOPY_PHOTO_META.razborKrovati.title}
+                  loading="lazy"
+                  decoding="async"
+                  width={1600}
+                  height={1200}
+                  className="h-full max-h-[420px] w-full object-cover"
+                />
+                <div className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.razborKrovati.caption}</div>
+              </Reveal>
+              <div className="grid gap-5 sm:grid-cols-1">
+                <Reveal delay={80} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+                  <div className="font-display text-lg font-bold text-primary">Препараты без запаха, эффект с первых минут</div>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Работаем составами без резкого запаха: гибель клопов начинается уже во время обработки, а вернуться в квартиру
+                    можно в тот же день — после 3–4 часов проветривания. Мебель, техника и текстиль не портятся, следов на
+                    поверхностях не остаётся.
+                  </p>
+                </Reveal>
+                <Reveal delay={160} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+                  <div className="font-display text-lg font-bold text-primary">Точечная обработка спальных мест</div>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Кровать и диван разбираем: проливаем ламели, короб, изнанку основания, стыки каркаса и ножки. Матрас
+                    обрабатываем по швам и кантам, отдельно проходим изголовье, плинтусы и дверные коробки — именно там держится
+                    гнездо, а не на открытых поверхностях.
+                  </p>
+                </Reveal>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -325,7 +380,7 @@ function ServicePage() {
         <section className="container-x pb-16">
           <h2 className="font-display text-2xl font-bold md:text-3xl">Смежные услуги</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {related.map((r) => (<ServiceCard key={r.slug} service={r} />))}
+            {related.map((r) => (<ServiceCard key={r.slug} service={{ ...r, icon: getServiceIcon(r.slug) }} />))}
           </div>
         </section>
       )}

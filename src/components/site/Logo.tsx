@@ -42,7 +42,7 @@ export function Logo({ variant = "dark", withTagline = false, className = "" }: 
           Дез-Федерация
         </span>
         <span className={`mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${sub}`}>
-          {withTagline ? "Санитарная служба Новосибирска" : "Новосибирск · с 2014"}
+          {withTagline ? "Санитарная служба Новосибирска" : "Новосибирск · с 2019"}
         </span>
       </span>
     </Link>

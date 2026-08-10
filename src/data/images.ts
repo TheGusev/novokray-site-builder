@@ -20,6 +20,10 @@ import svcFumigaciya from "@/assets/svc-fumigaciya.jpg";
 import svcDezinfekciya from "@/assets/svc-dezinfekciya.jpg";
 import svcDezodoraciya from "@/assets/svc-dezodoraciya.jpg";
 
+// Реальные рабочие фото с объектов (клопы)
+import klopyRazborKrovati from "@/assets/klopy-razbor-krovati.jpg";
+import klopyNaMatrase from "@/assets/klopy-na-matrase.jpg";
+
 // Unique blog covers
 import blogUkusKlopa from "@/assets/blog-ukus-klopa.jpg";
 import blogNovostroyka from "@/assets/blog-novostroyka.jpg";
@@ -51,6 +55,27 @@ export const COMMON = {
   b2bCafe,
 };
 
+/** Реальные фото с обработок от клопов — используются на странице услуги и в статьях. */
+export const KLOPY_PHOTOS = {
+  razborKrovati: klopyRazborKrovati,
+  naMatrase: klopyNaMatrase,
+};
+
+export const KLOPY_PHOTO_META: Record<keyof typeof KLOPY_PHOTOS, ImgMeta & { caption: string }> = {
+  razborKrovati: {
+    alt: "Разобранная кровать с открытыми ламелями перед обработкой от клопов в квартире в Новосибирске",
+    title: "Точечная обработка спальных мест: кровать разбирается до ламелей",
+    caption:
+      "Точечная обработка спальных мест: кровать разбираем до ламелей, проливаем короб, изнанку основания и стыки каркаса — там, где клоп прячется днём.",
+  },
+  naMatrase: {
+    alt: "Живые постельные клопы и следы крови на матрасе — реальное фото заражённой квартиры",
+    title: "Как выглядят клопы на матрасе — признак заражения спального места",
+    caption:
+      "Реальное фото с выезда: взрослые клопы и бурые точки на матрасе. Если вы видите такую картину — гнездо уже в спальном месте, обработка нужна по всей комнате.",
+  },
+};
+
 export const SERVICE_IMAGES: Record<string, string> = {
   "unichtozhenie-klopov": svcKlopy,
   "unichtozhenie-tarakanov": svcTarakany,
@@ -76,8 +101,8 @@ export const GALLERY = [
 export const BLOG_COVERS: Record<string, string> = {
   // Насекомые
   "kak-otlichit-ukus-klopa": blogUkusKlopa,
-  "priznaki-zarazheniya-klopami": blogUkusKlopa,
-  "klopy-v-divane-chto-delat": svcKlopy,
+  "priznaki-zarazheniya-klopami": klopyNaMatrase,
+  "klopy-v-divane-chto-delat": klopyRazborKrovati,
   "tarakany-v-novostroyke": blogNovostroyka,
   "ryzhie-i-chernye-tarakany-razlichiya": svcTarakany,
   "pochemu-tarakany-vozvraschayutsya": svcTarakany,
@@ -146,7 +171,7 @@ export interface ImgMeta { alt: string; title: string }
 export const COMMON_IMAGE_META: Record<keyof typeof COMMON, ImgMeta> = {
   heroTeam: {
     alt: "Бригада санитарной службы Дез-Федерация на выезде в Новосибирске",
-    title: "Дез-Федерация — выезд бригады по Новосибирску с 2014 года",
+    title: "Дез-Федерация — выезд бригады по Новосибирску с 2019 года",
   },
   heroSpray: {
     alt: "Специалист Дез-Федерация обрабатывает квартиру холодным туманом против насекомых",
@@ -285,8 +310,8 @@ export const SERVICE_IMAGE_META: Record<string, ServiceImgMeta> = {
 export const BLOG_IMAGE_META: Record<string, ImgMeta> = {
   // Насекомые
   "kak-otlichit-ukus-klopa": { alt: "Дорожка укусов постельного клопа на руке — фото к статье", title: "Как отличить укус клопа от комара и блохи — Дез-Федерация" },
-  "priznaki-zarazheniya-klopami": { alt: "Следы постельных клопов на белом белье — диагностика заражения", title: "10 признаков заражения квартиры клопами — проверка по чек-листу" },
-  "klopy-v-divane-chto-delat": { alt: "Швы тканевого дивана как место скрытия постельных клопов", title: "Клопы в диване: можно ли спасти мебель обработкой" },
+  "priznaki-zarazheniya-klopami": { alt: "Живые постельные клопы на матрасе — реальное фото заражённой квартиры в Новосибирске", title: "10 признаков заражения квартиры клопами — проверка по чек-листу" },
+  "klopy-v-divane-chto-delat": { alt: "Разобранная кровать с ламелями перед точечной обработкой мягкой мебели от клопов", title: "Клопы в диване: можно ли спасти мебель обработкой" },
   "tarakany-v-novostroyke": { alt: "Пустая кухня новостройки Новосибирска как зона риска по тараканам", title: "Тараканы в новостройке Новосибирска — причины и решение" },
   "ryzhie-i-chernye-tarakany-razlichiya": { alt: "Сравнение рыжего и чёрного таракана — внешний вид", title: "Рыжие и чёрные тараканы: отличия и тактика борьбы" },
   "pochemu-tarakany-vozvraschayutsya": { alt: "Гель-приманка против тараканов на кухонной поверхности", title: "Почему тараканы возвращаются через 2 недели — 5 причин" },
