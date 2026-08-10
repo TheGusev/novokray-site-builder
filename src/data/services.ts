@@ -195,7 +195,7 @@ export const SERVICES: Service[] = [
       { q: "Что делать с причиной сырости?", a: "В акте указываем причину (протечка, конденсат, плохая вентиляция). Без её устранения плесень вернётся — об этом честно предупреждаем." },
       { q: "Какая гарантия?", a: "До 24 месяцев — при условии устранения причины сырости. Если плесень вернётся — обработаем бесплатно." },
     ],
-    related: ["ozonirovanie-pomescheniy", "sushka-posle-zatopleniya", "dezodoraciya", "dezinfekciya"],
+    related: ["ozonirovanie-pomescheniy", "sushka-posle-zatopleniya", "unichtozhenie-klopov", "dezinfekciya"],
     keywords: ["обработка от плесени", "удаление плесени новосибирск", "грибок на стенах"],
   },
   {
@@ -281,7 +281,7 @@ export const SERVICES: Service[] = [
       { q: "Чем опасна несвоевременная сушка?", a: "На 3–5 сутки появляется плесень и грибок. Дерево, ламинат и гипсокартон могут стать невосстановимыми." },
       { q: "Работаете с юрлицами?", a: "Да. УК, ТСЖ, офисы, магазины — счёт и акт выполненных работ выдаём в день обращения." },
     ],
-    related: ["obrabotka-ot-pleseni", "ozonirovanie-pomescheniy", "dezodoraciya", "dezinfekciya"],
+    related: ["obrabotka-ot-pleseni", "ozonirovanie-pomescheniy", "unichtozhenie-klopov", "dezinfekciya"],
     keywords: ["сушка после потопа новосибирск", "осушение после затопления", "сушка стен"],
   },
   {
