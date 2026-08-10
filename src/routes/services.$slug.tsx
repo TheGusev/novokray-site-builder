@@ -38,7 +38,11 @@ export const Route = createFileRoute("/services/$slug")({
     const { SERVICES_BY_SLUG } = await import("@/data/services");
     const service = SERVICES_BY_SLUG[params.slug];
     if (!service) throw notFound();
-    const related = service.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
+    // без дублей и без ссылки страницы на саму себя
+    const related = [...new Set(service.related)]
+      .filter((slug) => slug !== service.slug)
+      .map((slug) => SERVICES_BY_SLUG[slug])
+      .filter(Boolean);
     // icon — React-компонент, он не сериализуется при передаче лоадера в браузер
     return { service: plain(service), related: related.map(plain) };
   },
@@ -46,20 +50,28 @@ export const Route = createFileRoute("/services/$slug")({
     const s = loaderData?.service;
     if (!s) return { meta: [{ title: "Не найдено" }] };
     const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
+    const url = `${SITE.domain}/services/${params.slug}`;
+    const ogImage = `${SITE.domain}${SERVICE_IMAGES[s.slug] ?? "/og/default.jpg"}`;
+    const ogTitle = `${s.h1} — от ${s.priceFrom.toLocaleString("ru-RU")} ₽`;
+    const ogDescription = s.metaDescription;
     return {
       meta: [
         { title: s.metaTitle },
         { name: "description", content: s.metaDescription },
         { name: "keywords", content: s.keywords.join(", ") },
-        { property: "og:title", content: s.metaTitle },
-        { property: "og:description", content: s.metaDescription },
-        { property: "og:url", content: `${SITE.domain}/services/${params.slug}` },
-        { property: "og:type", content: "website" },
-        { property: "og:image", content: `${SITE.domain}${SERVICE_IMAGES[s.slug] ?? "/og/default.jpg"}` },
+        { property: "og:title", content: ogTitle },
+        { property: "og:description", content: ogDescription },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "article" },
+        { property: "og:image", content: ogImage },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: ogTitle },
+        { name: "twitter:description", content: ogDescription },
+        { name: "twitter:image", content: ogImage },
       ],
       links: [
-        { rel: "canonical", href: `/services/${params.slug}` },
-        { rel: "alternate", hrefLang: "ru", href: `/services/${params.slug}` },
+        { rel: "canonical", href: url },
+        { rel: "alternate", hrefLang: "ru", href: url },
       ],
       scripts: [
         {
@@ -232,7 +244,7 @@ function ServicePage() {
 
       {/* Problems */}
       <section className="container-x py-16">
-        <AnimatedHeading as="h2" text={`Когда нужна ${s.title.toLowerCase()}`} className="font-display text-3xl font-bold md:text-4xl text-balance" />
+        <AnimatedHeading as="h2" text={s.slug === "unichtozhenie-klopov" ? "Признаки клопов в квартире" : `Когда нужна ${s.title.toLowerCase()}`} className="font-display text-3xl font-bold md:text-4xl text-balance" />
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {s.problems.map((p, i) => (
             <Reveal key={i} delay={i * 70} className="flex gap-3 rounded-xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-elegant">
@@ -256,17 +268,37 @@ function ServicePage() {
             <div className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.naMatrase.caption}</div>
           </Reveal>
         )}
+        {s.slug === "unichtozhenie-klopov" && (
+          <Reveal className="mt-8 max-w-3xl text-[15px] leading-relaxed text-muted-foreground">
+            <p>
+              Клопы редко приходят одни: если в доме заодно завелись кухонные насекомые, вместе с обработкой спальных мест
+              имеет смысл заказать{" "}
+              <Link to="/services/$slug" params={{ slug: "unichtozhenie-tarakanov" }} className="font-semibold text-primary underline-offset-4 hover:underline">
+                травлю тараканов
+              </Link>
+              . После залива соседей сначала нужна{" "}
+              <Link to="/services/$slug" params={{ slug: "sushka-posle-zatopleniya" }} className="font-semibold text-primary underline-offset-4 hover:underline">
+                аварийная сушка квартиры
+              </Link>
+              , иначе в сырых стенах через несколько дней появится{" "}
+              <Link to="/services/$slug" params={{ slug: "obrabotka-ot-pleseni" }} className="font-semibold text-primary underline-offset-4 hover:underline">
+                плесень и грибок
+              </Link>
+              , а влажные плинтусы мешают барьерному препарату держаться.
+            </p>
+          </Reveal>
+        )}
       </section>
 
       {/* Steps */}
       <section className="bg-surface py-16">
         <div className="container-x">
-          <AnimatedHeading as="h2" text="Как проходит обработка" className="font-display text-3xl font-bold md:text-4xl" />
+          <AnimatedHeading as="h2" text={s.slug === "unichtozhenie-klopov" ? "Как проходит обработка от клопов" : "Как проходит обработка"} className="font-display text-3xl font-bold md:text-4xl" />
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {s.steps.map((st, i) => (
               <Reveal key={i} delay={i * 100} className="rounded-2xl border border-border bg-card p-6 shadow-card">
                 <div className="font-display text-3xl font-extrabold text-primary/30">{String(i + 1).padStart(2, "0")}</div>
-                <div className="mt-1 font-display text-lg font-bold">{st.title}</div>
+                <h3 className="mt-1 font-display text-lg font-bold">{st.title}</h3>
                 <div className="mt-2 text-sm text-muted-foreground">{st.text}</div>
               </Reveal>
             ))}
@@ -314,11 +346,11 @@ function ServicePage() {
         <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary">
           <FlaskConical className="h-3.5 w-3.5" /> Препараты и технологии
         </div>
-        <AnimatedHeading as="h2" text="Профессиональное оборудование и сертифицированные препараты" highlight="сертифицированные" className="font-display text-3xl font-bold md:text-4xl text-balance" />
+        <AnimatedHeading as="h2" text={s.slug === "unichtozhenie-klopov" ? "Технологии и препараты против клопов" : "Профессиональное оборудование и сертифицированные препараты"} highlight="препараты" className="font-display text-3xl font-bold md:text-4xl text-balance" />
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {s.tech.map((t, i) => (
             <Reveal key={i} delay={i * 90} className="rounded-2xl border border-border bg-card p-6 shadow-card">
-              <div className="font-display text-lg font-bold text-primary">{t.title}</div>
+              <h3 className="font-display text-lg font-bold text-primary">{t.title}</h3>
               <div className="mt-2 text-sm text-muted-foreground">{t.text}</div>
             </Reveal>
           ))}
@@ -328,7 +360,7 @@ function ServicePage() {
       {/* Prices */}
       <section className="bg-surface py-16">
         <div className="container-x">
-          <h2 className="font-display text-3xl font-bold md:text-4xl">Цены</h2>
+          <h2 className="font-display text-3xl font-bold md:text-4xl">{`Цены на ${s.title.toLowerCase()} в ${SITE.city === "Новосибирск" ? "Новосибирске" : SITE.city}`}</h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">Стоимость фиксируется до выезда. Без скрытых платежей и доплат за препараты.</p>
           <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
             <table className="w-full text-left">
@@ -373,7 +405,7 @@ function ServicePage() {
         </div>
       </section>
 
-      <FAQ items={s.faq} />
+      <FAQ items={s.faq} title={s.slug === "unichtozhenie-klopov" ? "Частые вопросы про обработку от клопов" : `Частые вопросы: ${s.title.toLowerCase()}`} />
 
       {/* Related */}
       {related.length > 0 && (
