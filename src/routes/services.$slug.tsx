@@ -53,7 +53,7 @@ export const Route = createFileRoute("/services/$slug")({
     const url = `${SITE.domain}/services/${params.slug}`;
     const ogImage = `${SITE.domain}${SERVICE_IMAGES[s.slug] ?? "/og/default.jpg"}`;
     const ogTitle = `${s.h1} — от ${s.priceFrom.toLocaleString("ru-RU")} ₽`;
-    const ogDescription = `${s.lead.slice(0, 180).trim()}…`;
+    const ogDescription = s.metaDescription;
     return {
       meta: [
         { title: s.metaTitle },
