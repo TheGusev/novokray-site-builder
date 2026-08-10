@@ -101,8 +101,8 @@ export const GALLERY = [
 export const BLOG_COVERS: Record<string, string> = {
   // Насекомые
   "kak-otlichit-ukus-klopa": blogUkusKlopa,
-  "priznaki-zarazheniya-klopami": blogUkusKlopa,
-  "klopy-v-divane-chto-delat": svcKlopy,
+  "priznaki-zarazheniya-klopami": klopyNaMatrase,
+  "klopy-v-divane-chto-delat": klopyRazborKrovati,
   "tarakany-v-novostroyke": blogNovostroyka,
   "ryzhie-i-chernye-tarakany-razlichiya": svcTarakany,
   "pochemu-tarakany-vozvraschayutsya": svcTarakany,
@@ -310,8 +310,8 @@ export const SERVICE_IMAGE_META: Record<string, ServiceImgMeta> = {
 export const BLOG_IMAGE_META: Record<string, ImgMeta> = {
   // Насекомые
   "kak-otlichit-ukus-klopa": { alt: "Дорожка укусов постельного клопа на руке — фото к статье", title: "Как отличить укус клопа от комара и блохи — Дез-Федерация" },
-  "priznaki-zarazheniya-klopami": { alt: "Следы постельных клопов на белом белье — диагностика заражения", title: "10 признаков заражения квартиры клопами — проверка по чек-листу" },
-  "klopy-v-divane-chto-delat": { alt: "Швы тканевого дивана как место скрытия постельных клопов", title: "Клопы в диване: можно ли спасти мебель обработкой" },
+  "priznaki-zarazheniya-klopami": { alt: "Живые постельные клопы на матрасе — реальное фото заражённой квартиры в Новосибирске", title: "10 признаков заражения квартиры клопами — проверка по чек-листу" },
+  "klopy-v-divane-chto-delat": { alt: "Разобранная кровать с ламелями перед точечной обработкой мягкой мебели от клопов", title: "Клопы в диване: можно ли спасти мебель обработкой" },
   "tarakany-v-novostroyke": { alt: "Пустая кухня новостройки Новосибирска как зона риска по тараканам", title: "Тараканы в новостройке Новосибирска — причины и решение" },
   "ryzhie-i-chernye-tarakany-razlichiya": { alt: "Сравнение рыжего и чёрного таракана — внешний вид", title: "Рыжие и чёрные тараканы: отличия и тактика борьбы" },
   "pochemu-tarakany-vozvraschayutsya": { alt: "Гель-приманка против тараканов на кухонной поверхности", title: "Почему тараканы возвращаются через 2 недели — 5 причин" },
