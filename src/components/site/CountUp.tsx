@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReveal } from "@/hooks/use-reveal";
 
 interface Props {
@@ -13,9 +13,18 @@ interface Props {
 export function CountUp({ value, duration = 1400, suffix = "", prefix = "", decimals = 0, className = "" }: Props) {
   const { ref, shown } = useReveal<HTMLSpanElement>();
   const [n, setN] = useState(0);
+  const done = useRef(false);
 
   useEffect(() => {
-    if (!shown) return;
+    if (!shown || done.current) return;
+    done.current = true;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setN(value);
+      return;
+    }
     const start = performance.now();
     let raf = 0;
     const tick = (t: number) => {

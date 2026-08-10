@@ -59,4 +59,17 @@ describe("analytics", () => {
     trackLead(GOALS.leadModal);
     expect(ym.mock.calls.map((c) => c[2])).toEqual(["lead_modal"]);
   });
+
+  it("отправляет цели CTA первого экрана", () => {
+    const ym = vi.fn();
+    setupWindow("", ym);
+    trackGoal(GOALS.heroCallClick);
+    trackGoal(GOALS.heroCalcClick);
+    trackGoal(GOALS.statsInfoOpen);
+    expect(ym.mock.calls.map((c) => c[2])).toEqual([
+      "hero_call_click",
+      "hero_calc_click",
+      "stats_info_open",
+    ]);
+  });
 });

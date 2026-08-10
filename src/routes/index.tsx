@@ -20,7 +20,8 @@ import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { WaveSentences } from "@/components/site/WaveSentences";
 import { WaveText } from "@/components/site/WaveText";
-import { CountUp } from "@/components/site/CountUp";
+import { StatsRow } from "@/components/site/StatsRow";
+import { GOALS, trackGoal } from "@/lib/analytics";
 
 const HOME_FAQ = [
   { q: "Сколько стоит обработка квартиры?", a: "Однокомнатная квартира от 1 900 ₽, двухкомнатная от 2 400 ₽, трёхкомнатная от 2 900 ₽. Цена фиксируется до выезда и включает все препараты и гарантию." },
@@ -194,6 +195,7 @@ function HomePage() {
             <Reveal delay={350} className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <a
                 href={SITE.phoneHref}
+                onClick={() => trackGoal(GOALS.heroCallClick)}
                 className="cta-shine inline-flex items-center justify-center gap-2 rounded-xl bg-cta-gradient px-5 py-4 font-bold text-accent-foreground shadow-cta transition hover:scale-[1.02]"
               >
                 <Phone className="h-5 w-5" /> Позвонить · бесплатный осмотр
@@ -202,6 +204,7 @@ function HomePage() {
                 trigger={
                   <button
                     type="button"
+                    onClick={() => trackGoal(GOALS.heroCalcClick)}
                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-4 font-semibold backdrop-blur transition hover:bg-white/20"
                   >
                     Расчёт за 5 сек <ArrowRight className="h-4 w-4" />
@@ -210,35 +213,7 @@ function HomePage() {
               />
             </Reveal>
 
-            <div className="mt-8 grid max-w-md grid-cols-3 gap-4 border-t border-white/15 pt-6 text-sm">
-              <Reveal delay={400}>
-                <div className="font-display text-2xl font-extrabold md:text-3xl">
-                  <CountUp value={38000} suffix="+" />
-                </div>
-                <div className="text-[11px] uppercase tracking-wider text-white/70">заявок по РФ</div>
-              </Reveal>
-              <Reveal delay={500}>
-                <div className="flex items-baseline gap-1">
-                  <span className="font-display text-2xl font-extrabold md:text-3xl">
-                    <CountUp value={4.9} decimals={1} />
-                  </span>
-                  <Star className="h-4 w-4 fill-accent text-accent" />
-                </div>
-                <div className="text-[11px] uppercase tracking-wider text-white/70">{SITE.rating.count} отзывов</div>
-              </Reveal>
-              <Reveal delay={600}>
-                <div className="font-display text-2xl font-extrabold md:text-3xl">
-                  <CountUp value={24} suffix=" мес" />
-                </div>
-                <div className="text-[11px] uppercase tracking-wider text-white/70">гарантия</div>
-              </Reveal>
-            </div>
-            <Reveal delay={650}>
-              <p className="mt-3 max-w-md text-[12px] leading-snug text-white/60">
-                38 000+ — общее число заявок, обработанных федерацией по России с 2019 года. В Новосибирске и области работают
-                наши бригады: выезд за 60 минут, договор и гарантия.
-              </p>
-            </Reveal>
+            <StatsRow />
           </div>
         </div>
 
