@@ -17,6 +17,9 @@ export const GOALS = {
   dogovorPdf: "dogovor_pdf",
   callClick: "call_click",
   telegramClick: "telegram_click",
+  heroCallClick: "hero_call_click",
+  heroCalcClick: "hero_calc_click",
+  statsInfoOpen: "stats_info_open",
 } as const;
 
 export type GoalName = (typeof GOALS)[keyof typeof GOALS] | (string & {});
