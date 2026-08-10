@@ -219,6 +219,22 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        {/* Аварийные контакты: показываются только если приложение не поднялось. */}
+        <div
+          id="emergency-contacts"
+          style={{ display: "none", position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 2147483647, background: "#0F4A7A", color: "#fff", padding: "12px 16px", font: "16px/1.4 system-ui, sans-serif", textAlign: "center" }}
+        >
+          Страница загружается дольше обычного.{" "}
+          <a href={SITE.phoneHref} style={{ color: "#fff", fontWeight: 700 }}>Позвонить {SITE.phone}</a>
+          {" · "}
+          <a href={SITE.telegramHref} style={{ color: "#fff", fontWeight: 700 }}>Telegram {SITE.telegramHandle}</a>
+        </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'setTimeout(function(){try{var m=document.querySelector("main");if(!m||m.offsetHeight<40){var e=document.getElementById("emergency-contacts");if(e)e.style.display="block";}}catch(x){}},8000);',
+          }}
+        />
         {children}
         <Scripts />
         <noscript>
@@ -235,6 +251,38 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   useEffect(() => {
     initLeadQueue();
+  }, []);
+  // Метрику подключаем после отрисовки — mc.yandex.ru не влияет на первый экран.
+  useEffect(() => {
+    const start = () => {
+      const w = window as unknown as Record<string, any>;
+      if (w.__ymLoaded) return;
+      w.__ymLoaded = true;
+      const src = "https://mc.yandex.ru/metrika/tag.js?id=110968995";
+      w.ym =
+        w.ym ||
+        function (...args: unknown[]) {
+          (w.ym.a = w.ym.a || []).push(args);
+        };
+      w.ym.l = Date.now();
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = src;
+      document.head.appendChild(s);
+      w.ym(110968995, "init", {
+        ssr: true,
+        webvisor: true,
+        clickmap: true,
+        ecommerce: "dataLayer",
+        referrer: document.referrer,
+        url: location.href,
+        accurateTrackBounce: true,
+        trackLinks: true,
+      });
+    };
+    const w = window as unknown as { requestIdleCallback?: (cb: () => void, o?: unknown) => number };
+    if (typeof w.requestIdleCallback === "function") w.requestIdleCallback(start, { timeout: 3000 });
+    else setTimeout(start, 1200);
   }, []);
   return (
     <QueryClientProvider client={queryClient}>
