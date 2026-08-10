@@ -233,6 +233,12 @@ function HomePage() {
                 <div className="text-[11px] uppercase tracking-wider text-white/70">гарантия</div>
               </Reveal>
             </div>
+            <Reveal delay={650}>
+              <p className="mt-3 max-w-md text-[12px] leading-snug text-white/60">
+                38 000+ — общее число заявок, обработанных федерацией по России с 2019 года. В Новосибирске и области работают
+                наши бригады: выезд за 60 минут, договор и гарантия.
+              </p>
+            </Reveal>
           </div>
         </div>
 
