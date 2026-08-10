@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
 import { type Service } from "@/data/services";
-import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META } from "@/data/images";
+import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META, KLOPY_PHOTOS, KLOPY_PHOTO_META } from "@/data/images";
 import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -236,6 +236,21 @@ function ServicePage() {
             </Reveal>
           ))}
         </div>
+        {s.slug === "unichtozhenie-klopov" && (
+          <Reveal className="mt-8 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+            <img
+              src={KLOPY_PHOTOS.naMatrase}
+              alt={KLOPY_PHOTO_META.naMatrase.alt}
+              title={KLOPY_PHOTO_META.naMatrase.title}
+              loading="lazy"
+              decoding="async"
+              width={1440}
+              height={1920}
+              className="max-h-[460px] w-full object-cover"
+            />
+            <figcaption className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.naMatrase.caption}</figcaption>
+          </Reveal>
+        )}
       </section>
 
       {/* Steps */}
@@ -251,6 +266,41 @@ function ServicePage() {
               </Reveal>
             ))}
           </div>
+          {s.slug === "unichtozhenie-klopov" && (
+            <div className="mt-10 grid items-stretch gap-6 lg:grid-cols-2">
+              <Reveal className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+                <img
+                  src={KLOPY_PHOTOS.razborKrovati}
+                  alt={KLOPY_PHOTO_META.razborKrovati.alt}
+                  title={KLOPY_PHOTO_META.razborKrovati.title}
+                  loading="lazy"
+                  decoding="async"
+                  width={1600}
+                  height={1200}
+                  className="h-full max-h-[420px] w-full object-cover"
+                />
+                <figcaption className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.razborKrovati.caption}</figcaption>
+              </Reveal>
+              <div className="grid gap-5 sm:grid-cols-1">
+                <Reveal delay={80} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+                  <div className="font-display text-lg font-bold text-primary">Препараты без запаха, эффект с первых минут</div>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Работаем составами без резкого запаха: гибель клопов начинается уже во время обработки, а вернуться в квартиру
+                    можно в тот же день — после 3–4 часов проветривания. Мебель, техника и текстиль не портятся, следов на
+                    поверхностях не остаётся.
+                  </p>
+                </Reveal>
+                <Reveal delay={160} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+                  <div className="font-display text-lg font-bold text-primary">Точечная обработка спальных мест</div>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Кровать и диван разбираем: проливаем ламели, короб, изнанку основания, стыки каркаса и ножки. Матрас
+                    обрабатываем по швам и кантам, отдельно проходим изголовье, плинтусы и дверные коробки — именно там держится
+                    гнездо, а не на открытых поверхностях.
+                  </p>
+                </Reveal>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
