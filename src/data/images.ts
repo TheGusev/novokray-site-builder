@@ -20,6 +20,10 @@ import svcFumigaciya from "@/assets/svc-fumigaciya.jpg";
 import svcDezinfekciya from "@/assets/svc-dezinfekciya.jpg";
 import svcDezodoraciya from "@/assets/svc-dezodoraciya.jpg";
 
+// Реальные рабочие фото с объектов (клопы)
+import klopyRazborKrovati from "@/assets/klopy-razbor-krovati.jpg";
+import klopyNaMatrase from "@/assets/klopy-na-matrase.jpg";
+
 // Unique blog covers
 import blogUkusKlopa from "@/assets/blog-ukus-klopa.jpg";
 import blogNovostroyka from "@/assets/blog-novostroyka.jpg";
@@ -49,6 +53,27 @@ export const COMMON = {
   documents: documentsImg,
   office: officeImg,
   b2bCafe,
+};
+
+/** Реальные фото с обработок от клопов — используются на странице услуги и в статьях. */
+export const KLOPY_PHOTOS = {
+  razborKrovati: klopyRazborKrovati,
+  naMatrase: klopyNaMatrase,
+};
+
+export const KLOPY_PHOTO_META: Record<keyof typeof KLOPY_PHOTOS, ImgMeta & { caption: string }> = {
+  razborKrovati: {
+    alt: "Разобранная кровать с открытыми ламелями перед обработкой от клопов в квартире в Новосибирске",
+    title: "Точечная обработка спальных мест: кровать разбирается до ламелей",
+    caption:
+      "Точечная обработка спальных мест: кровать разбираем до ламелей, проливаем короб, изнанку основания и стыки каркаса — там, где клоп прячется днём.",
+  },
+  naMatrase: {
+    alt: "Живые постельные клопы и следы крови на матрасе — реальное фото заражённой квартиры",
+    title: "Как выглядят клопы на матрасе — признак заражения спального места",
+    caption:
+      "Реальное фото с выезда: взрослые клопы и бурые точки на матрасе. Если вы видите такую картину — гнездо уже в спальном месте, обработка нужна по всей комнате.",
+  },
 };
 
 export const SERVICE_IMAGES: Record<string, string> = {
