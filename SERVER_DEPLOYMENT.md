@@ -227,6 +227,9 @@ curl -s -X POST https://dez-federation.ru/api/lead \
 | `invoice_pdf` | скачан счёт |
 | `dogovor_pdf` | скачан договор (форма /dogovor/zapolnit или /kp) |
 | `call_click` | клик по телефону |
+| `hero_call_click` | клик по кнопке «Позвонить» в первом экране главной |
+| `hero_calc_click` | клик по кнопке «Расчёт за 5 сек» в первом экране главной |
+| `stats_info_open` | раскрытие пояснения к счётчику «38 000+ заявок по РФ» |
 | `telegram_click` | клик по Telegram |
 | `whatsapp_click` | клик по WhatsApp |
 
@@ -243,7 +246,8 @@ lead_sushka_posle_potopa, lead_borschevik, lead_drugoe
 ### 3. Составные цели (создать в Метрике → Цели → Составная)
 
 - `all_conversions` = `lead_hero` + `lead_modal` + `lead_service` + `lead_price` + `docs_request` + `kp_submit`
-- `contacts` = `call_click` + `telegram_click` + `whatsapp_click`
+- `contacts` = `call_click` + `hero_call_click` + `telegram_click` + `whatsapp_click`
+- `hero_cta` = `hero_call_click` + `hero_calc_click`
 - `documents` = `kp_pdf` + `invoice_pdf` + `dogovor_pdf`
 - по каждой услуге: `conv_klopy` = `lead_klopy` + `call_click`, `conv_tarakany` = `lead_tarakany` + `call_click` и т.д.
 
