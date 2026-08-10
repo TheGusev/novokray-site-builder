@@ -38,7 +38,11 @@ export const Route = createFileRoute("/services/$slug")({
     const { SERVICES_BY_SLUG } = await import("@/data/services");
     const service = SERVICES_BY_SLUG[params.slug];
     if (!service) throw notFound();
-    const related = service.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
+    // без дублей и без ссылки страницы на саму себя
+    const related = [...new Set(service.related)]
+      .filter((slug) => slug !== service.slug)
+      .map((slug) => SERVICES_BY_SLUG[slug])
+      .filter(Boolean);
     // icon — React-компонент, он не сериализуется при передаче лоадера в браузер
     return { service: plain(service), related: related.map(plain) };
   },
@@ -46,20 +50,28 @@ export const Route = createFileRoute("/services/$slug")({
     const s = loaderData?.service;
     if (!s) return { meta: [{ title: "Не найдено" }] };
     const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
+    const url = `${SITE.domain}/services/${params.slug}`;
+    const ogImage = `${SITE.domain}${SERVICE_IMAGES[s.slug] ?? "/og/default.jpg"}`;
+    const ogTitle = `${s.h1} — от ${s.priceFrom.toLocaleString("ru-RU")} ₽`;
+    const ogDescription = `${s.lead.slice(0, 180).trim()}…`;
     return {
       meta: [
         { title: s.metaTitle },
         { name: "description", content: s.metaDescription },
         { name: "keywords", content: s.keywords.join(", ") },
-        { property: "og:title", content: s.metaTitle },
-        { property: "og:description", content: s.metaDescription },
-        { property: "og:url", content: `${SITE.domain}/services/${params.slug}` },
-        { property: "og:type", content: "website" },
-        { property: "og:image", content: `${SITE.domain}${SERVICE_IMAGES[s.slug] ?? "/og/default.jpg"}` },
+        { property: "og:title", content: ogTitle },
+        { property: "og:description", content: ogDescription },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "article" },
+        { property: "og:image", content: ogImage },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: ogTitle },
+        { name: "twitter:description", content: ogDescription },
+        { name: "twitter:image", content: ogImage },
       ],
       links: [
-        { rel: "canonical", href: `/services/${params.slug}` },
-        { rel: "alternate", hrefLang: "ru", href: `/services/${params.slug}` },
+        { rel: "canonical", href: url },
+        { rel: "alternate", hrefLang: "ru", href: url },
       ],
       scripts: [
         {
