@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
 import { type Service } from "@/data/services";
+import { getServiceIcon } from "@/data/serviceIcons";
 import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META, KLOPY_PHOTOS, KLOPY_PHOTO_META } from "@/data/images";
 import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
@@ -28,14 +29,18 @@ const WARRANTY_BY_SLUG: Record<string, string> = {
   "dezodoraciya": "до 6 месяцев",
 };
 
+type PlainService = Omit<Service, "icon">;
+const plain = ({ icon: _icon, ...rest }: Service): PlainService => rest;
+
 export const Route = createFileRoute("/services/$slug")({
   // Каталог услуг (68 КБ) грузится отдельным чанком, а не в общем бандле сайта.
-  loader: async ({ params }): Promise<{ service: Service; related: Service[] }> => {
+  loader: async ({ params }): Promise<{ service: PlainService; related: PlainService[] }> => {
     const { SERVICES_BY_SLUG } = await import("@/data/services");
     const service = SERVICES_BY_SLUG[params.slug];
     if (!service) throw notFound();
     const related = service.related.map((slug) => SERVICES_BY_SLUG[slug]).filter(Boolean);
-    return { service, related };
+    // icon — React-компонент, он не сериализуется при передаче лоадера в браузер
+    return { service: plain(service), related: related.map(plain) };
   },
   head: ({ loaderData, params }) => {
     const s = loaderData?.service;
@@ -137,9 +142,9 @@ export const Route = createFileRoute("/services/$slug")({
 });
 
 function ServicePage() {
-  const data = Route.useLoaderData() as { service: Service; related: Service[] };
+  const data = Route.useLoaderData() as { service: PlainService; related: PlainService[] };
   const s = data.service;
-  const Icon = s.icon;
+  const Icon = getServiceIcon(s.slug);
   const related = data.related;
   const hero = SERVICE_IMAGES[s.slug];
   const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
@@ -375,7 +380,7 @@ function ServicePage() {
         <section className="container-x pb-16">
           <h2 className="font-display text-2xl font-bold md:text-3xl">Смежные услуги</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {related.map((r) => (<ServiceCard key={r.slug} service={r} />))}
+            {related.map((r) => (<ServiceCard key={r.slug} service={{ ...r, icon: getServiceIcon(r.slug) }} />))}
           </div>
         </section>
       )}
