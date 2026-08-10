@@ -248,7 +248,7 @@ function ServicePage() {
               height={1920}
               className="max-h-[460px] w-full object-cover"
             />
-            <figcaption className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.naMatrase.caption}</figcaption>
+            <div className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.naMatrase.caption}</div>
           </Reveal>
         )}
       </section>
@@ -279,7 +279,7 @@ function ServicePage() {
                   height={1200}
                   className="h-full max-h-[420px] w-full object-cover"
                 />
-                <figcaption className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.razborKrovati.caption}</figcaption>
+                <div className="px-5 py-4 text-sm text-muted-foreground">{KLOPY_PHOTO_META.razborKrovati.caption}</div>
               </Reveal>
               <div className="grid gap-5 sm:grid-cols-1">
                 <Reveal delay={80} className="rounded-2xl border border-border bg-card p-6 shadow-card">
