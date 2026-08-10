@@ -37,7 +37,7 @@ const WHY_US = [
   { icon: HandCoins, t: "Фикс цена до выезда", s: "Никаких доплат за препараты и время. Оплата после обработки." },
   { icon: Clock4, t: "Выезд за 60 минут", s: "Бригада в форме, СИЗ и оборудование уже в машине." },
   { icon: FileText, t: "Договор, акт, чек", s: "Принимаем оплату наличными, картой, СБП и безналом." },
-  { icon: Award, t: "12 лет опыта", s: "Более 38 000 объектов с 2014 года в Новосибирске и области." },
+  { icon: Award, t: "7 лет опыта", s: "38 000+ заявок обработано по РФ, с 2019 года работаем в Новосибирске и области." },
 ];
 
 const TIMELINE = [
@@ -148,7 +148,7 @@ function HomePage() {
       <section className="relative min-h-[42rem] overflow-hidden bg-hero text-primary-foreground sm:min-h-[38rem] lg:min-h-[43rem]">
         <div className="absolute inset-0 overflow-hidden">
           <div className="hero-room-tour-frame">
-            <img src={heroBg} alt="Современная квартира в Новосибирске после санитарной обработки — Дез-Федерация" title="Дез-Федерация — санитарная служба №1 в Новосибирске с 2014 года" className="hero-room-tour-media h-full w-full object-cover" loading="eager" fetchPriority="high" decoding="async" width={1920} height={1080} />
+            <img src={heroBg} alt="Современная квартира в Новосибирске после санитарной обработки — Дез-Федерация" title="Дез-Федерация — санитарная служба №1 в Новосибирске с 2019 года" className="hero-room-tour-media h-full w-full object-cover" loading="eager" fetchPriority="high" decoding="async" width={1920} height={1080} />
           </div>
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-black/72 via-black/42 to-black/18" />
@@ -174,7 +174,7 @@ function HomePage() {
             />
 
             <WaveSentences
-              text="Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов. Работаем с 2014 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев, безопасные для детей и животных препараты."
+              text="Уничтожаем клопов и тараканов, обрабатываем участки от клещей и комаров, удаляем плесень, делаем озонирование и срочную сушку после потопов. Работаем с 2019 года, лицензия Роспотребнадзора, гарантия по договору до 24 месяцев, безопасные для детей и животных препараты."
               className="mt-5 min-h-[9.5rem] max-w-xl text-[15px] font-medium leading-[1.75] md:min-h-[7rem] md:text-lg"
               startDelay={420}
               wordStep={195}
@@ -215,7 +215,7 @@ function HomePage() {
                 <div className="font-display text-2xl font-extrabold md:text-3xl">
                   <CountUp value={38000} suffix="+" />
                 </div>
-                <div className="text-[11px] uppercase tracking-wider text-white/70">обработок</div>
+                <div className="text-[11px] uppercase tracking-wider text-white/70">заявок по РФ</div>
               </Reveal>
               <Reveal delay={500}>
                 <div className="flex items-baseline gap-1">

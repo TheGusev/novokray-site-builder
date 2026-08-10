@@ -171,7 +171,7 @@ export interface ImgMeta { alt: string; title: string }
 export const COMMON_IMAGE_META: Record<keyof typeof COMMON, ImgMeta> = {
   heroTeam: {
     alt: "Бригада санитарной службы Дез-Федерация на выезде в Новосибирске",
-    title: "Дез-Федерация — выезд бригады по Новосибирску с 2014 года",
+    title: "Дез-Федерация — выезд бригады по Новосибирску с 2019 года",
   },
   heroSpray: {
     alt: "Специалист Дез-Федерация обрабатывает квартиру холодным туманом против насекомых",
