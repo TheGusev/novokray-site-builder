@@ -86,8 +86,10 @@ server {
     }
 
     location / {
+        # HTML не кешируем вовсе: телефон с уже сохранённой старой страницей
+        # обязан получить свежую версию после каждого деплоя.
         try_files $uri $uri/ $uri.html /index.html;
-        add_header Cache-Control "no-cache" always;
+        add_header Cache-Control "no-store" always;
     }
 }
 ```
@@ -113,7 +115,8 @@ curl -I https://dez-federation.ru/несуществующий-файл.js
 
 Ожидается:
 
-- HTML: `200`, `Content-Type: text/html`, `Cache-Control: no-cache`.
+- HTML: `200`, `Content-Type: text/html`, `Cache-Control: no-store`.
+- Шрифты: `curl -I https://dez-federation.ru/fonts/inter-400-cyrillic.woff2` → `200`, `font/woff2`. Сайт больше не обращается к `fonts.googleapis.com`; если в HTML снова появится этот домен — это регрессия.
 - JS/CSS с хешем: `200`, правильный MIME, `Cache-Control: ... immutable`, gzip или Brotli.
 - PDF: `200`, `Content-Type: application/pdf`.
 - TTF: `200`, тип шрифта, не `text/html`.
