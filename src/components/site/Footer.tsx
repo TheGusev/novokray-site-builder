@@ -52,6 +52,7 @@ export function Footer() {
             <li><Link to="/price" className="text-muted-foreground hover:text-primary">Цены</Link></li>
             <li><Link to="/garantii" className="text-muted-foreground hover:text-primary">Гарантии и сертификаты</Link></li>
             <li><Link to="/blog" className="text-muted-foreground hover:text-primary">Блог и полезные статьи</Link></li>
+            <li><Link to="/video" className="text-muted-foreground hover:text-primary">Видео наших работ</Link></li>
             <li><Link to="/faq" className="text-muted-foreground hover:text-primary">Вопросы и ответы</Link></li>
             <li><Link to="/category/dezinfekciya-novosibirsk" className="text-muted-foreground hover:text-primary">Дезинфекция в Новосибирске</Link></li>
             <li><Link to="/contacts" className="text-muted-foreground hover:text-primary">Контакты</Link></li>
