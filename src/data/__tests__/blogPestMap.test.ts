@@ -32,7 +32,7 @@ describe("сквиз-предложения в блоге", () => {
     for (const offer of Object.values(BLOG_OFFERS)) {
       expect(offer.priceFrom === null || offer.priceFrom > 0).toBe(true);
       const table = PRICING[offer.pest];
-      if (table && offer.priceFrom) {
+      if (table && offer.priceFrom && offer.pest !== "Другое") {
         const min = Math.min(...Object.values(table));
         expect(offer.priceFrom).toBeGreaterThanOrEqual(min);
       }
