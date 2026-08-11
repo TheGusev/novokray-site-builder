@@ -102,7 +102,7 @@ function CompactSelect({
   const current = items.find((i) => i.id === value);
   return (
     <Select value={value || undefined} onValueChange={onChange}>
-      <SelectTrigger className="h-12 rounded-lg border-input bg-background text-sm font-semibold">
+      <SelectTrigger className="h-12 rounded-lg border-input bg-background text-sm font-semibold text-foreground text-foreground">
         {current ? (
           <span className="flex items-center gap-2">
             <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-secondary text-primary">
@@ -236,7 +236,7 @@ export function LeadForm({
     };
 
     return (
-      <form onSubmit={onCompactSubmit} className="grid gap-2.5">
+      <form onSubmit={onCompactSubmit} className="grid gap-2.5 text-foreground">
         <input
           type="text"
           name="company"
@@ -257,7 +257,7 @@ export function LeadForm({
             autoComplete="tel"
             aria-label="Телефон"
             required
-            className="h-12 flex-1 rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide outline-none ring-ring/40 focus:ring-2"
+            className="h-12 flex-1 rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
           />
           <button
             type="submit"
@@ -285,7 +285,7 @@ export function LeadForm({
               value={name}
               onChange={(e) => setName(e.target.value.slice(0, 60))}
               placeholder="Имя"
-              className="h-12 rounded-lg border border-input bg-background px-3 text-sm outline-none ring-ring/40 focus:ring-2"
+              className="h-12 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
             />
           </div>
         )}
@@ -310,8 +310,8 @@ export function LeadForm({
       onSubmit={onSubmit}
       className={
         heroStyle
-          ? "rounded-2xl border border-white/10 bg-white/97 p-5 shadow-elegant backdrop-blur md:p-6"
-          : "rounded-2xl border border-border bg-card p-5 shadow-card md:p-6"
+          ? "rounded-2xl border border-white/10 bg-white/97 p-5 text-foreground shadow-elegant backdrop-blur md:p-6"
+          : "rounded-2xl border border-border bg-card p-5 text-foreground shadow-card md:p-6"
       }
     >
       {title && <div className="font-display text-lg font-bold text-foreground md:text-xl">{title}</div>}
@@ -420,7 +420,7 @@ export function LeadForm({
             value={name}
             onChange={(e) => setName(e.target.value.slice(0, 60))}
             placeholder="Имя (необязательно)"
-            className="h-11 rounded-lg border border-input bg-background px-3 text-sm outline-none ring-ring/40 focus:ring-2"
+            className="h-11 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
           />
           <input
             value={phone}
@@ -430,7 +430,7 @@ export function LeadForm({
             inputMode="tel"
             autoComplete="tel"
             required
-            className="h-12 rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide outline-none ring-ring/40 focus:ring-2"
+            className="h-12 rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
           />
 
           <div className="rounded-lg bg-secondary/60 px-3 py-2.5">
