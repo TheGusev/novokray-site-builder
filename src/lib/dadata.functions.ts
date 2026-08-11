@@ -1,63 +1,44 @@
-export interface DadataParty {
-  name: string;
-  fullName: string;
-  inn: string;
-  kpp?: string;
-  ogrn?: string;
-  address?: string;
-  managementName?: string;
-  managementPost?: string;
-  branchType?: string;
-  status?: string;
-}
+import { isValidInn, type DadataParty } from "./dadata.parse";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function pickParty(raw: any): DadataParty | null {
-  const s = raw?.suggestions?.[0];
-  if (!s) return null;
-  const d = s.data ?? {};
-  return {
-    name: d.name?.short_with_opf ?? d.name?.short ?? s.value ?? "",
-    fullName: d.name?.full_with_opf ?? s.value ?? "",
-    inn: d.inn ?? "",
-    kpp: d.kpp ?? undefined,
-    ogrn: d.ogrn ?? undefined,
-    address: d.address?.value ?? undefined,
-    managementName: d.management?.name ?? undefined,
-    managementPost: d.management?.post ?? undefined,
-    branchType: d.branch_type ?? undefined,
-    status: d.state?.status ?? undefined,
-  };
-}
+export type { DadataParty };
+export { isValidInn };
+
+export type LookupReason = "invalid_inn" | "not_found" | "not_configured" | "unavailable";
+
+export type LookupResult = { ok: true; party: DadataParty } | { ok: false; reason: LookupReason };
 
 /**
- * Автоподстановка реквизитов по ИНН через DaData Suggestions API.
- * Клиентский вызов (для статического хостинга без бэкенда).
- * Токен читается из `import.meta.env.VITE_DADATA_TOKEN`.
- * Возвращает `null`, если токен не задан, реквизиты не найдены или произошла ошибка —
- * форма продолжает работать в ручном режиме.
+ * Реквизиты по ИНН. Ключ DaData живёт только на сервере
+ * (`DADATA_API_KEY` в /etc/dez-federation/lead.env), браузер ходит через прокси.
+ * `/api/dadata` — боевой Bun-сервис за nginx, `/api/public/dadata` — SSR-роут (превью/дев).
  */
-export async function lookupInnParty(inn: string): Promise<DadataParty | null> {
-  if (!/^\d{10}(\d{2})?$/u.test(inn)) return null;
-  const token = (import.meta.env.VITE_DADATA_TOKEN as string | undefined) ?? "";
-  if (!token) return null;
-  try {
-    const res = await fetch(
-      "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party",
-      {
+const ENDPOINTS = ["/api/dadata", "/api/public/dadata"];
+
+export async function lookupInnParty(inn: string): Promise<LookupResult> {
+  if (!isValidInn(inn)) return { ok: false, reason: "invalid_inn" };
+
+  let lastReason: LookupReason = "unavailable";
+  for (const url of ENDPOINTS) {
+    try {
+      const res = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Token ${token}`,
-        },
-        body: JSON.stringify({ query: inn, count: 1 }),
-      },
-    );
-    if (!res.ok) return null;
-    const json = await res.json();
-    return pickParty(json);
-  } catch {
-    return null;
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inn }),
+        signal: AbortSignal.timeout(8000),
+      });
+      const json = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        party?: DadataParty;
+        error?: string;
+      } | null;
+      if (json?.ok && json.party) return { ok: true, party: json.party };
+      if (json?.error === "not_found") return { ok: false, reason: "not_found" };
+      if (json?.error === "key_not_configured") return { ok: false, reason: "not_configured" };
+      // Ответа от нашего сервиса нет (статика без nginx-прокси) — пробуем следующий адрес.
+      lastReason = "unavailable";
+    } catch {
+      lastReason = "unavailable";
+    }
   }
+  return { ok: false, reason: lastReason };
 }

@@ -15,11 +15,12 @@ jobs:
         uses: appleboy/ssh-action@v1.2.0
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          DADATA_API_KEY: ${{ secrets.DADATA_API_KEY }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: TELEGRAM_BOT_TOKEN
+          envs: TELEGRAM_BOT_TOKEN,DADATA_API_KEY
           script: |
             set -e
             cd /root
@@ -80,6 +81,24 @@ jobs:
               fi
             fi
 
+            # Ключ DaData: автозаполнение реквизитов по ИНН на /kp.
+            # Отсутствие ключа не блокирует деплой — форма работает в ручном режиме.
+            grep -q '^DADATA_API_KEY=' /etc/dez-federation/lead.env \
+              || echo 'DADATA_API_KEY=' >> /etc/dez-federation/lead.env
+            if ! grep -qE '^DADATA_API_KEY=.+' /etc/dez-federation/lead.env; then
+              if [ -n "${DADATA_API_KEY:-}" ]; then
+                umask 077
+                sed -i "s|^DADATA_API_KEY=.*|DADATA_API_KEY=${DADATA_API_KEY}|" \
+                  /etc/dez-federation/lead.env
+                chmod 600 /etc/dez-federation/lead.env
+                umask 022
+              else
+                echo "ВНИМАНИЕ: DADATA_API_KEY пуст — реквизиты по ИНН придётся вводить вручную."
+                echo "Задайте секрет DADATA_API_KEY в GitHub или впишите ключ"
+                echo "в /etc/dez-federation/lead.env и выполните: systemctl restart lead-api"
+              fi
+            fi
+
             # Порт 8787 должен быть свободен или занят самим lead-api.
             if ss -tlnp 2>/dev/null | grep -q ':8787 '; then
               if ! ss -tlnp 2>/dev/null | grep ':8787 ' | grep -q 'lead-api\|bun'; then
@@ -116,6 +135,20 @@ jobs:
               exit 1
             }
 
+            # Проверка автозаполнения по ИНН (ИНН самой компании).
+            dprobe=$(curl --silent --show-error -X POST http://127.0.0.1:8787/api/dadata \
+              -H 'Content-Type: application/json' -d '{"inn":"5410169338"}')
+            echo "dadata probe: $dprobe"
+            case "$dprobe" in
+              *'"ok":true'*) : ;;
+              *key_not_configured*)
+                echo "ВНИМАНИЕ: DADATA_API_KEY не задан — автозаполнение по ИНН выключено." ;;
+              *)
+                echo "ОШИБКА: /api/dadata отвечает неверно. Логи:"
+                journalctl -u lead-api -n 30 --no-pager || true
+                exit 1 ;;
+            esac
+
             release_dir="/var/www/dez-federation-releases/$(date +%Y%m%d%H%M%S)-${GITHUB_SHA:-manual}"
             mkdir -p "$release_dir" /var/www/dez-federation.ru
             cp -a dist/client/. "$release_dir/"
@@ -128,6 +161,17 @@ jobs:
             systemctl reload nginx
 
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/ >/dev/null
+
+            # Внешний маршрут: ловит отсутствие location = /api/dadata в nginx.
+            ext_dadata=$(curl --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 \
+              -X POST https://dez-federation.ru/api/dadata \
+              -H 'Content-Type: application/json' -d '{"inn":"5410169338"}' \
+              -o /dev/null -w '%{http_code}')
+            echo "внешний /api/dadata: $ext_dadata"
+            if [ "$ext_dadata" = "404" ] || [ "$ext_dadata" = "405" ]; then
+              echo "ОШИБКА: /api/dadata недоступен через nginx — добавьте location = /api/dadata."
+              exit 1
+            fi
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/blog >/dev/null
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/docs/dogovor-obrazec.pdf >/dev/null
 

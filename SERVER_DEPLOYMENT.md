@@ -207,7 +207,7 @@ LEAD_API_PORT=8787
 ```bash
 chmod 600 /etc/dez-federation/lead.env
 systemctl restart lead-api
-curl -s http://127.0.0.1:8787/health   # ожидается {"ok":true,"token":true}
+curl -s http://127.0.0.1:8787/health   # ожидается {"ok":true,"token":true,"dadata":true}
 ```
 
 Деплой этот файл не перетирает: вставленное вручную значение сохраняется при каждом push.
@@ -218,7 +218,7 @@ curl -s http://127.0.0.1:8787/health   # ожидается {"ok":true,"token":t
 3. Добавить в nginx server-блок (443) до `location /`:
 
 ```nginx
-location = /api/lead {
+location ~ ^/api/(lead|dadata)$ {
     proxy_pass http://127.0.0.1:8787;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
@@ -227,6 +227,9 @@ location = /api/lead {
     proxy_read_timeout 20s;
 }
 ```
+
+`/api/lead` — заявки в Telegram, `/api/dadata` — автозаполнение реквизитов по ИНН на странице `/kp`.
+Если раньше стоял блок `location = /api/lead`, замените его на этот regex-блок (он должен идти **до** `location /`).
 
 Затем `nginx -t && systemctl reload nginx`.
 
@@ -247,6 +250,15 @@ curl -s -X POST https://dez-federation.ru/api/lead \
 ```
 
 Ожидается `{"ok":true}` и сообщение в Telegram-группе.
+
+Проверка реквизитов по ИНН:
+
+```bash
+curl -s -X POST https://dez-federation.ru/api/dadata \
+  -H "Content-Type: application/json" -d '{"inn":"5410169338"}'
+```
+
+Ожидается `{"ok":true,"party":{...}}`.
 
 ### Диагностика одной командой
 
@@ -272,6 +284,9 @@ journalctl -u lead-api -n 30 --no-pager
 | `429 rate_limited` | больше 5 заявок в минуту с IP | подождать минуту |
 | `404` от nginx на `/api/lead` | нет блока `location = /api/lead` | добавить блок, `nginx -t && systemctl reload nginx` |
 | `405 Method Not Allowed` на `/api/lead` | POST обрабатывает статика (нет блока `location = /api/lead` выше `location /`) | добавить блок проксирования **до** общего `location /`, затем `nginx -t && systemctl reload nginx` |
+| `503 key_not_configured` на `/api/dadata` | не задан `DADATA_API_KEY` | вписать ключ DaData в `/etc/dez-federation/lead.env`, `systemctl restart lead-api` |
+| `502 upstream_failed` на `/api/dadata`, в логе 401/403 | неверный ключ DaData или исчерпан лимит | заменить ключ, проверить лимиты в кабинете DaData |
+| `404 not_found` на `/api/dadata` при верном ИНН | организации нет в ЕГРЮЛ | заполнить реквизиты вручную |
 | curl не отвечает, сайт работает | сервис упал | `journalctl -u lead-api -n 50`, `systemctl restart lead-api` |
 
 Деплой сам проверяет цепочку: если токена нет, порт 8787 занят чужим процессом, Telegram отвергает сообщение или nginx не проксирует `/api/lead` — GitHub Actions падает с понятной ошибкой, не выкатывая сайт с неработающими формами.
@@ -282,6 +297,7 @@ journalctl -u lead-api -n 30 --no-pager
 - Honeypot-поле `company`: если заполнено — заявка молча игнорируется.
 - Лимит 5 заявок в минуту с одного IP, иначе `429`.
 - Телефон нормализуется к `+7XXXXXXXXXX`, некорректный — `422`.
+- Ключ DaData (`DADATA_API_KEY`) читается только сервисом: браузер обращается к `/api/dadata`, ключ в бандл не попадает. Лимит 20 запросов в минуту с IP.
 - Токен нигде не попадает в репозиторий и в бандл фронтенда: его читает только systemd через `EnvironmentFile`.
 - Если токен не задан, `/api/lead` отвечает `503 token_not_configured`, а `/health` — `{"ok":true,"token":false}`.
 - Если сервис недоступен, браузер сохраняет заявку в `localStorage` (`offlineQueue`) и отправляет её автоматически при восстановлении связи.

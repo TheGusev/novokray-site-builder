@@ -30,6 +30,7 @@ import { Route as DogovorZapolnitRouteImport } from './routes/dogovor.zapolnit'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiPublicDadataRouteImport } from './routes/api/public/dadata'
 
 const VideoRoute = VideoRouteImport.update({
   id: '/video',
@@ -137,6 +138,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicDadataRoute = ApiPublicDadataRouteImport.update({
+  id: '/api/public/dadata',
+  path: '/api/public/dadata',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/api/public/dadata': typeof ApiPublicDadataRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog': typeof BlogIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/api/public/dadata': typeof ApiPublicDadataRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/uslugi/$slug': typeof UslugiSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/api/public/dadata': typeof ApiPublicDadataRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/uslugi/$slug'
     | '/blog/'
     | '/services/'
+    | '/api/public/dadata'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/uslugi/$slug'
     | '/blog'
     | '/services'
+    | '/api/public/dadata'
   id:
     | '__root__'
     | '/'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/uslugi/$slug'
     | '/blog/'
     | '/services/'
+    | '/api/public/dadata'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -302,6 +314,7 @@ export interface RootRouteChildren {
   UslugiSlugRoute: typeof UslugiSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  ApiPublicDadataRoute: typeof ApiPublicDadataRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -453,6 +466,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/dadata': {
+      id: '/api/public/dadata'
+      path: '/api/public/dadata'
+      fullPath: '/api/public/dadata'
+      preLoaderRoute: typeof ApiPublicDadataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -478,16 +498,8 @@ const rootRouteChildren: RootRouteChildren = {
   UslugiSlugRoute: UslugiSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  ApiPublicDadataRoute: ApiPublicDadataRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
