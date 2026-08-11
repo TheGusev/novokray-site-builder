@@ -343,6 +343,33 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Видео работ */}
+      <section className="container-x py-14 md:py-20">
+        <Reveal>
+          <div className="text-xs font-semibold uppercase tracking-wider text-primary">Видео с объектов</div>
+          <AnimatedHeading
+            as="h2"
+            text="Смотрите, как проходит обработка"
+            highlight="обработка"
+            className="mt-2 max-w-2xl font-display text-3xl font-bold md:text-4xl text-balance"
+          />
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            Реальные съёмки с выездов: горячий туман по спальным местам, кухня от тараканов, участок от клещей и комаров.
+            Ролики подгружаются только по клику — страница остаётся быстрой.
+          </p>
+        </Reveal>
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {WORK_VIDEOS.slice(0, 3).map((v, i) => (
+            <Reveal key={v.slug} delay={i * 80}>
+              <VideoCard video={v} />
+            </Reveal>
+          ))}
+        </div>
+        <Link to="/video" className="mt-8 inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 font-semibold hover:bg-secondary">
+          Все видео работ <ArrowRight className="h-4 w-4" />
+        </Link>
+      </section>
+
       {/* Photo gallery */}
       <section className="bg-surface py-14 md:py-20">
         <div className="container-x">
@@ -522,33 +549,6 @@ function HomePage() {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* Видео работ */}
-      <section className="container-x py-14 md:py-20">
-        <Reveal>
-          <div className="text-xs font-semibold uppercase tracking-wider text-primary">Видео с объектов</div>
-          <AnimatedHeading
-            as="h2"
-            text="Смотрите, как проходит обработка"
-            highlight="обработка"
-            className="mt-2 max-w-2xl font-display text-3xl font-bold md:text-4xl text-balance"
-          />
-          <p className="mt-3 max-w-2xl text-muted-foreground">
-            Реальные съёмки с выездов: горячий туман по спальным местам, кухня от тараканов, участок от клещей и комаров.
-            Ролики подгружаются только по клику — страница остаётся быстрой.
-          </p>
-        </Reveal>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {WORK_VIDEOS.slice(0, 3).map((v, i) => (
-            <Reveal key={v.slug} delay={i * 80}>
-              <VideoCard video={v} />
-            </Reveal>
-          ))}
-        </div>
-        <Link to="/video" className="mt-8 inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 font-semibold hover:bg-secondary">
-          Все видео работ <ArrowRight className="h-4 w-4" />
-        </Link>
       </section>
 
       {/* Documents */}
