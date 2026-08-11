@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
+import { typo } from "./typography";
 
 export function slugify(str: string): string {
   const map: Record<string, string> = {
@@ -29,17 +30,17 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
   const re = /(\*\*([^*]+)\*\*)|(`([^`]+)`)|(\[([^\]]+)\]\(([^)]+)\))/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
-    if (m.index > i) parts.push(text.slice(i, m.index));
-    if (m[1]) parts.push(<strong key={`${keyPrefix}-${key++}`}>{m[2]}</strong>);
+    if (m.index > i) parts.push(typo(text.slice(i, m.index)));
+    if (m[1]) parts.push(<strong key={`${keyPrefix}-${key++}`}>{typo(m[2])}</strong>);
     else if (m[3]) parts.push(<code key={`${keyPrefix}-${key++}`} className="rounded bg-secondary px-1 py-0.5 text-[0.92em]">{m[4]}</code>);
     else if (m[5]) {
-      const label = m[6]; const href = m[7];
+      const label = typo(m[6]); const href = m[7];
       if (href.startsWith("/")) parts.push(<Link key={`${keyPrefix}-${key++}`} to={href} className="text-primary underline decoration-primary/40 hover:decoration-primary">{label}</Link>);
       else parts.push(<a key={`${keyPrefix}-${key++}`} href={href} target="_blank" rel="noopener noreferrer nofollow" className="text-primary underline decoration-primary/40 hover:decoration-primary">{label}</a>);
     }
     i = m.index + m[0].length;
   }
-  if (i < text.length) parts.push(text.slice(i));
+  if (i < text.length) parts.push(typo(text.slice(i)));
   return parts;
 }
 
