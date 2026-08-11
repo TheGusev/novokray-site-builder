@@ -55,7 +55,9 @@ export const Route = createFileRoute("/services/$slug")({
     const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
     const url = `${SITE.domain}/services/${params.slug}`;
     const ogImage = `${SITE.domain}${SERVICE_IMAGES[s.slug] ?? "/og/default.jpg"}`;
-    const ogTitle = `${s.h1} — от ${s.priceFrom.toLocaleString("ru-RU")} ₽`;
+    // В meta уходит обычный пробел: toLocaleString("ru-RU") вставляет неразрывный,
+    // а внешние парсеры (соцсети, превью) показывают его как служебный символ.
+    const ogTitle = `${s.h1} — от ${s.priceFrom.toLocaleString("ru-RU").replace(/[\u00A0\u202F]/g, " ")} ₽`;
     const ogDescription = s.metaDescription;
     return {
       meta: [

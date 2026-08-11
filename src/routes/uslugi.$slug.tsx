@@ -86,8 +86,8 @@ export const Route = createFileRoute("/uslugi/$slug")({
         { property: "og:type", content: "website" },
       ],
       links: [
-        { rel: "canonical", href: `/uslugi/${params.slug}` },
-        { rel: "alternate", hrefLang: "ru-RU", href: `/uslugi/${params.slug}` },
+        { rel: "canonical", href: `${SITE.domain}/uslugi/${params.slug}` },
+        { rel: "alternate", hrefLang: "ru-RU", href: `${SITE.domain}/uslugi/${params.slug}` },
       ],
       scripts: [{
         type: "application/ld+json",

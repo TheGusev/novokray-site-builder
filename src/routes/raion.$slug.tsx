@@ -33,7 +33,7 @@ export const Route = createFileRoute("/raion/$slug")({
         { property: "og:image", content: `${SITE.domain}/og/default.jpg` },
       ],
       links: [
-        { rel: "canonical", href: `/raion/${params.slug}` },
+        { rel: "canonical", href: `${SITE.domain}/raion/${params.slug}` },
       ],
       scripts: [{
         type: "application/ld+json",

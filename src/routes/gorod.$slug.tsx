@@ -33,8 +33,8 @@ export const Route = createFileRoute("/gorod/$slug")({
         { property: "og:image", content: `${SITE.domain}/og/default.jpg` },
       ],
       links: [
-        { rel: "canonical", href: `/gorod/${params.slug}` },
-        { rel: "alternate", hrefLang: "ru-RU", href: `/gorod/${params.slug}` },
+        { rel: "canonical", href: `${SITE.domain}/gorod/${params.slug}` },
+        { rel: "alternate", hrefLang: "ru-RU", href: `${SITE.domain}/gorod/${params.slug}` },
       ],
       scripts: [{
         type: "application/ld+json",
