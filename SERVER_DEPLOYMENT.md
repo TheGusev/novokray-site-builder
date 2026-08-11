@@ -80,6 +80,32 @@ server {
         add_header Cache-Control "public, max-age=31536000, immutable" always;
     }
 
+    location ^~ /media/ {
+        # Видео и постеры отдаём только реальным файлом: HTML-fallback здесь запрещён,
+        # иначе плеер получает страницу вместо ролика и молча не стартует.
+        try_files $uri =404;
+
+        # Если в mime.types сервера нет этих типов — они задаются явно здесь.
+        types {
+            video/mp4  mp4;
+            image/webp webp;
+        }
+        default_type application/octet-stream;
+
+        # Range-запросы нужны для перемотки и для старта воспроизведения в iOS Safari.
+        add_header Accept-Ranges "bytes" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Cross-Origin-Resource-Policy "same-origin" always;
+        # CORS не требуется: медиа отдаётся с того же домена. Раскомментировать
+        # только при переносе файлов на отдельный поддомен или CDN.
+        # add_header Access-Control-Allow-Origin "https://dez-federation.ru" always;
+
+        gzip off;   # mp4/webp уже сжаты, gzip только ломает Range
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, immutable" always;
+        access_log off;
+    }
+
     location ~* ^/(robots\.txt|sitemap\.xml|yandex-recrawl(?:-rel)?\.txt)$ {
         try_files $uri =404;
         add_header Cache-Control "no-cache" always;
