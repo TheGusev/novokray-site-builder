@@ -56,14 +56,14 @@ export const Route = createFileRoute("/blog/")({
     const page = Math.max(1, search?.page ?? 1);
     const hasFilter = !!(search?.cat || search?.geo || search?.hf || search?.tag || search?.q || page > 1);
     const totalPages = Math.max(1, Math.ceil(TOTAL_POSTS / POSTS_PER_PAGE));
-    const base = "Библиотека санитарной службы Дез-Федерация — 50 статей о вредителях, плесени, СанПиН в Новосибирске";
+    const base = "Библиотека санитарной службы Дез-Федерация — 54 статьи о вредителях, плесени, СанПиН в Новосибирске";
     const title = page > 1 ? `${base} — стр. ${page}` : base;
     const canonical = `${SITE.domain}/blog`;
     return {
       meta: [
         { title },
         { name: "description", content: "Библиотека из 50 практических статей: клопы, тараканы, грызуны, плесень, клещи, борщевик, СанПиН для бизнеса, образцы документов. Реальные данные для Новосибирска и НСО." },
-        { property: "og:title", content: "Библиотека санитарной службы — 50 статей о вредителях и санобработке" },
+        { property: "og:title", content: "Библиотека санитарной службы — 54 статьи о вредителях и санобработке" },
         { property: "og:description", content: "От первой помощи при укусе клеща до журналов СанПиН для общепита. Реальные нормативы, препараты, цены 2026 для НСК и НСО." },
         { property: "og:url", content: canonical },
         ...(hasFilter ? [{ name: "robots", content: "noindex,follow" }] : []),
@@ -200,7 +200,7 @@ function BlogIndex() {
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.heroSpray} alt="Библиотека санитарной службы Дез-Федерация — статьи и инструкции" title="Библиотека: 50 статей о вредителях, плесени, СанПиН" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+        <img src={COMMON.heroSpray} alt="Библиотека санитарной службы Дез-Федерация — статьи и инструкции" title="Библиотека: 54 статьи о вредителях, плесени, СанПиН" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
         <div className="container-x relative py-10 md:py-14">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-white/80">
