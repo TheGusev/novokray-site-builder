@@ -90,8 +90,10 @@ export function VideoCard({ video, eager = false }: Props) {
               autoPlay
               playsInline
               preload="auto"
-              className={`mx-auto w-full rounded-xl bg-black ${
-                video.orientation === "portrait" ? "max-h-[80vh] w-auto" : "max-h-[80vh]"
+              className={`mx-auto rounded-xl bg-black ${
+                video.orientation === "portrait"
+                  ? "h-[72vh] w-auto max-w-full"
+                  : "max-h-[72vh] w-full"
               }`}
             />
           )}
