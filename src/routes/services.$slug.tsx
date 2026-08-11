@@ -302,7 +302,7 @@ function ServicePage() {
               <Reveal key={i} delay={i * 100} className="rounded-2xl border border-border bg-card p-6 shadow-card">
                 <div className="font-display text-3xl font-extrabold text-primary/30">{String(i + 1).padStart(2, "0")}</div>
                 <h3 className="mt-1 font-display text-lg font-bold">{st.title}</h3>
-                <div className="mt-2 text-sm text-muted-foreground">{st.text}</div>
+                <div className="mt-2 text-sm text-muted-foreground">{typo(st.text)}</div>
               </Reveal>
             ))}
           </div>
@@ -354,7 +354,7 @@ function ServicePage() {
           {s.tech.map((t, i) => (
             <Reveal key={i} delay={i * 90} className="rounded-2xl border border-border bg-card p-6 shadow-card">
               <h3 className="font-display text-lg font-bold text-primary">{t.title}</h3>
-              <div className="mt-2 text-sm text-muted-foreground">{t.text}</div>
+              <div className="mt-2 text-sm text-muted-foreground">{typo(t.text)}</div>
             </Reveal>
           ))}
         </div>
