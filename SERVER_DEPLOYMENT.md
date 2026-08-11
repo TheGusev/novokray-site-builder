@@ -221,6 +221,7 @@ journalctl -u lead-api -n 30 --no-pager
 | `422 invalid_phone` | телефон не в формате РФ | так и задумано, проверка ввода |
 | `429 rate_limited` | больше 5 заявок в минуту с IP | подождать минуту |
 | `404` от nginx на `/api/lead` | нет блока `location = /api/lead` | добавить блок, `nginx -t && systemctl reload nginx` |
+| `405 Method Not Allowed` на `/api/lead` | POST обрабатывает статика (нет блока `location = /api/lead` выше `location /`) | добавить блок проксирования **до** общего `location /`, затем `nginx -t && systemctl reload nginx` |
 | curl не отвечает, сайт работает | сервис упал | `journalctl -u lead-api -n 50`, `systemctl restart lead-api` |
 
 Деплой сам проверяет цепочку: если токена нет, порт 8787 занят чужим процессом, Telegram отвергает сообщение или nginx не проксирует `/api/lead` — GitHub Actions падает с понятной ошибкой, не выкатывая сайт с неработающими формами.
