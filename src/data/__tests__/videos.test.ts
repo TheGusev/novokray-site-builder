@@ -9,10 +9,10 @@ describe("видео работ", () => {
     expect(new Set(WORK_VIDEOS.map((v) => v.slug)).size).toBe(WORK_VIDEOS.length);
   });
 
-  it("у каждого видео есть CDN-ссылка, постер и описание", () => {
+  it("у каждого видео есть локальный файл, постер и описание", () => {
     for (const v of WORK_VIDEOS) {
-      expect(v.src, v.slug).toMatch(/^\/__l5e\/assets-v1\/.+\.mp4$/);
-      expect(v.poster, v.slug).toMatch(/^\/__l5e\/assets-v1\/.+\.webp$/);
+      expect(v.src, v.slug).toMatch(/^\/media\/[\w-]+\.mp4$/);
+      expect(v.poster, v.slug).toMatch(/^\/media\/[\w-]+\.webp$/);
       expect(v.title.length).toBeGreaterThan(10);
       expect(v.description.length).toBeGreaterThan(30);
       expect(v.durationSec).toBeGreaterThan(0);
@@ -40,7 +40,7 @@ describe("видео работ", () => {
   });
 
   it("фото участка подписано", () => {
-    expect(UCHASTOK_PHOTO.url).toMatch(/^\/__l5e\/assets-v1\//);
+    expect(UCHASTOK_PHOTO.url).toMatch(/^\/media\//);
     expect(UCHASTOK_PHOTO.alt.length).toBeGreaterThan(10);
   });
 

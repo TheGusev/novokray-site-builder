@@ -107,7 +107,7 @@ export function videosForService(slug: string): WorkVideo[] {
 
 /** Размер кадра ролика (съёмка на телефон). */
 export function videoDimensions(v: WorkVideo) {
-  return v.orientation === "portrait" ? { width: 464, height: 848 } : { width: 848, height: 464 };
+  return v.orientation === "portrait" ? { width: 464, height: 848 } : { width: 720, height: 394 };
 }
 
 /** Дата публикации роликов на сайте (ISO). */
