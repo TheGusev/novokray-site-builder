@@ -67,8 +67,19 @@ jobs:
                 chmod 600 /etc/dez-federation/lead.env
                 umask 022
               else
-                echo "ВНИМАНИЕ: TELEGRAM_BOT_TOKEN пуст — заявки в Telegram уходить не будут."
-                echo "Вставьте токен в /etc/dez-federation/lead.env и выполните: systemctl restart lead-api"
+                echo "ОШИБКА: TELEGRAM_BOT_TOKEN пуст — заявки в Telegram уходить не будут."
+                echo "Задайте секрет TELEGRAM_BOT_TOKEN в GitHub или вставьте токен"
+                echo "в /etc/dez-federation/lead.env и выполните: systemctl restart lead-api"
+                exit 1
+              fi
+            fi
+
+            # Порт 8787 должен быть свободен или занят самим lead-api.
+            if ss -tlnp 2>/dev/null | grep -q ':8787 '; then
+              if ! ss -tlnp 2>/dev/null | grep ':8787 ' | grep -q 'lead-api\|bun'; then
+                echo "ОШИБКА: порт 8787 занят посторонним процессом:"
+                ss -tlnp | grep ':8787 '
+                exit 1
               fi
             fi
 
@@ -81,7 +92,23 @@ jobs:
               curl --fail --silent http://127.0.0.1:8787/health >/dev/null && break
               sleep 1
             done
-            curl --fail --silent http://127.0.0.1:8787/health >/dev/null
+            health=$(curl --fail --silent http://127.0.0.1:8787/health)
+            echo "health: $health"
+            echo "$health" | grep -q '"token":true' || {
+              echo "ОШИБКА: сервис заявок запущен без токена."
+              exit 1
+            }
+
+            # Боевая проверка канала: заявка реально уходит в Telegram.
+            probe=$(curl --silent --show-error -X POST http://127.0.0.1:8787/api/lead \
+              -H 'Content-Type: application/json' \
+              -d '{"type":"Деплой: проверка канала","phone":"+70000000000","formName":"deploy-check"}')
+            echo "probe: $probe"
+            echo "$probe" | grep -q '"ok":true' || {
+              echo "ОШИБКА: заявка не дошла до Telegram. Логи:"
+              journalctl -u lead-api -n 30 --no-pager || true
+              exit 1
+            }
 
             release_dir="/var/www/dez-federation-releases/$(date +%Y%m%d%H%M%S)-${GITHUB_SHA:-manual}"
             mkdir -p "$release_dir" /var/www/dez-federation.ru
@@ -97,6 +124,17 @@ jobs:
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/ >/dev/null
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/blog >/dev/null
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/docs/dogovor-obrazec.pdf >/dev/null
+
+            # Внешний маршрут: ловит отсутствие location = /api/lead в nginx.
+            nginx_probe=$(curl --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 \
+              -X POST https://dez-federation.ru/api/lead \
+              -H 'Content-Type: application/json' \
+              -d '{"type":"Деплой: проверка канала","phone":"+70000000000","formName":"deploy-check"}')
+            echo "nginx probe: $nginx_probe"
+            echo "$nginx_probe" | grep -q '"ok":true' || {
+              echo "ОШИБКА: /api/lead недоступен через nginx — добавьте location = /api/lead."
+              exit 1
+            }
 
             # Удаление устаревших файлов выполняется только после успешной проверки.
             # Старые хешированные assets сохраняем: открытая до деплоя вкладка может ещё запросить их.
