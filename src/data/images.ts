@@ -64,6 +64,7 @@ import blogPosleZhivotnyh from "@/assets/blog-posle-zhivotnyh.jpg";
 import blogKleshchPomosch from "@/assets/blog-kleshch-pomosch.jpg";
 import blogAkaritsidy from "@/assets/blog-akaritsidy.jpg";
 import blogZhurnal from "@/assets/blog-zhurnal.jpg";
+import blogZatopiliSosedi from "@/assets/blog-zatopili-sosedi.jpg";
 
 // Unique gallery (process-in-action photos)
 import gallery1 from "@/assets/gallery-1.jpg";
@@ -171,7 +172,7 @@ export const BLOG_COVERS: Record<string, string> = {
   "dezodoratsiya-posle-zhivotnyh": blogPosleZhivotnyh,
   "zapakh-tabaka-v-arendnoy-kvartire": svcOzon,
   // ЧС
-  "zatopili-sosedi-chto-delat": blogZatopili,
+  "zatopili-sosedi-chto-delat": blogZatopiliSosedi,
   "sushka-posle-zatopleniya-skolko-stoit": svcSushka,
   "obrabotka-kvartiry-posle-umershego": blogPosleUmershego,
   "obrabotka-posle-pozhara-pervye-shagi": svcDezodoraciya,
