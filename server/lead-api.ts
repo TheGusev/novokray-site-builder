@@ -12,17 +12,19 @@ const RATE_WINDOW_MS = 60_000;
 const MAX_BODY = 8192;
 
 const hits = new Map<string, number[]>();
+const dadataHits = new Map<string, number[]>();
+const DADATA_RATE_LIMIT = 20;
 
-function rateLimited(ip: string): boolean {
+function rateLimited(ip: string, limit = RATE_LIMIT, store = hits): boolean {
   const now = Date.now();
-  const list = (hits.get(ip) ?? []).filter((t) => t > now - RATE_WINDOW_MS);
-  if (list.length >= RATE_LIMIT) {
-    hits.set(ip, list);
+  const list = (store.get(ip) ?? []).filter((t) => t > now - RATE_WINDOW_MS);
+  if (list.length >= limit) {
+    store.set(ip, list);
     return true;
   }
   list.push(now);
-  hits.set(ip, list);
-  if (hits.size > 5000) hits.clear();
+  store.set(ip, list);
+  if (store.size > 5000) store.clear();
   return false;
 }
 
@@ -110,7 +112,8 @@ async function handleLead(req: Request, ip: string): Promise<Response> {
 
 /** Прокси к DaData: ключ остаётся на сервере, браузер получает только реквизиты. */
 async function handleDadata(req: Request, ip: string): Promise<Response> {
-  if (rateLimited(ip)) return json({ ok: false, error: "rate_limited" }, 429);
+  if (rateLimited(ip, DADATA_RATE_LIMIT, dadataHits))
+    return json({ ok: false, error: "rate_limited" }, 429);
 
   const raw = await req.text();
   if (raw.length > 512) return json({ ok: false, error: "bad_request" }, 400);

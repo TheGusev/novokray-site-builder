@@ -11,7 +11,8 @@ import {
   type ObjectKind,
   type Periodicity,
 } from "@/data/b2bPricing";
-import { lookupInnParty, type DadataParty } from "@/lib/dadata.functions";
+import { lookupInnParty } from "@/lib/dadata.functions";
+import { isActiveParty } from "@/lib/dadata.parse";
 import type { ContractBlock } from "@/lib/dogovor/buildPdf";
 import { GOALS, trackGoal } from "@/lib/analytics";
 import { sendLead } from "@/lib/leadSender";
@@ -68,7 +69,9 @@ function KpPage() {
   const [vatIncluded, setVatIncluded] = useState(false);
 
   // UI
-  const [lookupState, setLookupState] = useState<"idle" | "loading" | "not_found" | "no_key" | "ok" | "error">("idle");
+  const [lookupState, setLookupState] = useState<
+    "idle" | "loading" | "not_found" | "no_key" | "ok" | "inactive" | "unavailable" | "error"
+  >("idle");
   const [busy, setBusy] = useState<null | "kp" | "invoice" | "contract" | "all">(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -82,26 +85,31 @@ function KpPage() {
   const canGenerate = companyName.trim().length > 0 && objectAddress.trim().length > 0 && areaM2 > 0 && pests.length > 0;
 
   async function handleLookup() {
-    if (!/^\d{10}(\d{2})?$/.test(inn)) {
+    if (!/^\d{10}$|^\d{12}$/.test(inn)) {
       setLookupState("error");
       return;
     }
     setLookupState("loading");
-    try {
-      const p: DadataParty | null = await lookupInnParty(inn);
-      if (!p) {
-        setLookupState("no_key");
-        return;
-      }
-      setCompanyName(p.name || companyName);
-      if (p.kpp) setCompanyKpp(p.kpp);
-      if (p.ogrn) setCompanyOgrn(p.ogrn);
-      if (p.address) setLegalAddress(p.address);
-      if (p.managementName) setContactPerson(`${p.managementName}${p.managementPost ? `, ${p.managementPost}` : ""}`);
-      setLookupState("ok");
-    } catch {
-      setLookupState("error");
+    const result = await lookupInnParty(inn);
+    if (!result.ok) {
+      setLookupState(
+        result.reason === "not_found"
+          ? "not_found"
+          : result.reason === "not_configured"
+            ? "no_key"
+            : result.reason === "invalid_inn"
+              ? "error"
+              : "unavailable",
+      );
+      return;
     }
+    const p = result.party;
+    setCompanyName(p.name || companyName);
+    if (p.kpp) setCompanyKpp(p.kpp);
+    if (p.ogrn) setCompanyOgrn(p.ogrn);
+    if (p.address) setLegalAddress(p.address);
+    if (p.managementName) setContactPerson(`${p.managementName}${p.managementPost ? `, ${p.managementPost}` : ""}`);
+    setLookupState(isActiveParty(p) ? "ok" : "inactive");
   }
 
   function togglePest(key: string) {
@@ -257,7 +265,9 @@ function KpPage() {
                 </div>
                 {lookupState === "ok" && <p className="mt-1 text-xs text-emerald-600">Реквизиты подтянуты, проверьте поля ниже.</p>}
                 {lookupState === "not_found" && <p className="mt-1 text-xs text-amber-600">По этому ИНН ничего не нашли — заполните вручную.</p>}
+                {lookupState === "inactive" && <p className="mt-1 text-xs text-amber-600">Реквизиты подтянуты, но по данным ЕГРЮЛ организация не действующая — проверьте перед отправкой документов.</p>}
                 {lookupState === "no_key" && <p className="mt-1 text-xs text-muted-foreground">Автозаполнение по ИНН пока не подключено — заполните поля вручную, документы сформируются корректно.</p>}
+                {lookupState === "unavailable" && <p className="mt-1 text-xs text-amber-600">Сервис реквизитов временно недоступен — заполните поля вручную.</p>}
                 {lookupState === "error" && <p className="mt-1 text-xs text-destructive">Проверьте ИНН: 10 или 12 цифр.</p>}
               </div>
               <label className="md:col-span-2 block">
