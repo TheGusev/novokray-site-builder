@@ -4,6 +4,7 @@ import { SITE } from "@/data/site";
 import { GOALS, trackGoal } from "@/lib/analytics";
 import { LeadFormModal } from "./LeadFormModal";
 import type { BlogOffer } from "@/data/blogPestMap";
+import { typo } from "@/lib/typography";
 
 const DISMISS_KEY = "blogCtaDismissed";
 
@@ -66,7 +67,7 @@ export function BlogStickyCta({ offer, context }: Props) {
       <div className="flex items-center gap-2">
         <div className="min-w-0 flex-1">
           <div className="truncate font-display text-[13px] font-bold leading-tight text-foreground">
-            {offer.heading}
+            {typo(offer.heading)}
           </div>
           <div className="truncate text-[11px] text-muted-foreground">
             {offer.priceFrom ? `от ${offer.priceFrom.toLocaleString("ru-RU")} ₽ · ` : ""}выезд сегодня, гарантия

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import type { Service } from "@/data/services";
 import { SERVICE_IMAGES, SERVICE_IMAGE_META } from "@/data/images";
+import { typo } from "@/lib/typography";
 
 export function ServiceCard({ service }: { service: Service }) {
   const Icon = service.icon;
@@ -43,7 +44,7 @@ export function ServiceCard({ service }: { service: Service }) {
         </span>
       </div>
       )}
-      <h3 className={`${image ? "" : "mt-4"} font-display text-lg font-bold leading-tight text-balance`}>{service.title}</h3>
+      <h3 className={`${image ? "" : "mt-4"} font-display text-lg font-bold leading-tight text-balance`}>{typo(service.title)}</h3>
       <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{service.lead.slice(0, 130)}…</p>
       <div className="mt-auto flex items-center justify-between gap-2 pt-5 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-success" /> Гарантия по договору</span>
