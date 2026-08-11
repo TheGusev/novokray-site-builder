@@ -103,7 +103,7 @@ function CityPage() {
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <img src={COMMON.heroSpray} alt={`Санитарная служба ${c.prepositional} — дезинсекция, дератизация и озонирование`} title={`Выезд бригады ${c.prepositional} день в день — Дез-Федерация`} className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent" />
-        <div className="container-x relative grid gap-8 py-12 md:py-16 lg:grid-cols-[1.25fr,1fr]">
+        <div className="container-x relative grid gap-8 py-12 md:py-16 lg:grid-cols-[1.25fr_1fr]">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur">
               <MapPin className="h-3.5 w-3.5" /> {c.name} · {c.distanceKm} км от Новосибирска

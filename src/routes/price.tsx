@@ -94,7 +94,7 @@ function PricePage() {
         <div className="space-y-10">
           {SERVICES.map((s, idx) => (
             <Reveal key={s.slug} delay={(idx % 3) * 80} className="overflow-hidden rounded-2xl border border-border bg-card shadow-card md:p-0">
-              <div className="grid gap-0 md:grid-cols-[260px,1fr]">
+              <div className="grid gap-0 md:grid-cols-[260px_1fr]">
                 {SERVICE_IMAGES[s.slug] && (
                   <div className="relative aspect-[16/10] md:aspect-auto">
                     <img src={SERVICE_IMAGES[s.slug]} alt={SERVICE_IMAGE_META[s.slug]?.cardAlt ?? `Цена на услугу «${s.title}»`} title={SERVICE_IMAGE_META[s.slug]?.cardTitle ?? s.title} loading="lazy" className="h-full w-full object-cover" />

@@ -179,7 +179,7 @@ function ServicePage() {
           </>
         )}
         <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 80% 30%, oklch(0.7 0.20 38 / 0.3), transparent 60%)" }} />
-        <div className="container-x relative grid gap-8 py-10 md:py-14 lg:grid-cols-[1.25fr,1fr] lg:py-20">
+        <div className="container-x relative grid gap-8 py-10 md:py-14 lg:grid-cols-[1.25fr_1fr] lg:py-20">
           <div>
             <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur">

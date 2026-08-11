@@ -417,7 +417,7 @@ function HomePage() {
 
       {/* GEO */}
       <section className="container-x py-14 md:py-20">
-        <div className="grid gap-10 lg:grid-cols-[1fr,1.2fr]">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr]">
           <Reveal>
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">География выездов</div>
             <AnimatedHeading
@@ -547,7 +547,7 @@ function HomePage() {
 
       {/* B2B */}
       <section className="bg-surface py-14 md:py-20">
-        <div className="container-x grid gap-10 lg:grid-cols-[1fr,1.4fr]">
+        <div className="container-x grid gap-10 lg:grid-cols-[1fr_1.4fr]">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
               <Building2 className="h-3.5 w-3.5" /> Для юрлиц

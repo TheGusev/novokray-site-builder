@@ -162,7 +162,7 @@ function HubPage() {
       </section>
 
       <section className="bg-surface py-14">
-        <div className="container-x grid gap-8 md:grid-cols-[1.2fr,1fr]">
+        <div className="container-x grid gap-8 md:grid-cols-[1.2fr_1fr]">
           <div>
             <h2 className="font-display text-2xl font-bold md:text-3xl">Заказать обработку</h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">Оставьте заявку — перезвоним за 10 минут, уточним детали и зафиксируем цену. Выезд по Новосибирску и области ежедневно с 07:00 до 23:00.</p>

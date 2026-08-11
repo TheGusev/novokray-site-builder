@@ -65,7 +65,7 @@ function AboutPage() {
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
         <img src={COMMON.heroTeam} alt="Команда из 28 специалистов санитарной службы Дез-Федерация на выезде в Новосибирске" title="Дез-Федерация — с 2019 года в Новосибирске и области" className="absolute inset-0 h-full w-full object-cover opacity-100" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
-        <div className="container-x relative grid gap-8 py-12 md:py-20 lg:grid-cols-[1.2fr,1fr]">
+        <div className="container-x relative grid gap-8 py-12 md:py-20 lg:grid-cols-[1.2fr_1fr]">
           <div>
             <Reveal>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider backdrop-blur">

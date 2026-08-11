@@ -132,7 +132,7 @@ function ContactsPage() {
 
       <section className="container-x -mt-6 md:-mt-8">
         <Reveal className="rounded-2xl border border-border bg-card p-5 shadow-elegant md:p-7">
-          <div className="grid gap-5 md:grid-cols-[1.1fr,1fr] md:items-center">
+          <div className="grid gap-5 md:grid-cols-[1.1fr_1fr] md:items-center">
             <div>
               <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Единый номер — звонок, MAX, WhatsApp
@@ -200,7 +200,7 @@ function ContactsPage() {
       </section>
 
       <section className="container-x py-8">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr,1fr]">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
           <div className="grid gap-4 sm:grid-cols-2">
             <Reveal>
               <a href={SITE.phoneHref} onClick={() => trackGoal(GOALS.callClick, { place: "contacts" })} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">

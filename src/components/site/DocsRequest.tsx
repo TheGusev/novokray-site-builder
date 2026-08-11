@@ -142,7 +142,7 @@ export function DocsRequest() {
           </span>
         </label>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-[1fr,auto,auto]">
+        <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
           <button
             type="submit"
             disabled={loading || !canSubmit}
