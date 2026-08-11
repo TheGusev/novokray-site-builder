@@ -19,6 +19,9 @@ export const GOALS = {
   telegramClick: "telegram_click",
   heroCallClick: "hero_call_click",
   heroCalcClick: "hero_calc_click",
+  contactsCallClick: "contacts_call_click",
+  contactsWhatsappClick: "contacts_whatsapp_click",
+  contactsMaxClick: "contacts_max_click",
   statsInfoOpen: "stats_info_open",
 } as const;
 

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from "lucide-react";
 import { SITE } from "@/data/site";
 import { COMMON } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -7,6 +7,7 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { Reveal } from "@/components/site/Reveal";
 import { WaveText } from "@/components/site/WaveText";
 import { GOALS, trackGoal } from "@/lib/analytics";
+import { openStatusLabel } from "@/lib/openHours";
 
 export const Route = createFileRoute("/contacts")({
   head: () => ({
@@ -63,6 +64,23 @@ export const Route = createFileRoute("/contacts")({
               contactType: "customer service",
               areaServed: "RU-NVS",
               availableLanguage: ["ru"],
+            }, {
+              "@type": "ContactPoint",
+              telephone: SITE.whatsapp,
+              contactType: "customer support",
+              contactOption: "TollFree",
+              areaServed: "RU-NVS",
+              availableLanguage: ["ru"],
+              url: SITE.whatsappHref,
+              name: "WhatsApp",
+            }, {
+              "@type": "ContactPoint",
+              telephone: SITE.max,
+              contactType: "customer support",
+              areaServed: "RU-NVS",
+              availableLanguage: ["ru"],
+              url: SITE.maxHref,
+              name: "MAX",
             }],
             areaServed: [
               { "@type": "City", name: "Новосибирск" },
@@ -97,6 +115,7 @@ export const Route = createFileRoute("/contacts")({
 
 function ContactsPage() {
   const cities = ["Новосибирск", "Бердск", "Искитим", "Кольцово", "Краснообск", "Обь", "Мочище", "Криводановка", "Толмачёво", "Барышево", "Линёво", "Каменка", "Сузун"];
+  const status = openStatusLabel();
   return (
     <>
       <Breadcrumbs items={[{ label: "Главная", to: "/" }, { label: "Контакты" }]} />
@@ -109,6 +128,75 @@ function ContactsPage() {
             Связаться с Дез-Федерацией в Новосибирске можно по телефону, в WhatsApp или Telegram, по email или через форму ниже. Работаем ежедневно с 07:00 до 23:00, аварийные службы — сушка после потопов — круглосуточно. По юрлицам — отдельный менеджер на договорное обслуживание.
           </p>
         </div>
+      </section>
+
+      <section className="container-x -mt-6 md:-mt-8">
+        <Reveal className="rounded-2xl border border-border bg-card p-5 shadow-elegant md:p-7">
+          <div className="grid gap-5 md:grid-cols-[1.1fr,1fr] md:items-center">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Единый номер — звонок, MAX, WhatsApp
+              </div>
+              <a
+                href={SITE.phoneHref}
+                onClick={() => trackGoal(GOALS.contactsCallClick, { place: "contacts_quick" })}
+                className="speakable mt-1 block font-display text-3xl font-extrabold tracking-tight text-foreground hover:text-primary md:text-4xl"
+              >
+                {SITE.phone}
+              </a>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary" />{SITE.hours}</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/70 px-2.5 py-0.5 text-xs font-semibold text-foreground">
+                  {status}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Сушка после потопов — аварийный выезд круглосуточно.
+              </p>
+            </div>
+
+            <div className="grid gap-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <a
+                  href={SITE.phoneHref}
+                  onClick={() => trackGoal(GOALS.contactsCallClick, { place: "contacts_quick" })}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta transition hover:scale-[1.01]"
+                >
+                  <Phone className="h-4.5 w-4.5" /> Позвонить
+                </a>
+                <a
+                  href={SITE.whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackGoal(GOALS.contactsWhatsappClick, { place: "contacts_quick" })}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-success/40 bg-success/10 font-bold text-foreground transition hover:border-success hover:bg-success/15"
+                >
+                  <MessageCircle className="h-4.5 w-4.5 text-success" /> Написать в WhatsApp
+                </a>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <a
+                  href={SITE.telegramHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackGoal(GOALS.telegramClick, { place: "contacts_quick" })}
+                  className="inline-flex items-center gap-1.5 font-semibold text-foreground hover:text-primary"
+                >
+                  <Send className="h-3.5 w-3.5 text-primary" /> Telegram {SITE.telegramHandle}
+                </a>
+                <a
+                  href={SITE.maxHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackGoal(GOALS.contactsMaxClick, { place: "contacts_quick" })}
+                  className="font-semibold text-foreground hover:text-primary"
+                >
+                  MAX на этом же номере
+                </a>
+              </div>
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       <section className="container-x py-8">
@@ -128,9 +216,9 @@ function ContactsPage() {
               <a href={SITE.telegramHref} target="_blank" rel="noopener noreferrer" onClick={() => trackGoal(GOALS.telegramClick, { place: "contacts" })} className="flex gap-4 rounded-2xl border border-border bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant">
                 <MessageCircle className="mt-1 h-6 w-6 text-success" />
                 <div>
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Telegram · MAX · WhatsApp</div>
-                  <div className="font-display text-lg font-bold">{SITE.telegramHandle} · {SITE.phone}</div>
-                  <div className="text-xs text-muted-foreground">MAX и WhatsApp — тот же номер. Отвечаем в течение 15 минут.</div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Telegram</div>
+                  <div className="font-display text-lg font-bold">{SITE.telegramHandle}</div>
+                  <div className="text-xs text-muted-foreground">Фото объекта и вопросы — отвечаем в течение 15 минут.</div>
                 </div>
               </a>
             </Reveal>
