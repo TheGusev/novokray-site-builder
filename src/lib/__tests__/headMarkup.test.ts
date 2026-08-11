@@ -14,11 +14,27 @@ const BASE = process.env["HEAD_TEST_BASE"] ?? "http://localhost:8080";
 const NBSP_RE = /[\u00A0\u202F]/;
 
 const STATIC_PAGES = [
-  "/", "/services", "/price", "/faq", "/blog", "/video", "/contacts",
-  "/o-kompanii", "/garantii", "/privacy", "/terms", "/karta-sayta", "/kp",
+  "/",
+  "/services",
+  "/price",
+  "/faq",
+  "/blog",
+  "/video",
+  "/contacts",
+  "/o-kompanii",
+  "/garantii",
+  "/privacy",
+  "/terms",
+  "/karta-sayta",
+  "/kp",
   "/category/dezinfekciya-novosibirsk",
 ];
-const HUBS = ["unichtozhenie-vrediteley", "sanitarnaya-obrabotka", "obrabotka-uchastkov", "spec-uslugi"];
+const HUBS = [
+  "unichtozhenie-vrediteley",
+  "sanitarnaya-obrabotka",
+  "obrabotka-uchastkov",
+  "spec-uslugi",
+];
 
 const urls = [
   ...STATIC_PAGES,
@@ -32,8 +48,11 @@ const urls = [
 
 function decode(s: string): string {
   return s
-    .replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'")
-    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
 }
 
 async function online(): Promise<boolean> {
@@ -51,61 +70,66 @@ beforeAll(async () => {
 });
 
 describe("meta и JSON-LD на отрендеренных страницах", () => {
-  it(
-    "разметка валидна, без неразрывных пробелов и с абсолютным canonical",
-    async () => {
-      if (!up) return; // dev-сервер не запущен — пропускаем
-      const problems: string[] = [];
+  it("разметка валидна, без неразрывных пробелов и с абсолютным canonical", async () => {
+    if (!up) return; // dev-сервер не запущен — пропускаем
+    const problems: string[] = [];
 
-      await Promise.all(
-        urls.map(async (u) => {
-          let html: string;
-          try {
-            const res = await fetch(BASE + u, { signal: AbortSignal.timeout(30000) });
-            if (!res.ok) {
-              problems.push(`${u}: HTTP ${res.status}`);
-              return;
-            }
-            html = await res.text();
-          } catch (e) {
-            problems.push(`${u}: ${(e as Error).message}`);
+    await Promise.all(
+      urls.map(async (u) => {
+        let html: string;
+        try {
+          const res = await fetch(BASE + u, { signal: AbortSignal.timeout(30000) });
+          if (!res.ok) {
+            problems.push(`${u}: HTTP ${res.status}`);
             return;
           }
+          html = await res.text();
+        } catch (e) {
+          problems.push(`${u}: ${(e as Error).message}`);
+          return;
+        }
 
-          const title = /<title>(.*?)<\/title>/s.exec(html)?.[1];
-          if (!title) problems.push(`${u}: нет <title>`);
-          else if (NBSP_RE.test(title) || title.includes("...")) problems.push(`${u}: title «${title}»`);
+        const title = /<title>(.*?)<\/title>/s.exec(html)?.[1];
+        if (!title) problems.push(`${u}: нет <title>`);
+        else if (NBSP_RE.test(title) || title.includes("..."))
+          problems.push(`${u}: title «${title}»`);
 
-          for (const tag of html.match(/<meta[^>]*>/g) ?? []) {
-            const content = /content="([^"]*)"/.exec(tag)?.[1];
-            if (!content) continue;
-            const isText = /name="(description|keywords|twitter:(title|description))"|property="og:(title|description)"/.test(tag);
-            if (!isText) continue;
-            if (NBSP_RE.test(content)) problems.push(`${u}: неразрывный пробел в ${tag.slice(0, 60)}`);
-            if (content.includes("...")) problems.push(`${u}: троеточие точками в ${tag.slice(0, 60)}`);
+        for (const tag of html.match(/<meta[^>]*>/g) ?? []) {
+          const content = /content="([^"]*)"/.exec(tag)?.[1];
+          if (!content) continue;
+          const isText =
+            /name="(description|keywords|twitter:(title|description))"|property="og:(title|description)"/.test(
+              tag,
+            );
+          if (!isText) continue;
+          if (NBSP_RE.test(content))
+            problems.push(`${u}: неразрывный пробел в ${tag.slice(0, 60)}`);
+          if (content.includes("..."))
+            problems.push(`${u}: троеточие точками в ${tag.slice(0, 60)}`);
+        }
+
+        const canon = [...html.matchAll(/rel="canonical"[^>]*href="([^"]*)"/g)].map((m) => m[1]);
+        if (canon.length !== 1) problems.push(`${u}: canonical ×${canon.length}`);
+        else if (!canon[0]!.startsWith("http"))
+          problems.push(`${u}: относительный canonical ${canon[0]}`);
+
+        const blocks = [
+          ...html.matchAll(/<script[^>]*application\/ld\+json[^>]*>(.*?)<\/script>/gs),
+        ].map((m) => m[1]!);
+        if (!blocks.length) problems.push(`${u}: нет JSON-LD`);
+        for (const raw of blocks) {
+          const json = decode(raw);
+          try {
+            const parsed = JSON.parse(json) as Record<string, unknown>;
+            if (!parsed["@context"]) problems.push(`${u}: JSON-LD без @context`);
+          } catch (e) {
+            problems.push(`${u}: JSON-LD не парсится (${(e as Error).message})`);
           }
+          if (NBSP_RE.test(json)) problems.push(`${u}: неразрывный пробел в JSON-LD`);
+        }
+      }),
+    );
 
-          const canon = [...html.matchAll(/rel="canonical"[^>]*href="([^"]*)"/g)].map((m) => m[1]);
-          if (canon.length !== 1) problems.push(`${u}: canonical ×${canon.length}`);
-          else if (!canon[0]!.startsWith("http")) problems.push(`${u}: относительный canonical ${canon[0]}`);
-
-          const blocks = [...html.matchAll(/<script[^>]*application\/ld\+json[^>]*>(.*?)<\/script>/gs)].map((m) => m[1]!);
-          if (!blocks.length) problems.push(`${u}: нет JSON-LD`);
-          for (const raw of blocks) {
-            const json = decode(raw);
-            try {
-              const parsed = JSON.parse(json) as Record<string, unknown>;
-              if (!parsed["@context"]) problems.push(`${u}: JSON-LD без @context`);
-            } catch (e) {
-              problems.push(`${u}: JSON-LD не парсится (${(e as Error).message})`);
-            }
-            if (NBSP_RE.test(json)) problems.push(`${u}: неразрывный пробел в JSON-LD`);
-          }
-        }),
-      );
-
-      expect(problems, problems.slice(0, 20).join("\n")).toEqual([]);
-    },
-    120000,
-  );
+    expect(problems, problems.slice(0, 20).join("\n")).toEqual([]);
+  }, 120000);
 });

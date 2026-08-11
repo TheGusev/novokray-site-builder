@@ -36,45 +36,109 @@ export const Route = createFileRoute("/gorod/$slug")({
         { rel: "canonical", href: `${SITE.domain}/gorod/${params.slug}` },
         { rel: "alternate", hrefLang: "ru-RU", href: `${SITE.domain}/gorod/${params.slug}` },
       ],
-      scripts: [{
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@graph": [
-            {
-              "@type": "LocalBusiness",
-              "@id": `${SITE.domain}/gorod/${params.slug}#localbusiness`,
-              name: `${SITE.name} — ${c.name}`,
-              parentOrganization: { "@id": `${SITE.domain}#organization` },
-              url: `${SITE.domain}/gorod/${params.slug}`,
-              telephone: SITE.phone,
-              email: SITE.email,
-              priceRange: "1500-25000",
-              areaServed: { "@type": "City", name: c.name, containedInPlace: { "@type": "AdministrativeArea", name: SITE.region } },
-              address: { "@type": "PostalAddress", addressCountry: "RU", addressRegion: SITE.region, addressLocality: c.name },
-              openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "07:00", closes: "23:00" }],
-            },
-            {
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
-                { "@type": "ListItem", position: 2, name: "Зона выезда", item: `${SITE.domain}/#region` },
-                { "@type": "ListItem", position: 3, name: c.name, item: `${SITE.domain}/gorod/${params.slug}` },
-              ],
-            },
-            {
-              "@type": "FAQPage",
-              mainEntity: [
-                { "@type": "Question", name: `Вы работаете ${c.prepositional}?`, acceptedAnswer: { "@type": "Answer", text: `Да. Бригада Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.` } },
-                { "@type": "Question", name: `Сколько стоит выезд ${c.prepositional}?`, acceptedAnswer: { "@type": "Answer", text: `Выезд бесплатный — оплачивается только сама обработка. Стоимость рассчитывается по типу объекта, цена фиксируется до приезда.` } },
-                { "@type": "Question", name: `Какие услуги доступны ${c.prepositional}?`, acceptedAnswer: { "@type": "Answer", text: `Все 13 направлений санитарной обработки: уничтожение клопов, тараканов, грызунов, обработка от плесени, озонирование, сушка после потопов, обработка участков от клещей и комаров, фумигация, дезодорация.` } },
-                { "@type": "Question", name: `Даёте ли гарантию ${c.prepositional}?`, acceptedAnswer: { "@type": "Answer", text: `Да, гарантия по договору такая же, как в Новосибирске — до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени.` } },
-              ],
-              speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
-            },
-          ],
-        }),
-      }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "LocalBusiness",
+                "@id": `${SITE.domain}/gorod/${params.slug}#localbusiness`,
+                name: `${SITE.name} — ${c.name}`,
+                parentOrganization: { "@id": `${SITE.domain}#organization` },
+                url: `${SITE.domain}/gorod/${params.slug}`,
+                telephone: SITE.phone,
+                email: SITE.email,
+                priceRange: "1500-25000",
+                areaServed: {
+                  "@type": "City",
+                  name: c.name,
+                  containedInPlace: { "@type": "AdministrativeArea", name: SITE.region },
+                },
+                address: {
+                  "@type": "PostalAddress",
+                  addressCountry: "RU",
+                  addressRegion: SITE.region,
+                  addressLocality: c.name,
+                },
+                openingHoursSpecification: [
+                  {
+                    "@type": "OpeningHoursSpecification",
+                    dayOfWeek: [
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                      "Sunday",
+                    ],
+                    opens: "07:00",
+                    closes: "23:00",
+                  },
+                ],
+              },
+              {
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+                  {
+                    "@type": "ListItem",
+                    position: 2,
+                    name: "Зона выезда",
+                    item: `${SITE.domain}/#region`,
+                  },
+                  {
+                    "@type": "ListItem",
+                    position: 3,
+                    name: c.name,
+                    item: `${SITE.domain}/gorod/${params.slug}`,
+                  },
+                ],
+              },
+              {
+                "@type": "FAQPage",
+                mainEntity: [
+                  {
+                    "@type": "Question",
+                    name: `Вы работаете ${c.prepositional}?`,
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: `Да. Бригада Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: `Сколько стоит выезд ${c.prepositional}?`,
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: `Выезд бесплатный — оплачивается только сама обработка. Стоимость рассчитывается по типу объекта, цена фиксируется до приезда.`,
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: `Какие услуги доступны ${c.prepositional}?`,
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: `Все 13 направлений санитарной обработки: уничтожение клопов, тараканов, грызунов, обработка от плесени, озонирование, сушка после потопов, обработка участков от клещей и комаров, фумигация, дезодорация.`,
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: `Даёте ли гарантию ${c.prepositional}?`,
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: `Да, гарантия по договору такая же, как в Новосибирске — до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени.`,
+                    },
+                  },
+                ],
+                speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
+              },
+            ],
+          }),
+        },
+      ],
     };
   },
   component: CityPage,
@@ -85,23 +149,46 @@ function CityPage() {
   const topServices = [...SERVICES].sort((a, b) => b.priority - a.priority).slice(0, 8);
 
   const faq = [
-    { q: `Вы работаете ${c.prepositional}?`, a: `Да. Бригада Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.` },
-    { q: `Сколько стоит выезд ${c.prepositional}?`, a: `Выезд бесплатный — оплачивается только обработка. Цена фиксируется по телефону до приезда, без скрытых платежей.` },
-    { q: `Какие услуги доступны ${c.prepositional}?`, a: `Все 13 направлений: клопы, тараканы, грызуны, плесень, озонирование, сушка после потопов, обработка участков от клещей и комаров, фумигация, дезодорация.` },
-    { q: `Даёте ли гарантию ${c.prepositional}?`, a: `Да, гарантия по договору такая же, как в Новосибирске — до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени.` },
-    { q: `За сколько приедет бригада ${c.prepositional}?`, a: `Стандартное время выезда — ${c.travelMin}–${c.travelMin + 20} минут с момента подтверждения заявки. В пиковые часы возможны задержки до 1,5 часов.` },
+    {
+      q: `Вы работаете ${c.prepositional}?`,
+      a: `Да. Бригада Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
+    },
+    {
+      q: `Сколько стоит выезд ${c.prepositional}?`,
+      a: `Выезд бесплатный — оплачивается только обработка. Цена фиксируется по телефону до приезда, без скрытых платежей.`,
+    },
+    {
+      q: `Какие услуги доступны ${c.prepositional}?`,
+      a: `Все 13 направлений: клопы, тараканы, грызуны, плесень, озонирование, сушка после потопов, обработка участков от клещей и комаров, фумигация, дезодорация.`,
+    },
+    {
+      q: `Даёте ли гарантию ${c.prepositional}?`,
+      a: `Да, гарантия по договору такая же, как в Новосибирске — до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени.`,
+    },
+    {
+      q: `За сколько приедет бригада ${c.prepositional}?`,
+      a: `Стандартное время выезда — ${c.travelMin}–${c.travelMin + 20} минут с момента подтверждения заявки. В пиковые часы возможны задержки до 1,5 часов.`,
+    },
   ];
 
   return (
     <>
-      <Breadcrumbs items={[
-        { label: "Главная", to: "/" },
-        { label: "Города области", to: "/karta-sayta" },
-        { label: c.name },
-      ]} />
+      <Breadcrumbs
+        items={[
+          { label: "Главная", to: "/" },
+          { label: "Города области", to: "/karta-sayta" },
+          { label: c.name },
+        ]}
+      />
 
       <section className="relative overflow-hidden bg-hero text-primary-foreground">
-        <img src={COMMON.heroSpray} alt={`Санитарная служба ${c.prepositional} — дезинсекция, дератизация и озонирование`} title={`Выезд бригады ${c.prepositional} день в день — Дез-Федерация`} className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+        <img
+          src={COMMON.heroSpray}
+          alt={`Санитарная служба ${c.prepositional} — дезинсекция, дератизация и озонирование`}
+          title={`Выезд бригады ${c.prepositional} день в день — Дез-Федерация`}
+          className="absolute inset-0 h-full w-full object-cover opacity-25"
+          loading="eager"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent" />
         <div className="container-x relative grid gap-8 py-12 md:py-16 lg:grid-cols-[1.25fr_1fr]">
           <div>
@@ -112,7 +199,9 @@ function CityPage() {
               Санитарная служба {c.prepositional} — дезинфекция и уничтожение вредителей
             </h1>
             <p className="speakable mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">
-              {c.description} Выезжаем из Новосибирска за {c.travelMin} минут, работаем по договору, цена фиксируется до приезда. На каждую обработку — гарантия и бесплатная повторная выездка при возврате проблемы.
+              {c.description} Выезжаем из Новосибирска за {c.travelMin} минут, работаем по договору,
+              цена фиксируется до приезда. На каждую обработку — гарантия и бесплатная повторная
+              выездка при возврате проблемы.
             </p>
             <div className="mt-6 max-w-xl">
               <TldrBlock
@@ -127,16 +216,26 @@ function CityPage() {
               />
             </div>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <a href={SITE.phoneHref} className="cta-shine inline-flex items-center justify-center gap-2 rounded-xl bg-cta-gradient px-5 py-4 font-bold text-accent-foreground shadow-cta">
+              <a
+                href={SITE.phoneHref}
+                className="cta-shine inline-flex items-center justify-center gap-2 rounded-xl bg-cta-gradient px-5 py-4 font-bold text-accent-foreground shadow-cta"
+              >
                 <Phone className="h-5 w-5" /> Вызвать {c.prepositional}
               </a>
-              <a href="#zayavka" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-4 font-semibold backdrop-blur hover:bg-white/20">
+              <a
+                href="#zayavka"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-4 font-semibold backdrop-blur hover:bg-white/20"
+              >
                 Получить расчёт
               </a>
             </div>
           </div>
           <div id="zayavka">
-            <LeadForm variant="hero" title={`Заявка ${c.prepositional}`} subtitle={`Перезвоним за 10 минут, зафиксируем цену.`} />
+            <LeadForm
+              variant="hero"
+              title={`Заявка ${c.prepositional}`}
+              subtitle={`Перезвоним за 10 минут, зафиксируем цену.`}
+            />
           </div>
         </div>
       </section>
@@ -144,24 +243,50 @@ function CityPage() {
       <TrustStrip />
 
       <section className="container-x py-14">
-        <h2 className="font-display text-2xl font-bold md:text-3xl">Что обрабатываем {c.prepositional}</h2>
-        <p className="mt-2 max-w-3xl text-muted-foreground">Все 13 направлений санитарной службы доступны жителям {c.name} и района. Самые востребованные — ниже.</p>
+        <h2 className="font-display text-2xl font-bold md:text-3xl">
+          Что обрабатываем {c.prepositional}
+        </h2>
+        <p className="mt-2 max-w-3xl text-muted-foreground">
+          Все 13 направлений санитарной службы доступны жителям {c.name} и района. Самые
+          востребованные — ниже.
+        </p>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {topServices.map((s) => (<ServiceCard key={s.slug} service={s} />))}
+          {topServices.map((s) => (
+            <ServiceCard key={s.slug} service={s} />
+          ))}
         </div>
         <div className="mt-6">
-          <Link to="/services" className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:gap-2">Все услуги →</Link>
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:gap-2"
+          >
+            Все услуги →
+          </Link>
         </div>
       </section>
 
       <section className="bg-surface py-14">
         <div className="container-x">
-          <h2 className="font-display text-2xl font-bold md:text-3xl">Почему жители {c.genitive} выбирают Дез-Федерацию</h2>
+          <h2 className="font-display text-2xl font-bold md:text-3xl">
+            Почему жители {c.genitive} выбирают Дез-Федерацию
+          </h2>
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {[
-              { icon: Truck, t: `Выезд ${c.prepositional} за ${c.travelMin} мин`, d: `Бригада с оборудованием выезжает день в день. Бесплатная диагностика на месте.` },
-              { icon: ShieldCheck, t: "Гарантия по договору", d: "До 24 месяцев. При возврате проблемы — приезжаем повторно бесплатно." },
-              { icon: Clock, t: "Работаем 7 дней в неделю", d: `${SITE.hours}. Принимаем заявки в выходные и праздники.` },
+              {
+                icon: Truck,
+                t: `Выезд ${c.prepositional} за ${c.travelMin} мин`,
+                d: `Бригада с оборудованием выезжает день в день. Бесплатная диагностика на месте.`,
+              },
+              {
+                icon: ShieldCheck,
+                t: "Гарантия по договору",
+                d: "До 24 месяцев. При возврате проблемы — приезжаем повторно бесплатно.",
+              },
+              {
+                icon: Clock,
+                t: "Работаем 7 дней в неделю",
+                d: `${SITE.hours}. Принимаем заявки в выходные и праздники.`,
+              },
             ].map((b, i) => (
               <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-card">
                 <b.icon className="h-7 w-7 text-primary" />
@@ -177,7 +302,10 @@ function CityPage() {
               `Опытные дезинфекторы с допусками — стаж в среднем 6+ лет.`,
               `Без запаха после высыхания — можно сразу возвращаться в помещение.`,
             ].map((x, i) => (
-              <li key={i} className="flex gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /><span>{x}</span></li>
+              <li key={i} className="flex gap-2 text-sm">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+                <span>{x}</span>
+              </li>
             ))}
           </ul>
         </div>
@@ -189,7 +317,12 @@ function CityPage() {
         <h2 className="font-display text-xl font-bold">Другие города области</h2>
         <div className="mt-4 flex flex-wrap gap-2">
           {CITIES.filter((x) => x.slug !== c.slug).map((x) => (
-            <Link key={x.slug} to="/gorod/$slug" params={{ slug: x.slug }} className="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary hover:text-primary">
+            <Link
+              key={x.slug}
+              to="/gorod/$slug"
+              params={{ slug: x.slug }}
+              className="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary hover:text-primary"
+            >
               {x.name}
             </Link>
           ))}

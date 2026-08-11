@@ -74,7 +74,10 @@ describe("типографика", () => {
   it("контент сайта проходит plain-нормализацию без изменений", () => {
     const problems: string[] = [];
     for (const p of POSTS) {
-      for (const [field, text] of [["title", p.title], ["excerpt", p.excerpt]] as const) {
+      for (const [field, text] of [
+        ["title", p.title],
+        ["excerpt", p.excerpt],
+      ] as const) {
         if (typoPlain(text) !== text) problems.push(`${p.slug}:${field}`);
       }
       (p.faq ?? []).forEach((f, i) => {
