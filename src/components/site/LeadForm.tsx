@@ -196,6 +196,115 @@ export function LeadForm({
 
   const heroStyle = variant === "hero";
 
+  if (variant === "compact") {
+    const finalPest = pest || initialPest || "Другое";
+    const finalObject = object || "Не указан";
+    const compactPrice = getLeadPrice(finalPest, finalObject);
+
+    const onCompactSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (phoneDigits !== 11) {
+        return toast.error("Укажите телефон полностью (11 цифр)");
+      }
+      setLoading(true);
+      const formGoal = goal ?? GOALS.leadService;
+      trackLead(formGoal, finalPest, {
+        object: finalObject,
+        price: compactPrice ?? 0,
+        form_name: formName ?? title ?? "",
+        context: context ?? "",
+      });
+      const sent = await sendLead({
+        type: "Заявка на обработку",
+        pest: finalPest,
+        object: finalObject,
+        name,
+        phone,
+        priceFrom: compactPrice,
+        formName: formName ?? title ?? "Быстрая форма",
+        priceBasis: context ? `Из статьи: ${context}` : undefined,
+        company,
+      });
+      setLoading(false);
+      toast.success(
+        sent
+          ? "Заявка отправлена. Перезвоним в течение 10 минут."
+          : "Заявка сохранена — отправим автоматически, как появится связь.",
+      );
+      setPhone(""); setName(""); setObject(""); setDetails(false);
+      onSuccess?.();
+    };
+
+    return (
+      <form onSubmit={onCompactSubmit} className="grid gap-2.5">
+        <input
+          type="text"
+          name="company"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute left-[-9999px] h-0 w-0 opacity-0"
+        />
+        <div className="flex flex-col gap-2.5 sm:flex-row">
+          <input
+            value={phone}
+            onChange={(e) => setPhone(formatPhone(e.target.value))}
+            onFocus={(e) => { if (!e.target.value) setPhone("+7 ("); }}
+            placeholder="+7 (___) ___-__-__"
+            inputMode="tel"
+            autoComplete="tel"
+            aria-label="Телефон"
+            required
+            className="h-12 flex-1 rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide outline-none ring-ring/40 focus:ring-2"
+          />
+          <button
+            type="submit"
+            disabled={loading || phoneDigits !== 11}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-cta-gradient px-5 font-bold text-accent-foreground shadow-cta transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[13rem]"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {submitLabel ?? "Получить расчёт"}
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setDetails((v) => !v)}
+          className="justify-self-start text-xs font-semibold text-primary hover:underline"
+        >
+          {details ? "Скрыть детали" : "Уточнить детали (необязательно)"}
+        </button>
+
+        {details && (
+          <div className="grid gap-2.5 animate-fade-in sm:grid-cols-3">
+            <CompactSelect items={PESTS} value={pest} onChange={setPest} placeholder="Что обрабатываем" />
+            <CompactSelect items={OBJECTS} value={object} onChange={setObject} placeholder="Объект" />
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value.slice(0, 60))}
+              placeholder="Имя"
+              className="h-12 rounded-lg border border-input bg-background px-3 text-sm outline-none ring-ring/40 focus:ring-2"
+            />
+          </div>
+        )}
+
+        {compactPrice !== null && (
+          <div className="text-xs font-semibold text-foreground/80">
+            Ориентир по вашей ситуации: <span className="text-primary">от {formatRub(compactPrice)}</span> · точная цена после осмотра
+          </div>
+        )}
+
+        <p className="text-[11px] leading-snug text-muted-foreground">
+          Нажимая кнопку, вы соглашаетесь с{" "}
+          <Link to="/privacy" target="_blank" className="underline underline-offset-2 hover:text-primary">политикой обработки персональных данных</Link>.
+          Перезвоним в течение 10 минут, без спама.
+        </p>
+      </form>
+    );
+  }
+
   return (
     <form
       onSubmit={onSubmit}
