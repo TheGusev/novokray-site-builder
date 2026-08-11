@@ -67,6 +67,7 @@ function deviceLabel(): string {
 /** Нормализует российский телефон к виду +7XXXXXXXXXX. */
 export function normalizePhone(raw: string): string {
   let d = (raw || "").replace(/\D/g, "");
+  while (d.length > 11 && (d.startsWith("7") || d.startsWith("8"))) d = d.slice(1);
   if (d.length === 11 && (d.startsWith("8") || d.startsWith("7"))) d = d.slice(1);
   if (d.length === 10) return `+7${d}`;
   return raw.trim();
