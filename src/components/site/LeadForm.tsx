@@ -146,7 +146,10 @@ function Progress({ step }: { step: 1 | 2 | 3 }) {
   );
 }
 
-export function LeadForm({ defaultService = "", variant = "card", title, subtitle, onSuccess, goal }: Props) {
+export function LeadForm({
+  defaultService = "", variant = "card", title, subtitle, onSuccess, goal,
+  formName, context, submitLabel,
+}: Props) {
   const initialPest = PESTS.find((p) => p.id === defaultService)?.id ?? "";
   const [step, setStep] = useState<1 | 2 | 3>(initialPest ? 2 : 1);
   const [pest, setPest] = useState<string>(initialPest);
@@ -156,6 +159,7 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [company, setCompany] = useState("");
+  const [details, setDetails] = useState(false);
 
   const phoneDigits = phone.replace(/\D/g, "").length;
   const canSubmit = phoneDigits >= 11 && agree && pest && object;
@@ -176,7 +180,7 @@ export function LeadForm({ defaultService = "", variant = "card", title, subtitl
       type: "Заявка на обработку",
       pest, object, name, phone,
       priceFrom: price,
-      formName: title ?? (variant === "hero" ? "Форма в баннере" : "Форма на странице"),
+      formName: formName ?? title ?? (variant === "hero" ? "Форма в баннере" : "Форма на странице"),
       priceBasis: price ? `${pest} · ${object} — прайс калькулятора` : undefined,
       company,
     });
