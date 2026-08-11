@@ -71,8 +71,8 @@ const OBJECTS: Tile[] = [
 
 function formatPhone(raw: string): string {
   let d = raw.replace(/\D/g, "").replace(/^8/, "7");
-  // вставка номера поверх подставленного «+7 (» даёт лишнюю семёрку — убираем
-  while (d.length > 11 && d.startsWith("7")) d = d.slice(1);
+  // ввод «+7…» поверх подставленного «+7 (» даёт лишнюю семёрку — убираем её
+  while (d.length > 11 && d.startsWith("77")) d = d.slice(1);
   d = d.slice(0, 11);
   const n = d.startsWith("7") ? d.slice(1) : d;
   const p1 = n.slice(0, 3);
