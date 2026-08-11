@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Phone, ArrowRight, Video as VideoIcon, ShieldCheck } from "lucide-react";
 import { SITE } from "@/data/site";
-import { WORK_VIDEOS, UCHASTOK_PHOTO } from "@/data/videos";
+import { WORK_VIDEOS, UCHASTOK_PHOTO, videoJsonLd } from "@/data/videos";
 import { SERVICES_INDEX } from "@/data/servicesIndex";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { VideoCard } from "@/components/site/VideoCard";
@@ -29,17 +29,7 @@ export const Route = createFileRoute("/video")({
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
-          "@graph": WORK_VIDEOS.map((v) => ({
-            "@type": "VideoObject",
-            name: v.title,
-            description: v.description,
-            thumbnailUrl: `${SITE.domain}${v.poster}`,
-            contentUrl: `${SITE.domain}${v.src}`,
-            uploadDate: "2026-08-11",
-            duration: `PT${v.durationSec}S`,
-            inLanguage: "ru-RU",
-            publisher: { "@type": "Organization", "@id": `${SITE.domain}#organization`, name: SITE.name },
-          })),
+          "@graph": WORK_VIDEOS.map((v) => videoJsonLd(v, SITE.domain)),
         }),
       },
     ],
@@ -71,7 +61,7 @@ function VideoPage() {
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {WORK_VIDEOS.map((v, i) => (
             <Reveal key={v.slug} delay={i * 60}>
-              <VideoCard video={v} eager={i === 0} />
+              <VideoCard video={v} eager={i === 0} schema={false} />
             </Reveal>
           ))}
         </div>
