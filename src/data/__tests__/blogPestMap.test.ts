@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { POSTS } from "../blog";
 import { getBlogOffer, BLOG_OFFERS } from "../blogPestMap";
-import { PRICING } from "../leadPricing";
+import { SERVICES_INDEX } from "../servicesIndex";
 
 // id вредителей, доступные в LeadForm
 const PEST_IDS = [
@@ -28,14 +28,11 @@ describe("сквиз-предложения в блоге", () => {
     }
   });
 
-  it("цены «от» неотрицательны и согласованы с прайсом там, где он есть", () => {
+  it("цены «от» совпадают с прайсом услуг", () => {
     for (const offer of Object.values(BLOG_OFFERS)) {
-      expect(offer.priceFrom === null || offer.priceFrom > 0).toBe(true);
-      const table = PRICING[offer.pest];
-      if (table && offer.priceFrom && offer.pest !== "Другое") {
-        const min = Math.min(...Object.values(table));
-        expect(offer.priceFrom).toBeGreaterThanOrEqual(min);
-      }
+      const svc = SERVICES_INDEX.find((s) => s.slug === offer.service);
+      expect(svc, `услуга ${offer.service}`).toBeTruthy();
+      expect(offer.priceFrom).toBe(svc!.priceFrom);
     }
   });
 
