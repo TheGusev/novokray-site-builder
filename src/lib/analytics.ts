@@ -29,6 +29,8 @@ export const GOALS = {
   blogInlineLead: "blog_inline_lead",
   blogBottomLead: "blog_bottom_lead",
   blogSidebarLead: "blog_sidebar_lead",
+  videoPlay: "video_play",
+  videoLead: "video_lead",
 } as const;
 
 export type GoalName = (typeof GOALS)[keyof typeof GOALS] | (string & {});
