@@ -2,6 +2,8 @@
 // Запускается на сервере через systemd: bun run server/lead-api.ts
 // Токен читается из окружения (TELEGRAM_BOT_TOKEN), в репозитории его нет.
 
+import { buildMessage, clean } from "./leadMessage";
+
 const PORT = Number(process.env.LEAD_API_PORT ?? 8787);
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID ?? "-5244841627";
 const RATE_LIMIT = 5;
@@ -21,15 +23,6 @@ function rateLimited(ip: string): boolean {
   hits.set(ip, list);
   if (hits.size > 5000) hits.clear();
   return false;
-}
-
-function clean(v: unknown, max = 200): string {
-  if (typeof v !== "string" && typeof v !== "number") return "";
-  return String(v).replace(/\s+/g, " ").trim().slice(0, max);
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 function normalizePhone(raw: string): string {
@@ -60,68 +53,6 @@ export function explainTelegramError(status: number, body: string): string {
   if (b.includes("can't parse entities"))
     return "Telegram не принял разметку сообщения";
   return "см. текст ответа Telegram выше";
-}
-
-function buildMessage(d: Record<string, unknown>, phone: string): string {
-  const f = (v: unknown, max?: number) => escapeHtml(clean(v, max));
-  const isCheck = clean(d.formName) === "deploy-check";
-  const lines: string[] = [
-    isCheck
-      ? "<b>🧪 Проверка канала (автотест деплоя)</b>"
-      : `<b>🔔 ${f(d.type || "Заявка с сайта", 60)}</b>`,
-    "",
-  ];
-  const add = (label: string, value: string) => { if (value) lines.push(`${label}: ${value}`); };
-
-  // КТО
-  lines.push("<b>Кто</b>");
-  add("Имя", f(d.name, 60));
-  lines.push(`Телефон: <a href="tel:${phone}">${phone}</a>`);
-  add("Организация", f(d.org, 120));
-  add("ИНН", f(d.inn, 12));
-
-  // ЧТО
-  const docs = Array.isArray(d.docs)
-    ? (d.docs as unknown[]).map((x) => clean(x, 60)).filter(Boolean).slice(0, 12)
-    : [];
-  if (clean(d.pest) || clean(d.object) || docs.length) {
-    lines.push("", "<b>Что нужно</b>");
-    add("Услуга", f(d.pest, 80));
-    add("Объект", f(d.object, 80));
-    if (docs.length) lines.push(`Документы: ${escapeHtml(docs.join(", "))}`);
-  }
-
-  // ПОЧЕМУ такая цена
-  const price = Number(d.priceFrom);
-  if (Number.isFinite(price) && price > 0) {
-    lines.push("", "<b>Цена</b>", `Расчёт: от ${price.toLocaleString("ru-RU")} ₽`);
-    add("Основание", f(d.priceBasis, 160));
-  }
-
-  // ОТКУДА
-  lines.push("", "<b>Источник</b>");
-  add("Форма", f(d.formName, 80));
-  add("Страница", f(d.page || d.source, 200));
-  add("Переход с", f(d.referrer, 200));
-  const utm = d.utm && typeof d.utm === "object" && !Array.isArray(d.utm)
-    ? (d.utm as Record<string, unknown>)
-    : {};
-  const utmLine = Object.entries(utm)
-    .map(([k, v]) => `${clean(k, 20)}=${clean(v, 120)}`)
-    .filter((s) => !s.endsWith("="))
-    .slice(0, 7)
-    .join(", ");
-  if (utmLine) lines.push(`Метки: ${escapeHtml(utmLine)}`);
-  add("Устройство", f(d.device, 20));
-
-  const sentAt = Date.parse(clean(d.sentAt, 40));
-  if (Number.isFinite(sentAt) && Date.now() - sentAt > 5 * 60_000) {
-    lines.push(
-      `⏳ Из офлайн-очереди, создана: ${new Date(sentAt).toLocaleString("ru-RU", { timeZone: "Asia/Novosibirsk" })}`,
-    );
-  }
-  lines.push(`Время: ${new Date().toLocaleString("ru-RU", { timeZone: "Asia/Novosibirsk" })}`);
-  return lines.join("\n");
 }
 
 async function handleLead(req: Request, ip: string): Promise<Response> {
