@@ -8,7 +8,11 @@ import { DOCS } from "@/data/docs";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
-import { renderBody, extractToc } from "@/lib/mdx-lite";
+import { renderBodyBlocks, extractToc } from "@/lib/mdx-lite";
+import { getBlogOffer } from "@/data/blogPestMap";
+import { InlineLeadCta } from "@/components/site/InlineLeadCta";
+import { BlogStickyCta } from "@/components/site/BlogStickyCta";
+import { GOALS } from "@/lib/analytics";
 
 export const Route = createFileRoute("/blog/$slug")({
   // Статьи грузятся отдельным чанком — они не нужны на остальных страницах.
@@ -110,6 +114,9 @@ function PostPage() {
   const cover = BLOG_COVERS[p.slug];
   const toc = extractToc(p.body);
   const docs = (p.relatedDocs ?? []).map((s: string) => DOCS.find((d) => d.slug === s)).filter(Boolean) as typeof DOCS;
+  const offer = getBlogOffer(p.category, p.relatedServices);
+  const blocks = renderBodyBlocks(p.body);
+  const cutIndex = Math.max(1, Math.round(blocks.length * 0.4));
 
   return (
     <>
@@ -146,7 +153,7 @@ function PostPage() {
           </div>
         )}
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-[220px,1fr,320px]">
+        <div className="mt-10 grid gap-10 lg:grid-cols-[220px_1fr_320px]">
           {/* TOC */}
           <aside className="hidden lg:block">
             <div className="sticky top-24 rounded-2xl border border-[--shelf-line] bg-[--paper] p-4 text-[--paper-foreground]">
@@ -166,7 +173,24 @@ function PostPage() {
             <div className="speakable rounded-2xl border border-primary/20 bg-secondary/50 p-5 text-base font-medium leading-relaxed text-foreground">
               {p.excerpt}
             </div>
-            <div className="mt-2">{renderBody(p.body)}</div>
+            <div className="mt-2">
+              {blocks.slice(0, cutIndex)}
+              <InlineLeadCta
+                offer={offer}
+                context={p.title}
+                goal={GOALS.blogInlineLead}
+                formName={`Врезка в статье: ${p.title}`}
+              />
+              {blocks.slice(cutIndex)}
+            </div>
+
+            <InlineLeadCta
+              offer={offer}
+              context={p.title}
+              goal={GOALS.blogBottomLead}
+              formName={`Блок под статьёй: ${p.title}`}
+              wide
+            />
 
             {/* Документы */}
             {docs.length > 0 && (
@@ -223,7 +247,15 @@ function PostPage() {
 
           {/* Правый сайдбар */}
           <aside className="space-y-6">
-            <LeadForm title="Нужна помощь?" subtitle="Расскажите о проблеме — подскажем решение и цену." />
+            <div className="lg:sticky lg:top-24">
+              <LeadForm
+                title={offer.heading}
+                subtitle={offer.sub}
+                defaultService={offer.pest}
+                goal={GOALS.blogSidebarLead}
+                formName={`Сайдбар статьи: ${p.title}`}
+              />
+            </div>
             {related.length > 0 && (
               <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
                 <div className="font-display text-sm font-bold uppercase tracking-wider text-muted-foreground">По теме статьи</div>
@@ -273,6 +305,8 @@ function PostPage() {
           </div>
         </section>
       )}
+
+      <BlogStickyCta offer={offer} context={p.title} />
     </>
   );
 }

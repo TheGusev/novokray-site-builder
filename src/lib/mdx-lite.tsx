@@ -116,11 +116,10 @@ export function parseMarkdownBlocks(body: string): MarkdownBlock[] {
   return out;
 }
 
-export function renderBody(body: string): ReactNode {
+/** Рендерит статью как массив блоков — чтобы можно было вставить CTA внутрь текста. */
+export function renderBodyBlocks(body: string): ReactNode[] {
   const blocks = parseMarkdownBlocks(body);
-  return (
-    <>
-      {blocks.map((b, idx) => {
+  return blocks.map((b, idx) => {
         switch (b.kind) {
           case "h2": {
             const id = slugify(b.text);
@@ -163,9 +162,11 @@ export function renderBody(body: string): ReactNode {
             );
           }
         }
-      })}
-    </>
-  );
+  });
+}
+
+export function renderBody(body: string): ReactNode {
+  return <>{renderBodyBlocks(body)}</>;
 }
 
 export function wordCount(body: string): number {
