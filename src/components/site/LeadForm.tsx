@@ -113,7 +113,7 @@ function CompactSelect({
   const current = items.find((i) => i.id === value);
   return (
     <Select value={value || undefined} onValueChange={onChange}>
-      <SelectTrigger className="h-12 rounded-lg border-input bg-background text-sm font-semibold text-foreground [&>span]:text-foreground">
+      <SelectTrigger className="h-12 rounded-lg border-input bg-background text-sm font-semibold text-foreground">
         {current ? (
           <span className="flex items-center gap-2">
             <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-secondary text-primary">
