@@ -43,8 +43,11 @@ jobs:
             test -f dist/client/sitemap.xml
             test -f dist/client/docs/dogovor-obrazec.pdf
             test -f dist/client/fonts/PTSans-Regular.ttf
-            test -f dist/client/media/obrabotka-spalnogo-mesta.mp4
-            test -f dist/client/media/obrabotka-spalnogo-mesta-poster.webp
+            for m in kompleksnaya-obrabotka obrabotka-ot-tarakanov obrabotka-spalnogo-mesta \
+                     obrabotka-uchastka rezultat-klopy-tuman; do
+              test -f "dist/client/media/$m.mp4" || { echo "ОШИБКА: нет dist/client/media/$m.mp4"; exit 1; }
+              test -f "dist/client/media/$m-poster.webp" || { echo "ОШИБКА: нет постера $m-poster.webp"; exit 1; }
+            done
             test -f dist/client/media/uchastok-obrabotka-foto.webp
             test -f server/lead-api.ts
             test -f deploy/lead-api.service
@@ -133,6 +136,23 @@ jobs:
               --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/media/obrabotka-spalnogo-mesta.mp4)
             echo "media content-type: $media_type"
             case "$media_type" in video/*) ;; *) echo "ОШИБКА: /media/*.mp4 не отдаётся (получено $media_type)."; exit 1;; esac
+
+            poster_type=$(curl --fail --silent --show-error -o /dev/null -w '%{content_type}' \
+              --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/media/obrabotka-spalnogo-mesta-poster.webp)
+            echo "poster content-type: $poster_type"
+            case "$poster_type" in image/webp*) ;; *) echo "ОШИБКА: постер отдаётся как $poster_type, ожидался image/webp."; exit 1;; esac
+
+            # Range-запрос: без 206 видео не стартует в iOS Safari и не перематывается.
+            range_code=$(curl --silent --show-error -o /dev/null -w '%{http_code}' -H 'Range: bytes=0-1' \
+              --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/media/obrabotka-spalnogo-mesta.mp4)
+            echo "media range code: $range_code"
+            [ "$range_code" = "206" ] || { echo "ОШИБКА: Range-запрос к /media/*.mp4 вернул $range_code вместо 206."; exit 1; }
+
+            # Отсутствующий файл обязан быть 404, а не HTML главной страницы.
+            missing_code=$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
+              --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/media/nope.mp4)
+            echo "media missing code: $missing_code"
+            [ "$missing_code" = "404" ] || { echo "ОШИБКА: /media/nope.mp4 вернул $missing_code — добавьте location ^~ /media/ с try_files \$uri =404."; exit 1; }
 
             # Внешний маршрут: ловит отсутствие location = /api/lead в nginx.
             nginx_probe=$(curl --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 \

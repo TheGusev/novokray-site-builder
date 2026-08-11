@@ -80,6 +80,32 @@ server {
         add_header Cache-Control "public, max-age=31536000, immutable" always;
     }
 
+    location ^~ /media/ {
+        # Видео и постеры отдаём только реальным файлом: HTML-fallback здесь запрещён,
+        # иначе плеер получает страницу вместо ролика и молча не стартует.
+        try_files $uri =404;
+
+        # Если в mime.types сервера нет этих типов — они задаются явно здесь.
+        types {
+            video/mp4  mp4;
+            image/webp webp;
+        }
+        default_type application/octet-stream;
+
+        # Range-запросы нужны для перемотки и для старта воспроизведения в iOS Safari.
+        add_header Accept-Ranges "bytes" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Cross-Origin-Resource-Policy "same-origin" always;
+        # CORS не требуется: медиа отдаётся с того же домена. Раскомментировать
+        # только при переносе файлов на отдельный поддомен или CDN.
+        # add_header Access-Control-Allow-Origin "https://dez-federation.ru" always;
+
+        gzip off;   # mp4/webp уже сжаты, gzip только ломает Range
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, immutable" always;
+        access_log off;
+    }
+
     location ~* ^/(robots\.txt|sitemap\.xml|yandex-recrawl(?:-rel)?\.txt)$ {
         try_files $uri =404;
         add_header Cache-Control "no-cache" always;
@@ -121,6 +147,30 @@ curl -I https://dez-federation.ru/несуществующий-файл.js
 - PDF: `200`, `Content-Type: application/pdf`.
 - TTF: `200`, тип шрифта, не `text/html`.
 - Несуществующий JS/PDF: `404`, не главная страница.
+
+## Проверка видео и постеров (/media/*)
+
+```bash
+curl -I https://dez-federation.ru/media/obrabotka-uchastka.mp4
+curl -I https://dez-federation.ru/media/obrabotka-uchastka-poster.webp
+curl -s -o /dev/null -w '%{http_code}\n' -H 'Range: bytes=0-1' \
+  https://dez-federation.ru/media/obrabotka-uchastka.mp4
+curl -s -o /dev/null -w '%{http_code}\n' https://dez-federation.ru/media/nope.mp4
+```
+
+Ожидается:
+
+- mp4: `200`, `Content-Type: video/mp4`, `Accept-Ranges: bytes`.
+- Постер: `200`, `Content-Type: image/webp`.
+- Range-запрос: `206`.
+- Несуществующий файл: `404` (не главная страница).
+
+| Симптом | Причина | Что делать |
+| --- | --- | --- |
+| Плеер чёрный, `Content-Type: text/html` | нет блока `location ^~ /media/`, файл ушёл в SPA-fallback | добавить блок выше `location /`, `nginx -t && systemctl reload nginx` |
+| `Content-Type: application/octet-stream` | в `mime.types` нет mp4/webp | оставить блок `types { video/mp4 mp4; image/webp webp; }` внутри `location /media/` |
+| Видео не стартует на iPhone, перемотка не работает | Range-запрос отдаёт `200` вместо `206` | убрать `gzip`/сторонние фильтры для `/media/`, проверить `Accept-Ranges: bytes` |
+| `404` на существующий файл | сборка не скопирована | `ls /var/www/dez-federation.ru/media/`, повторить деплой |
 
 ## Деплой
 
