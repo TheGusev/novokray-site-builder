@@ -116,7 +116,7 @@ export const Route = createFileRoute("/services/$slug")({
               },
               {
                 "@type": "HowTo",
-                name: `Как проходит ${s.title.toLowerCase()} — пошагово`,
+                name: `Этапы работ: ${s.title.toLowerCase()} — пошагово`,
                 description: s.lead,
                 totalTime: "PT2H",
                 estimatedCost: { "@type": "MonetaryAmount", currency: "RUB", value: s.priceFrom },
@@ -246,7 +246,7 @@ function ServicePage() {
 
       {/* Problems */}
       <section className="container-x py-16">
-        <AnimatedHeading as="h2" text={s.slug === "unichtozhenie-klopov" ? "Признаки клопов в квартире" : `Когда нужна ${s.title.toLowerCase()}`} className="font-display text-3xl font-bold md:text-4xl text-balance" />
+        <AnimatedHeading as="h2" text={s.slug === "unichtozhenie-klopov" ? "Признаки клопов в квартире" : `Когда заказывать: ${s.title.toLowerCase()}`} className="font-display text-3xl font-bold md:text-4xl text-balance" />
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {s.problems.map((p, i) => (
             <Reveal key={i} delay={i * 70} className="flex gap-3 rounded-xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-elegant">
@@ -382,7 +382,7 @@ function ServicePage() {
       {/* Prices */}
       <section className="bg-surface py-16">
         <div className="container-x">
-          <h2 className="font-display text-3xl font-bold md:text-4xl">{`Цены на ${s.title.toLowerCase()} в ${SITE.city === "Новосибирск" ? "Новосибирске" : SITE.city}`}</h2>
+          <h2 className="font-display text-3xl font-bold md:text-4xl">{`Цены: ${s.title.toLowerCase()} в ${SITE.city === "Новосибирск" ? "Новосибирске" : SITE.city}`}</h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">Стоимость фиксируется до выезда. Без скрытых платежей и доплат за препараты.</p>
           <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
             <table className="w-full text-left">
