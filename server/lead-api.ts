@@ -45,6 +45,23 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
+/** Расшифровка типовых ошибок Telegram — чтобы причина была видна в journalctl. */
+export function explainTelegramError(status: number, body: string): string {
+  const b = body.toLowerCase();
+  if (b.includes("chat not found"))
+    return "бот не добавлен в группу или неверный TELEGRAM_CHAT_ID";
+  if (b.includes("bot was kicked") || b.includes("bot was blocked"))
+    return "бота удалили из группы или заблокировали";
+  if (status === 401 || b.includes("unauthorized"))
+    return "неверный TELEGRAM_BOT_TOKEN в /etc/dez-federation/lead.env";
+  if (status === 403)
+    return "у бота нет права писать в эту группу";
+  if (status === 429) return "лимит Telegram, повторить позже";
+  if (b.includes("can't parse entities"))
+    return "Telegram не принял разметку сообщения";
+  return "см. текст ответа Telegram выше";
+}
+
 function buildMessage(d: Record<string, unknown>, phone: string): string {
   const f = (v: unknown, max?: number) => escapeHtml(clean(v, max));
   const isCheck = clean(d.formName) === "deploy-check";
