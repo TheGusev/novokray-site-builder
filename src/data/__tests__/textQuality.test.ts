@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { POSTS, CATEGORIES } from "../blog";
+import { POSTS, BLOG_CATEGORIES } from "../blog";
 import { SERVICES_INDEX } from "../servicesIndex";
 import { WORK_VIDEOS } from "../videos";
 
@@ -15,7 +15,7 @@ function collectTexts(): { where: string; text: string }[] {
       out.push({ where: `${p.slug}:faq[${i}].a`, text: f.a });
     });
   }
-  for (const c of CATEGORIES) {
+  for (const c of BLOG_CATEGORIES) {
     out.push({ where: `cat:${c.slug}`, text: `${c.title}. ${c.description}` });
   }
   for (const s of SERVICES_INDEX) {
