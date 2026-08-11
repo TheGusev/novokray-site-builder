@@ -28,14 +28,13 @@ export async function lookupInnParty(inn: string): Promise<LookupResult> {
         body: JSON.stringify({ inn }),
         signal: AbortSignal.timeout(8000),
       });
-      // Маршрута нет (например, статика без nginx-прокси) — пробуем следующий.
-      if (res.status === 404 || res.status === 405) continue;
       const json = (await res.json().catch(() => null)) as
         | { ok?: boolean; party?: DadataParty; error?: string }
         | null;
       if (json?.ok && json.party) return { ok: true, party: json.party };
       if (json?.error === "not_found") return { ok: false, reason: "not_found" };
       if (json?.error === "key_not_configured") return { ok: false, reason: "not_configured" };
+      // Ответа от нашего сервиса нет (статика без nginx-прокси) — пробуем следующий адрес.
       lastReason = "unavailable";
     } catch {
       lastReason = "unavailable";
