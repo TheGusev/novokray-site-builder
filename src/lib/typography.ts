@@ -27,7 +27,7 @@ const SHORT_WORDS = [
   "для","под","при","над","без","что","как","или","они","это","эта","эти","тот","так",
 ];
 const SHORT_WORDS_RE = new RegExp(
-  `(^|[\\s(«„\\u2014-])(${SHORT_WORDS.join("|")})\\s+`,
+  `(?<=^|[\\s(«„\\u2013\\u2014-])(${SHORT_WORDS.join("|")}) (?=[«„(\\w\\dА-Яа-яЁё])`,
   "gi",
 );
 
@@ -78,8 +78,7 @@ export function typo(input: string, options: TypoOptions = {}): string {
 
   // — многоточие и знаки
   s = s.replace(/\.{3,}/g, "…");
-  s = s.replace(/(\d)\s?[xх]\s?(?=\d)/g, `$1${NBSP === "" ? "" : ""}\u00D7`);
-  s = s.replace(/\u00D7/g, "\u00D7");
+  s = s.replace(/(\d)\s?[x\u0445]\s?(?=\d)/g, "$1\u00D7");
   s = s.replace(/\(c\)/gi, "©").replace(/\(r\)/gi, "®");
 
   // — кавычки
@@ -102,12 +101,12 @@ export function typo(input: string, options: TypoOptions = {}): string {
     s = s.replace(/\b(т|г|ул|д|стр|кв|руб|тыс|млн)\.\s+/g, `$1.${NBSP}`);
     s = s.replace(/\b([А-ЯЁ])\.\s?([А-ЯЁ])\.\s?(?=[А-ЯЁ][а-яё])/g, `$1.${NBSP}$2.${NBSP}`);
     // короткие слова не отрываем от следующего
-    s = s.replace(SHORT_WORDS_RE, `$1$2${NBSP}`);
+    s = s.replace(SHORT_WORDS_RE, `$1${NBSP}`);
     // тире не должно начинать строку — неразрывный пробел перед ним
     s = s.replace(new RegExp(` ${MDASH} `, "g"), `${NBSP}${MDASH} `);
   }
 
-  return s.trim() === s ? s : s;
+  return s;
 }
 
 /** Версия без неразрывных пробелов — для meta, JSON-LD, PDF и аналитики. */
