@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { WORK_VIDEOS, WORK_VIDEOS_BY_SLUG, videosForService, UCHASTOK_PHOTO } from "../videos";
+import { WORK_VIDEOS, WORK_VIDEOS_BY_SLUG, videosForService, UCHASTOK_PHOTO, videoJsonLd } from "../videos";
 import { SERVICES_INDEX } from "../servicesIndex";
 
 const PEST_IDS = ["Клопы", "Тараканы", "Клещи / комары", "Другое"];
@@ -42,5 +42,17 @@ describe("видео работ", () => {
   it("фото участка подписано", () => {
     expect(UCHASTOK_PHOTO.url).toMatch(/^\/__l5e\/assets-v1\//);
     expect(UCHASTOK_PHOTO.alt.length).toBeGreaterThan(10);
+  });
+
+  it("VideoObject собирается с абсолютными ссылками", () => {
+    for (const v of WORK_VIDEOS) {
+      const ld = videoJsonLd(v, "https://dez-federation.ru");
+      expect(ld["@type"]).toBe("VideoObject");
+      expect(ld.contentUrl.startsWith("https://dez-federation.ru/")).toBe(true);
+      expect(ld.thumbnailUrl[0].startsWith("https://dez-federation.ru/")).toBe(true);
+      expect(ld.duration).toMatch(/^PT\d+S$/);
+      expect(ld.uploadDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(ld.width * ld.height).toBeGreaterThan(0);
+    }
   });
 });
