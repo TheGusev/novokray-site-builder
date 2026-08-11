@@ -439,3 +439,16 @@
   .cta-shine::after, .animate-floaty, .animate-ticker, .pulse-ring::before,
   .wave-text .wave-char { animation: none !important; }
 }
+
+/* Автозаполнение браузера: Chrome/Яндекс.Браузер подставляют собственный цвет
+   текста и фон — фиксируем читаемые значения, иначе поле выглядит пустым. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-foreground);
+  caret-color: var(--color-foreground);
+  box-shadow: 0 0 0 1000px var(--color-background) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
