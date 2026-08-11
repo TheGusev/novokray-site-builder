@@ -43,8 +43,11 @@ jobs:
             test -f dist/client/sitemap.xml
             test -f dist/client/docs/dogovor-obrazec.pdf
             test -f dist/client/fonts/PTSans-Regular.ttf
-            test -f dist/client/media/obrabotka-spalnogo-mesta.mp4
-            test -f dist/client/media/obrabotka-spalnogo-mesta-poster.webp
+            for m in kompleksnaya-obrabotka obrabotka-ot-tarakanov obrabotka-spalnogo-mesta \
+                     obrabotka-uchastka rezultat-klopy-tuman; do
+              test -f "dist/client/media/$m.mp4" || { echo "ОШИБКА: нет dist/client/media/$m.mp4"; exit 1; }
+              test -f "dist/client/media/$m-poster.webp" || { echo "ОШИБКА: нет постера $m-poster.webp"; exit 1; }
+            done
             test -f dist/client/media/uchastok-obrabotka-foto.webp
             test -f server/lead-api.ts
             test -f deploy/lead-api.service
