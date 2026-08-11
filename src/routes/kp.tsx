@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Download, Loader2, FileText, Search, ArrowLeft, Phone, Send, ShieldCheck } from "lucide-react";
 import { SITE } from "@/data/site";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -14,6 +14,7 @@ import {
 import { lookupInnParty, type DadataParty } from "@/lib/dadata.functions";
 import type { ContractBlock } from "@/lib/dogovor/buildPdf";
 import { GOALS, trackGoal } from "@/lib/analytics";
+import { sendLead } from "@/lib/leadSender";
 
 export const Route = createFileRoute("/kp")({
   head: () => ({
@@ -45,6 +46,7 @@ function KpPage() {
   const [invNumber, setInvNumber] = useState(() => genNumber("СЧ"));
   const [contractNumber, setContractNumber] = useState(() => genNumber("ДФ"));
   const [date, setDate] = useState(todayIso);
+  const notifiedRef = useRef<string | null>(null);
 
   // Клиент
   const [inn, setInn] = useState("");
@@ -123,7 +125,29 @@ function KpPage() {
       downloadPdf(bytes, `КП_${kpNumber}.pdf`);
       trackGoal(GOALS.kpPdf, { company: companyName, inn, area: areaM2, price: price.perVisitTotal, pests: pestsLabels.join(", ") });
       trackGoal(GOALS.kpSubmit, { company: companyName, inn, doc: "kp" });
+      void notifyB2b("Заявка B2B (КП)", "КП для организации");
     } catch (e) { setErr((e as Error).message); } finally { setBusy(null); }
+  }
+
+  /** Уведомление менеджера в Telegram: КП/счёт сформированы на сайте. */
+  async function notifyB2b(type: string, formName: string) {
+    if (phone.replace(/\D/g, "").length < 11) return;
+    // Кнопка «Все документы» вызывает генерацию трижды — уведомляем один раз на комплект.
+    const key = `${phone}|${companyName}`;
+    if (notifiedRef.current === key) return;
+    notifiedRef.current = key;
+    await sendLead({
+      type: type as "Заявка на обработку",
+      name: contactPerson,
+      phone,
+      org: companyName,
+      inn,
+      pest: pestsLabels.join(", ") || "Санитарная обработка",
+      object: `${objectKindDef.label}, ${areaM2} м²`,
+      priceFrom: price.perVisitTotal,
+      priceBasis: `${PERIODICITY_LABEL[periodicity]}${withBarrier ? ", с барьерной защитой" : ""}${objectAddress ? ` · ${objectAddress}` : ""}`,
+      formName,
+    });
   }
 
   async function makeInvoice() {
@@ -147,6 +171,7 @@ function KpPage() {
       });
       downloadPdf(bytes, `Счёт_${invNumber}.pdf`);
       trackGoal(GOALS.invoicePdf, { company: companyName, inn, price: price.perVisitTotal });
+      void notifyB2b("Заявка B2B (счёт)", "Счёт для организации");
     } catch (e) { setErr((e as Error).message); } finally { setBusy(null); }
   }
 

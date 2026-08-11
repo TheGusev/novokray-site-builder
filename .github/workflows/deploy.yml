@@ -102,7 +102,7 @@ jobs:
             # Боевая проверка канала: заявка реально уходит в Telegram.
             probe=$(curl --silent --show-error -X POST http://127.0.0.1:8787/api/lead \
               -H 'Content-Type: application/json' \
-              -d '{"type":"Деплой: проверка канала","phone":"+70000000000","formName":"deploy-check"}')
+              -d '{"type":"Деплой: проверка канала","phone":"+70000000000","formName":"deploy-check","name":"Автотест","pest":"Клопы","object":"2-комн. квартира","priceFrom":3500,"priceBasis":"автотест деплоя","page":"https://dez-federation.ru/","device":"сервер","utm":{"utm_source":"deploy"}}')
             echo "probe: $probe"
             echo "$probe" | grep -q '"ok":true' || {
               echo "ОШИБКА: заявка не дошла до Telegram. Логи:"
@@ -129,7 +129,7 @@ jobs:
             nginx_probe=$(curl --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 \
               -X POST https://dez-federation.ru/api/lead \
               -H 'Content-Type: application/json' \
-              -d '{"type":"Деплой: проверка канала","phone":"+70000000000","formName":"deploy-check"}')
+              -d '{"type":"Деплой: проверка канала","phone":"+70000000000","formName":"deploy-check","name":"Автотест","pest":"Клопы","object":"2-комн. квартира","priceFrom":3500,"priceBasis":"автотест деплоя","page":"https://dez-federation.ru/","device":"сервер","utm":{"utm_source":"deploy"}}')
             echo "nginx probe: $nginx_probe"
             echo "$nginx_probe" | grep -q '"ok":true' || {
               echo "ОШИБКА: /api/lead недоступен через nginx — добавьте location = /api/lead."
