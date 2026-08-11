@@ -84,7 +84,7 @@ export function DocsRequest() {
         })}
       </div>
 
-      <form onSubmit={onSubmit} className="rounded-2xl border border-border bg-card p-5 shadow-card md:p-6">
+      <form onSubmit={onSubmit} className="rounded-2xl border border-border bg-card p-5 text-foreground shadow-card md:p-6">
         <input
           type="text"
           name="company_hp"
@@ -107,14 +107,14 @@ export function DocsRequest() {
             value={org}
             onChange={(e) => setOrg(e.target.value.slice(0, 120))}
             placeholder="Организация (необязательно)"
-            className="h-11 rounded-lg border border-input bg-background px-3 text-sm outline-none ring-ring/40 focus:ring-2"
+            className="h-11 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
           />
           <input
             value={inn}
             onChange={(e) => setInn(e.target.value.replace(/\D/g, "").slice(0, 12))}
             placeholder="ИНН (необязательно)"
             inputMode="numeric"
-            className="h-11 rounded-lg border border-input bg-background px-3 text-sm outline-none ring-ring/40 focus:ring-2"
+            className="h-11 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
           />
         </div>
 
@@ -126,7 +126,7 @@ export function DocsRequest() {
           inputMode="tel"
           autoComplete="tel"
           required
-          className="mt-3 h-12 w-full rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide outline-none ring-ring/40 focus:ring-2"
+          className="mt-3 h-12 w-full rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
         />
 
         <label className="mt-3 flex cursor-pointer items-start gap-2 text-[11px] leading-snug text-muted-foreground">
