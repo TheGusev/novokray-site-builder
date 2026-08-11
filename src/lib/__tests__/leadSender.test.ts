@@ -11,6 +11,9 @@ describe("normalizePhone", () => {
   it("нормализует 10 цифр", () => {
     expect(normalizePhone("9069989888")).toBe("+79069989888");
   });
+  it("убирает лишнюю семёрку при вводе поверх подставленного +7", () => {
+    expect(normalizePhone("+77906998988 8")).toBe("+79069989888");
+  });
 });
 
 describe("buildLeadBody", () => {
