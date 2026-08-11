@@ -53,11 +53,6 @@ function VideoPage() {
         <h1 className="mt-3 max-w-3xl font-display text-3xl font-extrabold leading-tight md:text-5xl">
           Как мы работаем: видео обработок в Новосибирске и области
         </h1>
-        <p className="mt-4 max-w-3xl text-muted-foreground">
-          Ролики сняты на реальных выездах. Видео не грузятся автоматически — страница остаётся лёгкой,
-          файл подтягивается только когда вы нажимаете «play».
-        </p>
-
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {WORK_VIDEOS.map((v, i) => (
             <Reveal key={v.slug} delay={i * 60}>

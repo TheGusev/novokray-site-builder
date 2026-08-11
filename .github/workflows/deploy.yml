@@ -43,6 +43,9 @@ jobs:
             test -f dist/client/sitemap.xml
             test -f dist/client/docs/dogovor-obrazec.pdf
             test -f dist/client/fonts/PTSans-Regular.ttf
+            test -f dist/client/media/obrabotka-spalnogo-mesta.mp4
+            test -f dist/client/media/obrabotka-spalnogo-mesta-poster.webp
+            test -f dist/client/media/uchastok-obrabotka-foto.webp
             test -f server/lead-api.ts
             test -f deploy/lead-api.service
             test -f deploy/lead.env.example
@@ -124,6 +127,12 @@ jobs:
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/ >/dev/null
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/blog >/dev/null
             curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/docs/dogovor-obrazec.pdf >/dev/null
+
+            # Медиа роликов должно отдаваться файлом, а не HTML-заглушкой SPA.
+            media_type=$(curl --fail --silent --show-error -o /dev/null -w '%{content_type}' \
+              --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/media/obrabotka-spalnogo-mesta.mp4)
+            echo "media content-type: $media_type"
+            case "$media_type" in video/*) ;; *) echo "ОШИБКА: /media/*.mp4 не отдаётся (получено $media_type)."; exit 1;; esac
 
             # Внешний маршрут: ловит отсутствие location = /api/lead в nginx.
             nginx_probe=$(curl --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 \

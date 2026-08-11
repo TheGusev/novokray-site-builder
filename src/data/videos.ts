@@ -1,14 +1,3 @@
-import kompleksnaya from "@/assets/video/kompleksnaya-obrabotka.mp4.asset.json";
-import kompleksnayaPoster from "@/assets/video/kompleksnaya-obrabotka-poster.webp.asset.json";
-import tarakany from "@/assets/video/obrabotka-ot-tarakanov.mp4.asset.json";
-import tarakanyPoster from "@/assets/video/obrabotka-ot-tarakanov-poster.webp.asset.json";
-import spalnoe from "@/assets/video/obrabotka-spalnogo-mesta.mp4.asset.json";
-import spalnoePoster from "@/assets/video/obrabotka-spalnogo-mesta-poster.webp.asset.json";
-import uchastok from "@/assets/video/obrabotka-uchastka.mp4.asset.json";
-import uchastokPoster from "@/assets/video/obrabotka-uchastka-poster.webp.asset.json";
-import klopyResult from "@/assets/video/rezultat-klopy-tuman.mp4.asset.json";
-import klopyResultPoster from "@/assets/video/rezultat-klopy-tuman-poster.webp.asset.json";
-import uchastokFoto from "@/assets/video/uchastok-foto.webp.asset.json";
 
 export interface WorkVideo {
   slug: string;
@@ -33,11 +22,11 @@ export const WORK_VIDEOS: WorkVideo[] = [
     title: "Обработка спального места горячим туманом",
     description:
       "Точечная обработка кровати и матраса: туман проникает в швы, стыки каркаса и складки — там, где прячутся клопы.",
-    src: spalnoe.url,
-    poster: spalnoePoster.url,
+    src: "/media/obrabotka-spalnogo-mesta.mp4",
+    poster: "/media/obrabotka-spalnogo-mesta-poster.webp",
     orientation: "portrait",
     durationSec: 35,
-    sizeBytes: spalnoe.size,
+    sizeBytes: 2307560,
     services: ["unichtozhenie-klopov"],
     pest: "Клопы",
     tags: ["клопы", "горячий туман", "квартира"],
@@ -47,11 +36,11 @@ export const WORK_VIDEOS: WorkVideo[] = [
     title: "Результат обработки от клопов туманом",
     description:
       "Что видит клиент после обработки: погибшие насекомые на обработанных поверхностях уже в первые часы.",
-    src: klopyResult.url,
-    poster: klopyResultPoster.url,
+    src: "/media/rezultat-klopy-tuman.mp4",
+    poster: "/media/rezultat-klopy-tuman-poster.webp",
     orientation: "landscape",
     durationSec: 17,
-    sizeBytes: klopyResult.size,
+    sizeBytes: 1646419,
     services: ["unichtozhenie-klopov"],
     pest: "Клопы",
     tags: ["клопы", "результат"],
@@ -61,11 +50,11 @@ export const WORK_VIDEOS: WorkVideo[] = [
     title: "Обработка квартиры от тараканов",
     description:
       "Пролив кухонного гарнитура, плинтусов и коммуникаций: препарат заходит в щели и работает барьером несколько недель.",
-    src: tarakany.url,
-    poster: tarakanyPoster.url,
+    src: "/media/obrabotka-ot-tarakanov.mp4",
+    poster: "/media/obrabotka-ot-tarakanov-poster.webp",
     orientation: "portrait",
     durationSec: 46,
-    sizeBytes: tarakany.size,
+    sizeBytes: 3414277,
     services: ["unichtozhenie-tarakanov"],
     pest: "Тараканы",
     tags: ["тараканы", "кухня", "барьер"],
@@ -75,11 +64,11 @@ export const WORK_VIDEOS: WorkVideo[] = [
     title: "Комплексная обработка помещения",
     description:
       "Полный цикл по помещению: генератор тумана обрабатывает объём, мебель и труднодоступные зоны за один выезд.",
-    src: kompleksnaya.url,
-    poster: kompleksnayaPoster.url,
+    src: "/media/kompleksnaya-obrabotka.mp4",
+    poster: "/media/kompleksnaya-obrabotka-poster.webp",
     orientation: "portrait",
     durationSec: 18,
-    sizeBytes: kompleksnaya.size,
+    sizeBytes: 1249066,
     services: ["dezinfekciya", "unichtozhenie-klopov"],
     pest: "Другое",
     tags: ["комплекс", "туман", "помещение"],
@@ -89,11 +78,11 @@ export const WORK_VIDEOS: WorkVideo[] = [
     title: "Обработка участка от клещей, комаров и ос",
     description:
       "Моторный опрыскиватель проходит траву, кустарник и периметр — защита участка на весь сезон активности.",
-    src: uchastok.url,
-    poster: uchastokPoster.url,
+    src: "/media/obrabotka-uchastka.mp4",
+    poster: "/media/obrabotka-uchastka-poster.webp",
     orientation: "portrait",
     durationSec: 19,
-    sizeBytes: uchastok.size,
+    sizeBytes: 3211425,
     services: ["obrabotka-uchastkov", "unichtozhenie-os"],
     pest: "Клещи / комары",
     tags: ["участок", "клещи", "комары", "осы"],
@@ -106,7 +95,7 @@ export const WORK_VIDEOS_BY_SLUG: Record<string, WorkVideo> = Object.fromEntries
 
 /** Фото с выезда на участок — используется в блоке про участковые работы. */
 export const UCHASTOK_PHOTO = {
-  url: uchastokFoto.url,
+  url: "/media/uchastok-obrabotka-foto.webp",
   alt: "Обработка участка с бассейном от клещей и комаров — Новосибирская область",
   title: "Выезд на участок: обработка территории от клещей и комаров",
 };
@@ -118,7 +107,7 @@ export function videosForService(slug: string): WorkVideo[] {
 
 /** Размер кадра ролика (съёмка на телефон). */
 export function videoDimensions(v: WorkVideo) {
-  return v.orientation === "portrait" ? { width: 464, height: 848 } : { width: 848, height: 464 };
+  return v.orientation === "portrait" ? { width: 464, height: 848 } : { width: 720, height: 394 };
 }
 
 /** Дата публикации роликов на сайте (ISO). */
