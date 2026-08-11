@@ -268,7 +268,7 @@ export function LeadForm({
             autoComplete="tel"
             aria-label="Телефон"
             required
-            className="h-12 flex-1 rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
+            className={`${FIELD_PHONE} flex-1`}
           />
           <button
             type="submit"
@@ -296,7 +296,7 @@ export function LeadForm({
               value={name}
               onChange={(e) => setName(e.target.value.slice(0, 60))}
               placeholder="Имя"
-              className="h-12 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
+              className={`${FIELD_TEXT} h-12`}
             />
           </div>
         )}
@@ -431,7 +431,7 @@ export function LeadForm({
             value={name}
             onChange={(e) => setName(e.target.value.slice(0, 60))}
             placeholder="Имя (необязательно)"
-            className="h-11 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
+            className={FIELD_TEXT}
           />
           <input
             value={phone}
@@ -441,7 +441,7 @@ export function LeadForm({
             inputMode="tel"
             autoComplete="tel"
             required
-            className="h-12 rounded-lg border border-input bg-background px-3 text-base font-semibold tracking-wide text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2"
+            className={FIELD_PHONE}
           />
 
           <div className="rounded-lg bg-secondary/60 px-3 py-2.5">
