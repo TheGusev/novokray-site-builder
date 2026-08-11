@@ -21,7 +21,10 @@ describe("pickParty", () => {
   it("берёт короткое название с ОПФ и реквизиты", () => {
     const p = pickParty(
       suggestion({
-        name: { short_with_opf: 'ООО "Ромашка"', full_with_opf: 'Общество с ограниченной ответственностью "Ромашка"' },
+        name: {
+          short_with_opf: 'ООО "Ромашка"',
+          full_with_opf: 'Общество с ограниченной ответственностью "Ромашка"',
+        },
         inn: "5410169338",
         kpp: "541001001",
         ogrn: "1145476000000",
@@ -42,7 +45,10 @@ describe("pickParty", () => {
 
   it("ИП: нет КПП и руководителя, название берётся из value", () => {
     const p = pickParty(
-      suggestion({ inn: "540123456789", ogrn: "314547600000000", state: { status: "ACTIVE" } }, "ИП Петров Пётр"),
+      suggestion(
+        { inn: "540123456789", ogrn: "314547600000000", state: { status: "ACTIVE" } },
+        "ИП Петров Пётр",
+      ),
     );
     expect(p?.name).toBe("ИП Петров Пётр");
     expect(p?.kpp).toBeUndefined();
@@ -51,7 +57,11 @@ describe("pickParty", () => {
 
   it("ликвидированная организация помечается неактивной", () => {
     const p = pickParty(
-      suggestion({ name: { short_with_opf: 'ООО "Старт"' }, inn: "5401000000", state: { status: "LIQUIDATED" } }),
+      suggestion({
+        name: { short_with_opf: 'ООО "Старт"' },
+        inn: "5401000000",
+        state: { status: "LIQUIDATED" },
+      }),
     );
     expect(isActiveParty(p!)).toBe(false);
   });

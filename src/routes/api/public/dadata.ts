@@ -23,19 +23,16 @@ async function handlePost({ request }: { request: Request }): Promise<Response> 
   if (!key) return json({ ok: false, error: "key_not_configured" }, 503);
 
   try {
-    const res = await fetch(
-      "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Token ${key}`,
-        },
-        body: JSON.stringify({ query: inn, count: 1 }),
-        signal: AbortSignal.timeout(6000),
+    const res = await fetch("https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Token ${key}`,
       },
-    );
+      body: JSON.stringify({ query: inn, count: 1 }),
+      signal: AbortSignal.timeout(6000),
+    });
     if (!res.ok) return json({ ok: false, error: "upstream_failed" }, 502);
     const party = pickParty(await res.json());
     if (!party) return json({ ok: false, error: "not_found" }, 404);
@@ -46,8 +43,6 @@ async function handlePost({ request }: { request: Request }): Promise<Response> 
 }
 
 // Типы server-обработчиков в текущей версии роутера ещё не описаны, runtime их поддерживает.
-export const Route = createFileRoute("/api/public/dadata")(
-  { server: { handlers: { POST: handlePost } } } as unknown as Parameters<
-    ReturnType<typeof createFileRoute<"/api/public/dadata">>
-  >[0],
-);
+export const Route = createFileRoute("/api/public/dadata")({
+  server: { handlers: { POST: handlePost } },
+} as unknown as Parameters<ReturnType<typeof createFileRoute<"/api/public/dadata">>>[0]);

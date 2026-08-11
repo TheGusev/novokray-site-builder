@@ -5,9 +5,7 @@ export { isValidInn };
 
 export type LookupReason = "invalid_inn" | "not_found" | "not_configured" | "unavailable";
 
-export type LookupResult =
-  | { ok: true; party: DadataParty }
-  | { ok: false; reason: LookupReason };
+export type LookupResult = { ok: true; party: DadataParty } | { ok: false; reason: LookupReason };
 
 /**
  * Реквизиты по ИНН. Ключ DaData живёт только на сервере
@@ -28,9 +26,11 @@ export async function lookupInnParty(inn: string): Promise<LookupResult> {
         body: JSON.stringify({ inn }),
         signal: AbortSignal.timeout(8000),
       });
-      const json = (await res.json().catch(() => null)) as
-        | { ok?: boolean; party?: DadataParty; error?: string }
-        | null;
+      const json = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        party?: DadataParty;
+        error?: string;
+      } | null;
       if (json?.ok && json.party) return { ok: true, party: json.party };
       if (json?.error === "not_found") return { ok: false, reason: "not_found" };
       if (json?.error === "key_not_configured") return { ok: false, reason: "not_configured" };
