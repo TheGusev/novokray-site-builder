@@ -26,6 +26,8 @@ interface Props {
  */
 export function VideoCard({ video, eager = false, schema = true }: Props) {
   const [open, setOpen] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   // Блокируем прокрутку фона, пока открыт полноэкранный плеер
   useEffect(() => {
@@ -39,6 +41,7 @@ export function VideoCard({ video, eager = false, schema = true }: Props) {
 
   const play = () => {
     setOpen(true);
+    setFailed(false);
     trackGoal(GOALS.videoPlay, { video: video.slug });
   };
 
@@ -106,20 +109,41 @@ export function VideoCard({ video, eager = false, schema = true }: Props) {
             <X className="h-6 w-6" />
           </button>
 
-          {open && (
+          {open && !failed && (
             <video
+              key={attempt}
               src={video.src}
               poster={video.poster}
               controls
               autoPlay
               playsInline
-              preload="auto"
+              preload="metadata"
+              onError={() => setFailed(true)}
               className="max-h-[100dvh] max-w-full object-contain"
               style={{
                 height: "calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 3.5rem)",
                 width: "100%",
               }}
             />
+          )}
+
+          {open && failed && (
+            <div className="z-10 mx-auto max-w-sm px-6 text-center text-white">
+              <p className="text-base font-semibold">Видео не загрузилось</p>
+              <p className="mt-2 text-sm text-white/75">
+                Проверьте подключение к интернету и попробуйте ещё раз.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setFailed(false);
+                  setAttempt((n) => n + 1);
+                }}
+                className="mt-4 inline-flex h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-semibold text-black transition hover:bg-white/90"
+              >
+                Повторить
+              </button>
+            </div>
           )}
 
           <p
