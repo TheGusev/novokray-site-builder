@@ -23,7 +23,8 @@ export function InlineLeadCta({ offer, context, goal, formName, wide = false }: 
     <section
       className={`not-prose rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/8 via-card to-accent/8 p-5 shadow-card md:p-6 ${wide ? "mt-12" : "my-10"}`}
     >
-      <div className={wide ? "grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-center" : ""}>
+      <div className="@container/cta">
+        <div className={wide ? "grid gap-6 @[640px]/cta:grid-cols-[1.1fr_1fr] @[640px]/cta:items-center" : ""}>
         <div>
           <div className="text-[11px] font-bold uppercase tracking-wider text-primary">
             Санитарная служба «Дез-Федерация» · Новосибирск и область
@@ -85,6 +86,7 @@ export function InlineLeadCta({ offer, context, goal, formName, wide = false }: 
               Подробнее об услуге
             </Link>
           </div>
+        </div>
         </div>
       </div>
     </section>
