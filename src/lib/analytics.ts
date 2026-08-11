@@ -23,6 +23,12 @@ export const GOALS = {
   contactsWhatsappClick: "contacts_whatsapp_click",
   contactsMaxClick: "contacts_max_click",
   statsInfoOpen: "stats_info_open",
+  blogStickyShow: "blog_sticky_show",
+  blogStickyCall: "blog_sticky_call",
+  blogStickyLead: "blog_sticky_lead",
+  blogInlineLead: "blog_inline_lead",
+  blogBottomLead: "blog_bottom_lead",
+  blogSidebarLead: "blog_sidebar_lead",
 } as const;
 
 export type GoalName = (typeof GOALS)[keyof typeof GOALS] | (string & {});
