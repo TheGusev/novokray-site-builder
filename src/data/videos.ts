@@ -80,7 +80,7 @@ export const WORK_VIDEOS: WorkVideo[] = [
     orientation: "portrait",
     durationSec: 18,
     sizeBytes: kompleksnaya.size,
-    services: ["dezinfekciya-pomescheniy", "unichtozhenie-klopov"],
+    services: ["dezinfekciya", "unichtozhenie-klopov"],
     pest: "Другое",
     tags: ["комплекс", "туман", "помещение"],
   },
