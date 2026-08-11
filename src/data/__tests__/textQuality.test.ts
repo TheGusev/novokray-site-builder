@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { POSTS, BLOG_CATEGORIES } from "../blog";
 import { SERVICES_INDEX } from "../servicesIndex";
 import { WORK_VIDEOS } from "../videos";
+import { typoPlain } from "@/lib/typography";
 
 /** Собираем все пользовательские строки сайта, которые ведём вручную. */
 function collectTexts(): { where: string; text: string }[] {
@@ -72,5 +73,35 @@ describe("качество текстов", () => {
       expect(/\bот \d{4,}\s?₽/.test(text), `${where}: цена без пробела в разряде`).toBe(false);
       expect(/\+7\s?\(?9\d{2}\)?[\s-]?\d{3}/.test(text) === false || text.includes("906"), `${where}: устаревший телефон`).toBe(true);
     }
+  });
+});
+
+describe("типографика в исходных текстах", () => {
+  it("в русском тексте нет прямых кавычек", () => {
+    for (const { where, text } of TEXTS) {
+      expect(/"[А-Яа-яЁё]|[А-Яа-яЁё]"/.test(text), `${where}: прямые кавычки`).toBe(false);
+      expect(/[\u201C\u201D](?=[А-Яа-яЁё])/.test(text), `${where}: английские кавычки`).toBe(false);
+    }
+  });
+
+  it("между словами используется длинное тире, а не дефис", () => {
+    for (const { where, text } of TEXTS) {
+      for (const line of text.split("\n")) {
+        if (/^\s*[-*|]/.test(line)) continue; // markdown-списки и таблицы
+        expect(/[А-Яа-яЁё]\s[-\u2013]\s/.test(line), `${where}: дефис вместо тире — «${line.slice(0, 60)}»`).toBe(false);
+      }
+    }
+  });
+
+  it("абзацы статей нормализованы: typoPlain ничего не меняет", () => {
+    const problems: string[] = [];
+    for (const p of POSTS) {
+      for (const line of p.body.split("\n")) {
+        const l = line.trim();
+        if (!l || /^[#>|]/.test(l) || /^[-*]\s/.test(l) || /^\d+\.\s/.test(l)) continue;
+        if (typoPlain(l) !== l) problems.push(`${p.slug}: ${l.slice(0, 70)}`);
+      }
+    }
+    expect(problems, problems.slice(0, 10).join(" | ")).toEqual([]);
   });
 });
