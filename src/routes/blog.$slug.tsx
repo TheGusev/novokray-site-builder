@@ -153,7 +153,7 @@ function PostPage() {
           </div>
         )}
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-[220px,1fr,320px]">
+        <div className="mt-10 grid gap-10 lg:grid-cols-[220px_1fr_320px]">
           {/* TOC */}
           <aside className="hidden lg:block">
             <div className="sticky top-24 rounded-2xl border border-[--shelf-line] bg-[--paper] p-4 text-[--paper-foreground]">
