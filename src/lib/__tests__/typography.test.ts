@@ -2,6 +2,11 @@ import { describe, it, expect } from "vitest";
 import { typo, typoPlain, NBSP } from "../typography";
 import { POSTS } from "@/data/blog";
 import { SERVICES_INDEX } from "@/data/servicesIndex";
+import { SERVICES } from "@/data/services";
+import { DOCS } from "@/data/docs";
+import { CITIES } from "@/data/cities";
+import { DISTRICTS } from "@/data/districts";
+import { WORK_VIDEOS } from "@/data/videos";
 
 describe("типографика", () => {
   it("прямые кавычки становятся ёлочками", () => {
@@ -81,6 +86,63 @@ describe("типографика", () => {
       if (typoPlain(s.h1) !== s.h1) problems.push(`svc:${s.slug}:h1`);
       if (typoPlain(s.metaDescription) !== s.metaDescription) problems.push(`svc:${s.slug}:meta`);
     }
+    expect(problems, problems.slice(0, 15).join("; ")).toEqual([]);
+  });
+
+  // Всё, что уходит в <title>, meta и JSON-LD, должно быть типографски чистым
+  // ещё в исходных данных: typo() к head не применяется намеренно.
+  it("строки для meta и JSON-LD чисты и без неразрывных пробелов", () => {
+    const problems: string[] = [];
+    const check = (id: string, text?: string) => {
+      if (!text) return;
+      if (/[\u00A0\u202F]/.test(text)) problems.push(`${id}: неразрывный пробел`);
+      if (typoPlain(text) !== text) problems.push(`${id}: типографика`);
+    };
+
+    for (const s of SERVICES) {
+      check(`svc:${s.slug}:metaTitle`, s.metaTitle);
+      check(`svc:${s.slug}:title`, s.title);
+      check(`svc:${s.slug}:h1`, s.h1);
+      check(`svc:${s.slug}:metaDescription`, s.metaDescription);
+      s.keywords.forEach((k, i) => check(`svc:${s.slug}:kw[${i}]`, k));
+      s.steps.forEach((st, i) => {
+        check(`svc:${s.slug}:step[${i}].title`, st.title);
+        check(`svc:${s.slug}:step[${i}].text`, st.text);
+      });
+      (s.faq ?? []).forEach((f, i) => {
+        check(`svc:${s.slug}:faq[${i}].q`, f.q);
+        check(`svc:${s.slug}:faq[${i}].a`, f.a);
+      });
+    }
+
+    for (const p of POSTS) {
+      check(`post:${p.slug}:title`, p.title);
+      check(`post:${p.slug}:excerpt`, p.excerpt);
+      p.tags.forEach((t, i) => check(`post:${p.slug}:tag[${i}]`, t));
+      if (p.howto) {
+        check(`post:${p.slug}:howto.name`, p.howto.name);
+        p.howto.steps.forEach((st, i) => {
+          check(`post:${p.slug}:howto[${i}].name`, st.name);
+          check(`post:${p.slug}:howto[${i}].text`, st.text);
+        });
+      }
+    }
+
+    for (const d of DOCS) {
+      check(`doc:${d.slug}:title`, d.title);
+      check(`doc:${d.slug}:description`, d.description);
+      check(`doc:${d.slug}:note`, d.note);
+    }
+    for (const c of CITIES) check(`city:${c.slug}`, c.description);
+    for (const d of DISTRICTS) {
+      check(`district:${d.slug}:full`, d.full);
+      check(`district:${d.slug}:description`, d.description);
+    }
+    for (const v of WORK_VIDEOS) {
+      check(`video:${v.slug}:title`, v.title);
+      check(`video:${v.slug}:description`, v.description);
+    }
+
     expect(problems, problems.slice(0, 15).join("; ")).toEqual([]);
   });
 });
