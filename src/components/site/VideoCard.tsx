@@ -90,10 +90,7 @@ export function VideoCard({ video, eager = false, schema = true }: Props) {
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent
-          showCloseButton={false}
-          className="left-0 top-0 flex h-[100dvh] w-screen max-w-none translate-x-0 translate-y-0 flex-col items-center justify-center gap-0 rounded-none border-0 bg-black p-0 shadow-none"
-        >
+        <DialogContent className="left-0 top-0 flex h-[100dvh] w-screen max-w-none translate-x-0 translate-y-0 flex-col items-center justify-center gap-0 rounded-none border-0 bg-black p-0 shadow-none [&>button:last-child]:hidden">
           <VisuallyHidden>
             <DialogTitle>{video.title}</DialogTitle>
             <DialogDescription>{video.description}</DialogDescription>
