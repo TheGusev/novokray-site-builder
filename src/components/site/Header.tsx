@@ -26,7 +26,6 @@ const NAV = [
   { to: "/blog", l: "Блог" },
   { to: "/faq", l: "FAQ" },
   { to: "/o-kompanii", l: "О компании" },
-  { to: "/contacts", l: "Контакты" },
 ] as const;
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -92,20 +91,20 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b transition-[transform,background-color,box-shadow,border-color,height] duration-300 will-change-transform ${
+      className={`sticky top-0 z-50 border-b transition-[transform,background-color,box-shadow,border-color] duration-300 will-change-transform ${
         scrolled
           ? "border-border bg-background/95 shadow-card backdrop-blur-md"
           : "border-transparent bg-background/80 backdrop-blur-sm"
       } ${hidden && !forceVisible ? "-translate-y-full" : "translate-y-0"}`}
     >
-      <div className={`container-x flex items-center justify-between gap-4 transition-all ${scrolled ? "h-14" : "h-16 md:h-18"}`}>
-        <Logo />
+      <div className="container-x flex h-16 items-center justify-between gap-4">
+        <div className="shrink-0"><Logo /></div>
 
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden min-w-0 items-center gap-0.5 lg:flex">
           <Popover open={services} onOpenChange={setServices}>
             <PopoverTrigger asChild>
               <button
-                className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-semibold text-foreground/80 hover:bg-secondary hover:text-foreground data-[state=open]:bg-secondary data-[state=open]:text-foreground"
+                className="flex items-center gap-1 whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-semibold text-foreground/80 hover:bg-secondary hover:text-foreground data-[state=open]:bg-secondary data-[state=open]:text-foreground xl:px-3"
                 aria-label="Открыть меню услуг"
               >
                 Услуги <ChevronDown className={`h-3.5 w-3.5 transition-transform ${services ? "rotate-180" : ""}`} />
@@ -162,18 +161,18 @@ export function Header() {
             <Link
               key={i.to}
               to={i.to}
-              activeProps={{ className: "rounded-md px-3 py-2 text-sm font-semibold text-primary bg-secondary" }}
-              inactiveProps={{ className: "rounded-md px-3 py-2 text-sm font-semibold text-foreground/80 hover:bg-secondary hover:text-foreground" }}
+              activeProps={{ className: "whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-semibold text-primary bg-secondary xl:px-3" }}
+              inactiveProps={{ className: "whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-semibold text-foreground/80 hover:bg-secondary hover:text-foreground xl:px-3" }}
             >
               {i.l}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <a href={SITE.phoneHref} onClick={() => trackGoal(GOALS.callClick, { place: "header" })} className="hidden text-right md:block">
-            <div className="font-display text-sm font-bold text-foreground">{SITE.phone}</div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{SITE.hours}</div>
+        <div className="flex shrink-0 items-center gap-2">
+          <a href={SITE.phoneHref} onClick={() => trackGoal(GOALS.callClick, { place: "header" })} className="hidden shrink-0 text-right leading-tight md:block">
+            <div className="whitespace-nowrap font-display text-sm font-bold text-foreground">{SITE.phone}</div>
+            <div className="whitespace-nowrap text-[10px] uppercase tracking-wider text-muted-foreground">{SITE.hours}</div>
           </a>
           <a
             href={SITE.telegramHref}
@@ -181,20 +180,20 @@ export function Header() {
             rel="noopener noreferrer"
             aria-label={`Telegram ${SITE.telegramHandle}`}
             onClick={() => trackGoal(GOALS.telegramClick, { place: "header" })}
-            className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:border-primary hover:text-primary"
+            className="hidden shrink-0 md:inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:border-primary hover:text-primary"
           >
             <Send className="h-4 w-4" />
           </a>
           <a
             href={SITE.phoneHref}
             onClick={() => trackGoal(GOALS.callClick, { place: "header_cta" })}
-            className="hidden md:inline-flex items-center gap-2 rounded-xl bg-cta-gradient px-4 py-2.5 text-sm font-semibold text-accent-foreground shadow-cta cta-shine transition hover:scale-[1.02]"
+            className="hidden shrink-0 whitespace-nowrap md:inline-flex items-center gap-2 rounded-xl bg-cta-gradient px-4 py-2.5 text-sm font-semibold text-accent-foreground shadow-cta cta-shine transition hover:scale-[1.02]"
           >
             <Phone className="h-4 w-4" /> Вызвать
           </a>
           <button
             onClick={() => setOpen(true)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card lg:hidden"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card lg:hidden"
             aria-label="Открыть меню"
           >
             <Menu className="h-5 w-5" />
@@ -288,7 +287,7 @@ export function Header() {
             </Accordion>
 
             <div className="mt-2 grid">
-              {[...NAV, { to: "/faq", l: "Вопросы и ответы" }, { to: "/category/dezinfekciya-novosibirsk", l: "Дезинфекция в Новосибирске" }].map((i) => (
+              {[...NAV, { to: "/contacts", l: "Контакты" }, { to: "/category/dezinfekciya-novosibirsk", l: "Дезинфекция в Новосибирске" }].map((i) => (
                 <Link
                   key={i.to}
                   to={i.to}
