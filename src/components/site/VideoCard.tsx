@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Play, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Play, Clock, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import type { WorkVideo } from "@/data/videos";
+import { videoJsonLd, type WorkVideo } from "@/data/videos";
+import { SITE } from "@/data/site";
 import { GOALS, trackGoal } from "@/lib/analytics";
 
 function mmss(sec: number) {
@@ -15,14 +16,26 @@ interface Props {
   video: WorkVideo;
   /** Приоритетная загрузка постера (первая карточка) */
   eager?: boolean;
+  /** Печатать JSON-LD VideoObject рядом с карточкой (выкл. там, где разметка уже в head) */
+  schema?: boolean;
 }
 
 /**
  * Карточка видео: до клика в DOM нет ни одного <video> — грузится только
  * лёгкий webp-постер. Сам файл подтягивается по запросу пользователя.
  */
-export function VideoCard({ video, eager = false }: Props) {
+export function VideoCard({ video, eager = false, schema = true }: Props) {
   const [open, setOpen] = useState(false);
+
+  // Блокируем прокрутку фона, пока открыт полноэкранный плеер
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   const play = () => {
     setOpen(true);
@@ -77,11 +90,25 @@ export function VideoCard({ video, eager = false }: Props) {
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-[min(96vw,900px)] border-0 bg-black/95 p-2 sm:p-4">
+        <DialogContent
+          showCloseButton={false}
+          className="left-0 top-0 flex h-[100dvh] w-screen max-w-none translate-x-0 translate-y-0 flex-col items-center justify-center gap-0 rounded-none border-0 bg-black p-0 shadow-none"
+        >
           <VisuallyHidden>
             <DialogTitle>{video.title}</DialogTitle>
             <DialogDescription>{video.description}</DialogDescription>
           </VisuallyHidden>
+
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Закрыть видео"
+            className="absolute right-3 z-20 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white/25"
+            style={{ top: "max(0.75rem, env(safe-area-inset-top))" }}
+          >
+            <X className="h-6 w-6" />
+          </button>
+
           {open && (
             <video
               src={video.src}
@@ -90,16 +117,31 @@ export function VideoCard({ video, eager = false }: Props) {
               autoPlay
               playsInline
               preload="auto"
-              className={`mx-auto rounded-xl bg-black ${
-                video.orientation === "portrait"
-                  ? "h-[72vh] w-auto max-w-full"
-                  : "max-h-[72vh] w-full"
-              }`}
+              className="max-h-[100dvh] max-w-full object-contain"
+              style={{
+                height: "calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 3.5rem)",
+                width: "100%",
+              }}
             />
           )}
-          <p className="px-2 pb-1 pt-2 text-center text-sm text-white/80">{video.title}</p>
+
+          <p
+            className="absolute inset-x-0 z-10 px-14 text-center text-sm text-white/85"
+            style={{ bottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+          >
+            {video.title}
+          </p>
         </DialogContent>
       </Dialog>
+
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({ "@context": "https://schema.org", ...videoJsonLd(video, SITE.domain) }),
+          }}
+        />
+      )}
     </>
   );
 }
