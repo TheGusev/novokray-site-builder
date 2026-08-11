@@ -198,6 +198,33 @@ curl -s -X POST https://dez-federation.ru/api/lead \
 
 Ожидается `{"ok":true}` и сообщение в Telegram-группе.
 
+### Диагностика одной командой
+
+```bash
+systemctl status lead-api --no-pager && \
+curl -s http://127.0.0.1:8787/health && echo && \
+curl -s -X POST http://127.0.0.1:8787/api/lead -H "Content-Type: application/json" \
+  -d '{"type":"Проверка","phone":"+70000000000","formName":"deploy-check"}' && echo && \
+curl -s -X POST https://dez-federation.ru/api/lead -H "Content-Type: application/json" \
+  -d '{"type":"Проверка","phone":"+70000000000","formName":"deploy-check"}' && echo && \
+journalctl -u lead-api -n 30 --no-pager
+```
+
+Заявки с `formName: deploy-check` приходят в группу с пометкой «🧪 Проверка канала».
+
+| Ответ | Причина | Что делать |
+| --- | --- | --- |
+| `{"ok":true,"token":false}` на `/health` | токен не задан | вписать токен в `/etc/dez-federation/lead.env`, `systemctl restart lead-api` |
+| `503 token_not_configured` | то же | то же |
+| `502 telegram_failed`, в логе «chat not found» | бот не в группе или неверный chat id | добавить бота в группу `-5244841627` |
+| `502 telegram_failed`, в логе «Unauthorized» | неверный токен | заменить токен и перезапустить сервис |
+| `422 invalid_phone` | телефон не в формате РФ | так и задумано, проверка ввода |
+| `429 rate_limited` | больше 5 заявок в минуту с IP | подождать минуту |
+| `404` от nginx на `/api/lead` | нет блока `location = /api/lead` | добавить блок, `nginx -t && systemctl reload nginx` |
+| curl не отвечает, сайт работает | сервис упал | `journalctl -u lead-api -n 50`, `systemctl restart lead-api` |
+
+Деплой сам проверяет цепочку: если токена нет, порт 8787 занят чужим процессом, Telegram отвергает сообщение или nginx не проксирует `/api/lead` — GitHub Actions падает с понятной ошибкой, не выкатывая сайт с неработающими формами.
+
 ### Поведение
 
 - Сервис слушает только `127.0.0.1:8787`, наружу доступен исключительно через nginx.
