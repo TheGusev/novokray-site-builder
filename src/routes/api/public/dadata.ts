@@ -8,10 +8,9 @@ function json(data: unknown, status = 200) {
   });
 }
 
-export const Route = createFileRoute("/api/public/dadata")({
-  server: {
-    handlers: {
-      POST: async ({ request }) => {
+async function handlePost({ request }: { request: Request }): Promise<Response> {
+  {
+    {
         const key = process.env["DADATA_API_KEY"];
         let inn = "";
         try {
@@ -44,7 +43,11 @@ export const Route = createFileRoute("/api/public/dadata")({
         } catch {
           return json({ ok: false, error: "upstream_failed" }, 502);
         }
-      },
-    },
-  },
-});
+  }
+}
+
+// Типы server-обработчиков в текущей версии роутера ещё не описаны — runtime их поддерживает.
+export const Route = createFileRoute("/api/public/dadata")({
+  server: { handlers: { POST: handlePost } },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any);
