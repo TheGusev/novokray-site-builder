@@ -3,4 +3,4 @@
 export const POSTS_PER_PAGE = 12;
 
 // Общее количество статей. Синхронизируется тестом src/data/__tests__/blogConst.test.ts
-export const TOTAL_POSTS = 50;
+export const TOTAL_POSTS = 54;
