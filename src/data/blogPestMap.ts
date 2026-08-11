@@ -63,7 +63,7 @@ const BY_SERVICE: Record<string, BlogOffer> = {
     pest: "Плесень", service: "obrabotka-ot-pleseni", priceFrom: 1800,
     heading: "Плесень или грибок? Уберём причину, а не пятно",
     sub: "Антисептики глубокого проникновения, просушка и заключение по объекту.",
-    bullets: ["Гарантия до 24 месяцев", "Работаем с подвалами МКД и УК", "Заключение и акт для管 документов"],
+    bullets: ["Гарантия до 24 месяцев", "Работаем с подвалами МКД и УК", "Заключение и акт для УК и суда"],
   },
   "ozonirovanie-pomescheniy": {
     pest: "Озонирование", service: "ozonirovanie-pomescheniy", priceFrom: 2500,
