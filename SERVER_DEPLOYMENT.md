@@ -148,6 +148,30 @@ curl -I https://dez-federation.ru/несуществующий-файл.js
 - TTF: `200`, тип шрифта, не `text/html`.
 - Несуществующий JS/PDF: `404`, не главная страница.
 
+## Проверка видео и постеров (/media/*)
+
+```bash
+curl -I https://dez-federation.ru/media/obrabotka-uchastka.mp4
+curl -I https://dez-federation.ru/media/obrabotka-uchastka-poster.webp
+curl -s -o /dev/null -w '%{http_code}\n' -H 'Range: bytes=0-1' \
+  https://dez-federation.ru/media/obrabotka-uchastka.mp4
+curl -s -o /dev/null -w '%{http_code}\n' https://dez-federation.ru/media/nope.mp4
+```
+
+Ожидается:
+
+- mp4: `200`, `Content-Type: video/mp4`, `Accept-Ranges: bytes`.
+- Постер: `200`, `Content-Type: image/webp`.
+- Range-запрос: `206`.
+- Несуществующий файл: `404` (не главная страница).
+
+| Симптом | Причина | Что делать |
+| --- | --- | --- |
+| Плеер чёрный, `Content-Type: text/html` | нет блока `location ^~ /media/`, файл ушёл в SPA-fallback | добавить блок выше `location /`, `nginx -t && systemctl reload nginx` |
+| `Content-Type: application/octet-stream` | в `mime.types` нет mp4/webp | оставить блок `types { video/mp4 mp4; image/webp webp; }` внутри `location /media/` |
+| Видео не стартует на iPhone, перемотка не работает | Range-запрос отдаёт `200` вместо `206` | убрать `gzip`/сторонние фильтры для `/media/`, проверить `Accept-Ranges: bytes` |
+| `404` на существующий файл | сборка не скопирована | `ls /var/www/dez-federation.ru/media/`, повторить деплой |
+
 ## Деплой
 
 Workflow копирует новую сборку поверх действующей без предварительной очистки, проверяет главную, блог и PDF, и только после успешной проверки удаляет устаревшие файлы. Поэтому во время обновления nginx не должен видеть пустой каталог.
