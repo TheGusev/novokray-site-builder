@@ -29,12 +29,18 @@ const leadSchema = z.object({
 
 interface Props {
   defaultService?: string;
-  variant?: "card" | "hero" | "inline";
+  variant?: "card" | "hero" | "inline" | "compact";
   title?: string;
   subtitle?: string;
   onSuccess?: () => void;
   /** Переопределяет имя цели формы (например, для модального окна) */
   goal?: string;
+  /** Человекочитаемое имя формы для заявки в Telegram */
+  formName?: string;
+  /** Доп. контекст (например, название статьи) — уходит в заявку */
+  context?: string;
+  /** Текст кнопки отправки в компактном режиме */
+  submitLabel?: string;
 }
 
 interface Tile { id: string; label: string; icon: LucideIcon }
