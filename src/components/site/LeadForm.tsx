@@ -76,6 +76,17 @@ const OBJECTS: Tile[] = [
 ];
 
 function formatPhone(raw: string): string {
+  return formatPhoneImpl(raw);
+}
+
+/** Единые классы полей формы — цвет текста задан явно, чтобы поле было читаемым
+ *  в любой секции (в том числе внутри блоков с белым текстом). */
+const FIELD_BASE =
+  "w-full rounded-lg border border-input bg-background px-3 text-foreground placeholder:text-muted-foreground outline-none ring-ring/40 focus:ring-2";
+export const FIELD_TEXT = `${FIELD_BASE} h-11 text-sm`;
+export const FIELD_PHONE = `${FIELD_BASE} h-12 text-base font-semibold tracking-wide`;
+
+function formatPhoneImpl(raw: string): string {
   let d = raw.replace(/\D/g, "").replace(/^8/, "7");
   // ввод «+7…» поверх подставленного «+7 (» даёт лишнюю семёрку — убираем её
   if (d.startsWith("77")) d = d.slice(1);
