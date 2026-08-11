@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
+import { typo } from "@/lib/typography";
 import { type Service } from "@/data/services";
 import { getServiceIcon } from "@/data/serviceIcons";
 import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META, KLOPY_PHOTOS, KLOPY_PHOTO_META } from "@/data/images";
@@ -190,7 +191,7 @@ function ServicePage() {
             </Reveal>
             <AnimatedHeading as="h1" text={s.h1} highlight="Новосибирске" className="mt-5 font-display text-[30px] font-extrabold leading-tight text-balance md:text-5xl" />
             <Reveal delay={250}>
-              <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">{s.lead}</p>
+              <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">{typo(s.lead)}</p>
             </Reveal>
             <Reveal delay={300}>
               <div className="mt-5 max-w-xl">

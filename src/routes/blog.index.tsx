@@ -4,6 +4,7 @@ import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { useMemo, useState } from "react";
 import { Calendar, Clock, ChevronLeft, ChevronRight, Search, Library, MapPin, Download, FileText, BookOpen } from "lucide-react";
 import { SITE } from "@/data/site";
+import { typo } from "@/lib/typography";
 import {
   POSTS, BLOG_CATEGORIES, POSTS_BY_CATEGORY,
   ALL_TAGS, PILLAR_SLUGS, CATEGORY_BY_SLUG,
@@ -153,8 +154,8 @@ function PostCard({ p }: { p: BlogPost }) {
           <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{p.readMin} мин</span>
           <GeoBadge geo={p.geo} />
         </div>
-        <h3 className="mt-3 font-display text-base font-bold leading-snug text-foreground group-hover:text-primary md:text-lg">{p.title}</h3>
-        <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{p.excerpt}</p>
+        <h3 className="mt-3 font-display text-base font-bold leading-snug text-foreground group-hover:text-primary md:text-lg">{typo(p.title)}</h3>
+        <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{typo(p.excerpt)}</p>
         <div className="mt-auto flex flex-wrap gap-1.5 pt-3">
           {p.tags.slice(0, 3).map((t) => (
             <span key={t} className="rounded-full bg-secondary px-2 py-0.5 text-[11px] text-secondary-foreground">#{t}</span>

@@ -13,6 +13,7 @@ import { getBlogOffer } from "@/data/blogPestMap";
 import { InlineLeadCta } from "@/components/site/InlineLeadCta";
 import { BlogStickyCta } from "@/components/site/BlogStickyCta";
 import { GOALS } from "@/lib/analytics";
+import { typo } from "@/lib/typography";
 
 export const Route = createFileRoute("/blog/$slug")({
   // Статьи грузятся отдельным чанком — они не нужны на остальных страницах.
@@ -139,7 +140,7 @@ function PostPage() {
           </span>
         </div>
 
-        <h1 className="mt-4 max-w-4xl font-display text-3xl font-extrabold leading-tight md:text-5xl">{p.title}</h1>
+        <h1 className="mt-4 max-w-4xl font-display text-3xl font-extrabold leading-tight md:text-5xl">{typo(p.title)}</h1>
         <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1"><Calendar className="h-4 w-4" />{new Date(p.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}</span>
           {p.updatedAt && <span className="text-xs">обновлено {new Date(p.updatedAt).toLocaleDateString("ru-RU")}</span>}
@@ -171,7 +172,7 @@ function PostPage() {
           {/* Контент */}
           <div className="prose-content min-w-0">
             <div className="speakable rounded-2xl border border-primary/20 bg-secondary/50 p-5 text-base font-medium leading-relaxed text-foreground">
-              {p.excerpt}
+              {typo(p.excerpt)}
             </div>
             <div className="mt-2">
               {blocks.slice(0, cutIndex)}
@@ -219,9 +220,9 @@ function PostPage() {
                   {p.faq.map((f: { q: string; a: string }, i: number) => (
                     <details key={i} className="group p-5">
                       <summary className="cursor-pointer list-none text-base font-bold text-foreground transition hover:text-primary">
-                        {f.q}
+                        {typo(f.q)}
                       </summary>
-                      <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">{f.a}</p>
+                      <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">{typo(f.a)}</p>
                     </details>
                   ))}
                 </div>
@@ -289,8 +290,8 @@ function PostPage() {
               )}
               <div className="flex flex-1 flex-col p-6">
                 <div className="text-xs text-muted-foreground">{new Date(o.date).toLocaleDateString("ru-RU")}</div>
-                <h3 className="mt-2 font-display text-lg font-bold group-hover:text-primary">{o.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{o.excerpt}</p>
+                <h3 className="mt-2 font-display text-lg font-bold group-hover:text-primary">{typo(o.title)}</h3>
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{typo(o.excerpt)}</p>
               </div>
             </Link>
           ))}
