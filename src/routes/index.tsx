@@ -21,6 +21,8 @@ import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { WaveSentences } from "@/components/site/WaveSentences";
 import { WaveText } from "@/components/site/WaveText";
 import { StatsRow } from "@/components/site/StatsRow";
+import { VideoCard } from "@/components/site/VideoCard";
+import { WORK_VIDEOS } from "@/data/videos";
 import { GOALS, trackGoal } from "@/lib/analytics";
 
 const HOME_FAQ = [
@@ -417,7 +419,7 @@ function HomePage() {
 
       {/* GEO */}
       <section className="container-x py-14 md:py-20">
-        <div className="grid gap-10 lg:grid-cols-[1fr,1.2fr]">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr]">
           <Reveal>
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">География выездов</div>
             <AnimatedHeading
@@ -522,6 +524,33 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Видео работ */}
+      <section className="container-x py-14 md:py-20">
+        <Reveal>
+          <div className="text-xs font-semibold uppercase tracking-wider text-primary">Видео с объектов</div>
+          <AnimatedHeading
+            as="h2"
+            text="Смотрите, как проходит обработка"
+            highlight="обработка"
+            className="mt-2 max-w-2xl font-display text-3xl font-bold md:text-4xl text-balance"
+          />
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            Реальные съёмки с выездов: горячий туман по спальным местам, кухня от тараканов, участок от клещей и комаров.
+            Ролики подгружаются только по клику — страница остаётся быстрой.
+          </p>
+        </Reveal>
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {WORK_VIDEOS.slice(0, 3).map((v, i) => (
+            <Reveal key={v.slug} delay={i * 80}>
+              <VideoCard video={v} />
+            </Reveal>
+          ))}
+        </div>
+        <Link to="/video" className="mt-8 inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 font-semibold hover:bg-secondary">
+          Все видео работ <ArrowRight className="h-4 w-4" />
+        </Link>
+      </section>
+
       {/* Documents */}
       <section className="container-x py-14 md:py-20">
         <Reveal>
@@ -547,7 +576,7 @@ function HomePage() {
 
       {/* B2B */}
       <section className="bg-surface py-14 md:py-20">
-        <div className="container-x grid gap-10 lg:grid-cols-[1fr,1.4fr]">
+        <div className="container-x grid gap-10 lg:grid-cols-[1fr_1.4fr]">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
               <Building2 className="h-3.5 w-3.5" /> Для юрлиц

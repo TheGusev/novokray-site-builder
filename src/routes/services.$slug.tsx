@@ -12,6 +12,8 @@ import { TrustStrip } from "@/components/site/TrustStrip";
 import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { TldrBlock } from "@/components/site/TldrBlock";
+import { VideoCard } from "@/components/site/VideoCard";
+import { videosForService } from "@/data/videos";
 
 const WARRANTY_BY_SLUG: Record<string, string> = {
   "unichtozhenie-klopov": "до 12 месяцев",
@@ -179,7 +181,7 @@ function ServicePage() {
           </>
         )}
         <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 80% 30%, oklch(0.7 0.20 38 / 0.3), transparent 60%)" }} />
-        <div className="container-x relative grid gap-8 py-10 md:py-14 lg:grid-cols-[1.25fr,1fr] lg:py-20">
+        <div className="container-x relative grid gap-8 py-10 md:py-14 lg:grid-cols-[1.25fr_1fr] lg:py-20">
           <div>
             <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur">
@@ -356,6 +358,26 @@ function ServicePage() {
           ))}
         </div>
       </section>
+
+      {/* Видео работ по услуге */}
+      {videosForService(s.slug).length > 0 && (
+        <section className="container-x pb-4">
+          <h2 className="font-display text-3xl font-bold md:text-4xl">Видео с наших выездов</h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            Ролики подгружаются только по клику — страница остаётся быстрой.
+          </p>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {videosForService(s.slug).map((v, i) => (
+              <Reveal key={v.slug} delay={i * 80}>
+                <VideoCard video={v} />
+              </Reveal>
+            ))}
+          </div>
+          <Link to="/video" className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2">
+            Все видео работ <ArrowRight className="h-4 w-4" />
+          </Link>
+        </section>
+      )}
 
       {/* Prices */}
       <section className="bg-surface py-16">

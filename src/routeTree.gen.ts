@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VideoRouteImport } from './routes/video'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PriceRouteImport } from './routes/price'
@@ -30,6 +31,11 @@ import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
+const VideoRoute = VideoRouteImport.update({
+  id: '/video',
+  path: '/video',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/video': typeof VideoRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/video': typeof VideoRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/price': typeof PriceRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/video': typeof VideoRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/category/dezinfekciya-novosibirsk': typeof CategoryDezinfekciyaNovosibirskRoute
   '/docs/$slug': typeof DocsSlugRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/price'
     | '/privacy'
     | '/terms'
+    | '/video'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/price'
     | '/privacy'
     | '/terms'
+    | '/video'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/price'
     | '/privacy'
     | '/terms'
+    | '/video'
     | '/blog/$slug'
     | '/category/dezinfekciya-novosibirsk'
     | '/docs/$slug'
@@ -279,6 +291,7 @@ export interface RootRouteChildren {
   PriceRoute: typeof PriceRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
+  VideoRoute: typeof VideoRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CategoryDezinfekciyaNovosibirskRoute: typeof CategoryDezinfekciyaNovosibirskRoute
   DocsSlugRoute: typeof DocsSlugRoute
@@ -293,6 +306,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/video': {
+      id: '/video'
+      path: '/video'
+      fullPath: '/video'
+      preLoaderRoute: typeof VideoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -447,6 +467,7 @@ const rootRouteChildren: RootRouteChildren = {
   PriceRoute: PriceRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
+  VideoRoute: VideoRoute,
   BlogSlugRoute: BlogSlugRoute,
   CategoryDezinfekciyaNovosibirskRoute: CategoryDezinfekciyaNovosibirskRoute,
   DocsSlugRoute: DocsSlugRoute,
@@ -461,12 +482,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

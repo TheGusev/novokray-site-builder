@@ -21,6 +21,7 @@ import {
 
 const NAV = [
   { to: "/price", l: "Цены" },
+  { to: "/video", l: "Видео" },
   { to: "/garantii", l: "Гарантии" },
   { to: "/blog", l: "Блог" },
   { to: "/faq", l: "FAQ" },

@@ -22,6 +22,7 @@ export const STATIC_PATHS: string[] = [
   "/faq",
   "/kp",
   "/blog",
+  "/video",
   "/karta-sayta",
   "/privacy",
   "/terms",

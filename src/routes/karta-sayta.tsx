@@ -22,6 +22,7 @@ const MAIN_SECTIONS: { to: string; label: string; desc: string }[] = [
   { to: "/contacts", label: "Контакты", desc: "Адрес, телефон, реквизиты" },
   { to: "/faq", label: "Вопросы и ответы", desc: "Часто задаваемые вопросы" },
   { to: "/blog", label: "Блог", desc: "Полезные статьи о дезинфекции" },
+  { to: "/video", label: "Видео работ", desc: "Съёмки реальных обработок в НСК и области" },
   { to: "/category/dezinfekciya-novosibirsk", label: "Дезинфекция в Новосибирске", desc: "Категория услуг по городу" },
   { to: "/privacy", label: "Политика конфиденциальности", desc: "Обработка персональных данных" },
   { to: "/terms", label: "Пользовательское соглашение", desc: "Условия использования сайта" },
