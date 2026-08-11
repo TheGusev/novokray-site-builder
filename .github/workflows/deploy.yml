@@ -15,6 +15,7 @@ jobs:
         uses: appleboy/ssh-action@v1.2.0
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          DADATA_API_KEY: ${{ secrets.DADATA_API_KEY }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
