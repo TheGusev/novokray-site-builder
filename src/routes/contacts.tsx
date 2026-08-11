@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from "lucide-react";
 import { SITE } from "@/data/site";
 import { COMMON } from "@/data/images";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -7,6 +7,7 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { Reveal } from "@/components/site/Reveal";
 import { WaveText } from "@/components/site/WaveText";
 import { GOALS, trackGoal } from "@/lib/analytics";
+import { openStatusLabel } from "@/lib/openHours";
 
 export const Route = createFileRoute("/contacts")({
   head: () => ({
@@ -63,6 +64,23 @@ export const Route = createFileRoute("/contacts")({
               contactType: "customer service",
               areaServed: "RU-NVS",
               availableLanguage: ["ru"],
+            }, {
+              "@type": "ContactPoint",
+              telephone: SITE.whatsapp,
+              contactType: "customer support",
+              contactOption: "TollFree",
+              areaServed: "RU-NVS",
+              availableLanguage: ["ru"],
+              url: SITE.whatsappHref,
+              name: "WhatsApp",
+            }, {
+              "@type": "ContactPoint",
+              telephone: SITE.max,
+              contactType: "customer support",
+              areaServed: "RU-NVS",
+              availableLanguage: ["ru"],
+              url: SITE.maxHref,
+              name: "MAX",
             }],
             areaServed: [
               { "@type": "City", name: "Новосибирск" },
