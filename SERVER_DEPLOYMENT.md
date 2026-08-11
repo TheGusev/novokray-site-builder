@@ -259,6 +259,9 @@ journalctl -u lead-api -n 30 --no-pager
 | `stats_info_open` | раскрытие пояснения к счётчику «38 000+ заявок по РФ» |
 | `telegram_click` | клик по Telegram |
 | `whatsapp_click` | клик по WhatsApp |
+| `contacts_call_click` | клик по кнопке «Позвонить» в блоке быстрых действий на /contacts |
+| `contacts_whatsapp_click` | клик по кнопке «Написать в WhatsApp» на /contacts |
+| `contacts_max_click` | клик по MAX на /contacts |
 
 ### 2. Цели по услугам
 
@@ -273,7 +276,7 @@ lead_sushka_posle_potopa, lead_borschevik, lead_drugoe
 ### 3. Составные цели (создать в Метрике → Цели → Составная)
 
 - `all_conversions` = `lead_hero` + `lead_modal` + `lead_service` + `lead_price` + `docs_request` + `kp_submit`
-- `contacts` = `call_click` + `hero_call_click` + `telegram_click` + `whatsapp_click`
+- `contacts` = `call_click` + `hero_call_click` + `telegram_click` + `whatsapp_click` + `contacts_call_click` + `contacts_whatsapp_click` + `contacts_max_click`
 - `hero_cta` = `hero_call_click` + `hero_calc_click`
 - `documents` = `kp_pdf` + `invoice_pdf` + `dogovor_pdf`
 - по каждой услуге: `conv_klopy` = `lead_klopy` + `call_click`, `conv_tarakany` = `lead_tarakany` + `call_click` и т.д.
