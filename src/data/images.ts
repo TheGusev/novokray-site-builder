@@ -38,6 +38,33 @@ import blogBorschevik from "@/assets/blog-borschevik.jpg";
 import blogOsyBalkon from "@/assets/blog-osy-balkon.jpg";
 import blogOzonVirus from "@/assets/blog-ozon-virus.jpg";
 
+import blogMyshiDacha from "@/assets/blog-myshi-dacha.jpg";
+import blogGnezdoGryzunov from "@/assets/blog-gnezdo-gryzunov.jpg";
+import blogRodenticidy from "@/assets/blog-rodenticidy.jpg";
+import blogKroty from "@/assets/blog-kroty.jpg";
+import blogZemlyanyeOsy from "@/assets/blog-zemlyanye-osy.jpg";
+import blogBazaOtdyha from "@/assets/blog-baza-otdyha.jpg";
+import blogPischevayaMol from "@/assets/blog-pischevaya-mol.jpg";
+import blogDetsad from "@/assets/blog-detsad.jpg";
+import blogUkPodezd from "@/assets/blog-uk-podezd.jpg";
+import blogPosleUmershego from "@/assets/blog-posle-umershego.jpg";
+import blogTarakanyVozvrat from "@/assets/blog-tarakany-vozvrat.jpg";
+import blogFaraonovyMuravi from "@/assets/blog-faraonovy-muravi.jpg";
+import blogChernayaPlesen from "@/assets/blog-chernaya-plesen.jpg";
+import blogPlesenPodval from "@/assets/blog-plesen-podval.jpg";
+import blogUkusOsy from "@/assets/blog-ukus-osy.jpg";
+import blogSredstvaOtOs from "@/assets/blog-sredstva-ot-os.jpg";
+import blogKonditsioner from "@/assets/blog-konditsioner.jpg";
+import blogBarernaya from "@/assets/blog-barernaya.jpg";
+import blogMikrokapsuly from "@/assets/blog-mikrokapsuly.jpg";
+import blogSklad from "@/assets/blog-sklad.jpg";
+import blogShershni from "@/assets/blog-shershni.jpg";
+import blogZapahGari from "@/assets/blog-zapah-gari.jpg";
+import blogPosleZhivotnyh from "@/assets/blog-posle-zhivotnyh.jpg";
+import blogKleshchPomosch from "@/assets/blog-kleshch-pomosch.jpg";
+import blogAkaritsidy from "@/assets/blog-akaritsidy.jpg";
+import blogZhurnal from "@/assets/blog-zhurnal.jpg";
+
 // Unique gallery (process-in-action photos)
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
@@ -105,62 +132,62 @@ export const BLOG_COVERS: Record<string, string> = {
   "klopy-v-divane-chto-delat": klopyRazborKrovati,
   "tarakany-v-novostroyke": blogNovostroyka,
   "ryzhie-i-chernye-tarakany-razlichiya": svcTarakany,
-  "pochemu-tarakany-vozvraschayutsya": svcTarakany,
+  "pochemu-tarakany-vozvraschayutsya": blogTarakanyVozvrat,
   "muravi-v-kvartire-novosibirsk": svcMuravi,
-  "faraonovy-muravi-kak-vyvesti": svcMuravi,
+  "faraonovy-muravi-kak-vyvesti": blogFaraonovyMuravi,
   "blohi-iz-podvala": blogPodval,
   "koshachi-blohi-v-kvartire": svcBloh,
-  "pischevaya-mol-na-kuhne": svcDezinfekciya,
+  "pischevaya-mol-na-kuhne": blogPischevayaMol,
   "cheshuynitsy-v-vannoy": svcPlesen,
   // Грызуны
   "krysy-v-chastnom-dome-nsk": svcGryzuny,
-  "myshi-na-dache-zimoy": svcGryzuny,
-  "kroty-na-uchastke-borba": blogUchastokVesnoy,
-  "kak-najti-myshinoe-gnezdo": svcGryzuny,
-  "deratizatsiya-skladov-trebovaniya": equipmentFlatlay,
+  "myshi-na-dache-zimoy": blogMyshiDacha,
+  "kroty-na-uchastke-borba": blogKroty,
+  "kak-najti-myshinoe-gnezdo": blogGnezdoGryzunov,
+  "deratizatsiya-skladov-trebovaniya": blogSklad,
   // Участок
   "obrabotka-uchastka-vesnoy": blogUchastokVesnoy,
   "kleshchi-v-akademgorodke-statistika": svcKleshchi,
-  "entsefalitnyy-kleshch-pervaya-pomosch": svcKleshchi,
+  "entsefalitnyy-kleshch-pervaya-pomosch": blogKleshchPomosch,
   "osy-na-balkone": blogOsyBalkon,
-  "shershni-opasnost-i-udalenie": svcOsy,
+  "shershni-opasnost-i-udalenie": blogShershni,
   "osy-v-dome-pod-kryshey": svcOsy,
-  "zemlyanye-osy-na-uchastke": blogUchastokVesnoy,
-  "ukus-osy-i-shershnya-pomoshch": blogOsyBalkon,
-  "sredstva-ot-os-i-shershney": svcOsy,
+  "zemlyanye-osy-na-uchastke": blogZemlyanyeOsy,
+  "ukus-osy-i-shershnya-pomoshch": blogUkusOsy,
+  "sredstva-ot-os-i-shershney": blogSredstvaOtOs,
   "borschevik-na-dache": blogBorschevik,
   "moshka-i-komary-v-novosibirske": svcMoshkiKomari,
-  "obrabotka-bazy-otdyha-ob": blogUchastokVesnoy,
+  "obrabotka-bazy-otdyha-ob": blogBazaOtdyha,
   // Плесень
   "plesen-v-vannoy-prichiny": blogPlesenVannaya,
-  "plesen-v-podvale-mnogokvartirnogo-doma": blogPodval,
+  "plesen-v-podvale-mnogokvartirnogo-doma": blogPlesenPodval,
   "plesen-posle-zatopleniya": blogZatopili,
-  "chernaya-plesen-vred-dlya-zdorovya": svcPlesen,
-  "plesen-v-konditsionere-avto-i-doma": blogOzonAvto,
+  "chernaya-plesen-vred-dlya-zdorovya": blogChernayaPlesen,
+  "plesen-v-konditsionere-avto-i-doma": blogKonditsioner,
   // Запахи
   "ozonirovanie-avto-zachem": blogOzonAvto,
   "ozon-protiv-virusov": blogOzonVirus,
-  "kak-ubrat-zapakh-gari-posle-pozhara": svcDezodoraciya,
-  "dezodoratsiya-posle-zhivotnyh": svcDezodoraciya,
+  "kak-ubrat-zapakh-gari-posle-pozhara": blogZapahGari,
+  "dezodoratsiya-posle-zhivotnyh": blogPosleZhivotnyh,
   "zapakh-tabaka-v-arendnoy-kvartire": svcOzon,
   // ЧС
   "zatopili-sosedi-chto-delat": blogZatopili,
   "sushka-posle-zatopleniya-skolko-stoit": svcSushka,
-  "obrabotka-kvartiry-posle-umershego": svcDezinfekciya,
+  "obrabotka-kvartiry-posle-umershego": blogPosleUmershego,
   "obrabotka-posle-pozhara-pervye-shagi": svcDezodoraciya,
   // СанПиН
   "deratizatsiya-v-kafe": blogKafe,
-  "dezinfektsiya-v-detskom-sadu-sanpin": svcDezinfekciya,
+  "dezinfektsiya-v-detskom-sadu-sanpin": blogDetsad,
   "obrabotka-gostinits-trebovaniya": b2bCafe,
-  "dezinfektsiya-dlya-uk-i-tsg": svcDezinfekciya,
+  "dezinfektsiya-dlya-uk-i-tsg": blogUkPodezd,
   "dogovor-na-dezinsektsiyu-obrazets": documentsImg,
-  "zhurnal-sanpin-kak-vesti": documentsImg,
+  "zhurnal-sanpin-kak-vesti": blogZhurnal,
   // Препараты
   "goryachiy-tuman-vs-holodnyy": svcFumigaciya,
-  "barernaya-obrabotka-chto-eto": equipmentFlatlay,
-  "mikrokapsulirovannye-preparaty-2026": equipmentFlatlay,
-  "akaritsidy-spisok-i-otlichiya": svcKleshchi,
-  "rodentitsidy-bezopasnost-dlya-detey-i-zhivotnyh": svcGryzuny,
+  "barernaya-obrabotka-chto-eto": blogBarernaya,
+  "mikrokapsulirovannye-preparaty-2026": blogMikrokapsuly,
+  "akaritsidy-spisok-i-otlichiya": blogAkaritsidy,
+  "rodentitsidy-bezopasnost-dlya-detey-i-zhivotnyh": blogRodenticidy,
   // Доп. (остался из старого набора)
   "kak-podgotovit-kvartiru": blogPodgotovka,
 };
