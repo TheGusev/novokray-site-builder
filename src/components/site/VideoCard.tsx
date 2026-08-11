@@ -5,6 +5,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { videoJsonLd, type WorkVideo } from "@/data/videos";
 import { SITE } from "@/data/site";
 import { GOALS, trackGoal } from "@/lib/analytics";
+import { typo } from "@/lib/typography";
 
 function mmss(sec: number) {
   const m = Math.floor(sec / 60);
@@ -79,9 +80,9 @@ export function VideoCard({ video, eager = false, schema = true }: Props) {
         </div>
         <div className="flex flex-1 flex-col p-5">
           <h3 className="font-display text-base font-bold leading-snug text-foreground group-hover:text-primary">
-            {video.title}
+            {typo(video.title)}
           </h3>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{video.description}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{typo(video.description)}</p>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {video.tags.map((t) => (
               <span key={t} className="rounded-full bg-secondary px-2 py-0.5 text-[11px] text-muted-foreground">
@@ -95,8 +96,8 @@ export function VideoCard({ video, eager = false, schema = true }: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="left-0 top-0 flex h-[100dvh] w-screen max-w-none translate-x-0 translate-y-0 flex-col items-center justify-center gap-0 rounded-none border-0 bg-black p-0 shadow-none [&>button:last-child]:hidden">
           <VisuallyHidden>
-            <DialogTitle>{video.title}</DialogTitle>
-            <DialogDescription>{video.description}</DialogDescription>
+            <DialogTitle>{typo(video.title)}</DialogTitle>
+            <DialogDescription>{typo(video.description)}</DialogDescription>
           </VisuallyHidden>
 
           <button

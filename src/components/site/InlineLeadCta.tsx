@@ -5,6 +5,7 @@ import { formatRub } from "@/data/leadPricing";
 import { LeadForm } from "./LeadForm";
 import { GOALS, trackGoal } from "@/lib/analytics";
 import type { BlogOffer } from "@/data/blogPestMap";
+import { typo } from "@/lib/typography";
 
 interface Props {
   offer: BlogOffer;
@@ -30,9 +31,9 @@ export function InlineLeadCta({ offer, context, goal, formName, wide = false }: 
             Санитарная служба «Дез-Федерация» · Новосибирск и область
           </div>
           <h2 className="mt-1.5 font-display text-xl font-extrabold leading-tight text-foreground md:text-2xl">
-            {offer.heading}
+            {typo(offer.heading)}
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{offer.sub}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{typo(offer.sub)}</p>
 
           <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">
             {offer.bullets.map((b) => (

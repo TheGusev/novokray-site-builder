@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
+import { typo } from "@/lib/typography";
 import { type Service } from "@/data/services";
 import { getServiceIcon } from "@/data/serviceIcons";
 import { SERVICE_IMAGES, COMMON, SERVICE_IMAGE_META, COMMON_IMAGE_META, KLOPY_PHOTOS, KLOPY_PHOTO_META } from "@/data/images";
@@ -190,7 +191,7 @@ function ServicePage() {
             </Reveal>
             <AnimatedHeading as="h1" text={s.h1} highlight="Новосибирске" className="mt-5 font-display text-[30px] font-extrabold leading-tight text-balance md:text-5xl" />
             <Reveal delay={250}>
-              <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">{s.lead}</p>
+              <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-white/90 md:text-lg">{typo(s.lead)}</p>
             </Reveal>
             <Reveal delay={300}>
               <div className="mt-5 max-w-xl">
@@ -301,7 +302,7 @@ function ServicePage() {
               <Reveal key={i} delay={i * 100} className="rounded-2xl border border-border bg-card p-6 shadow-card">
                 <div className="font-display text-3xl font-extrabold text-primary/30">{String(i + 1).padStart(2, "0")}</div>
                 <h3 className="mt-1 font-display text-lg font-bold">{st.title}</h3>
-                <div className="mt-2 text-sm text-muted-foreground">{st.text}</div>
+                <div className="mt-2 text-sm text-muted-foreground">{typo(st.text)}</div>
               </Reveal>
             ))}
           </div>
@@ -353,7 +354,7 @@ function ServicePage() {
           {s.tech.map((t, i) => (
             <Reveal key={i} delay={i * 90} className="rounded-2xl border border-border bg-card p-6 shadow-card">
               <h3 className="font-display text-lg font-bold text-primary">{t.title}</h3>
-              <div className="mt-2 text-sm text-muted-foreground">{t.text}</div>
+              <div className="mt-2 text-sm text-muted-foreground">{typo(t.text)}</div>
             </Reveal>
           ))}
         </div>

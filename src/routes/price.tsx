@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BadgeCheck, CreditCard, Percent, Calculator, Phone } from "lucide-react";
 import { SITE } from "@/data/site";
+import { typo } from "@/lib/typography";
 import { SERVICES } from "@/data/services";
 import { SERVICES_INDEX } from "@/data/servicesIndex";
 import { COMMON, SERVICE_IMAGES, SERVICE_IMAGE_META } from "@/data/images";
@@ -104,7 +105,7 @@ function PricePage() {
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <s.icon className="h-7 w-7 text-primary" />
-                  <h2 className="font-display text-xl font-bold md:text-2xl">{s.title}</h2>
+                  <h2 className="font-display text-xl font-bold md:text-2xl">{typo(s.title)}</h2>
                 </div>
                 <Link to="/services/$slug" params={{ slug: s.slug }} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2">
                   Подробнее <ArrowRight className="h-4 w-4" />
