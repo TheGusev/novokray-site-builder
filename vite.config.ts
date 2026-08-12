@@ -6,7 +6,6 @@ import routesJson from "./src/generated/routes.json" with { type: "json" };
 const pages = (routesJson.paths as string[]).map((path) => ({ path }));
 
 export default defineConfig({
-  nitro: false,
   tanstackStart: {
     // Prerender всех маршрутов в готовые HTML-файлы.
     pages,
