@@ -6,9 +6,6 @@ import routesJson from "./src/generated/routes.json" with { type: "json" };
 const pages = (routesJson.paths as string[]).map((path) => ({ path }));
 
 export default defineConfig({
-  // Воркер хостинга не умеет резолвить модули в рантайме — h3 должен попасть в бандл.
-  ssr: { noExternal: ["h3-v2", "h3"] },
-  nitro: false,
   tanstackStart: {
     // Prerender всех маршрутов в готовые HTML-файлы.
     pages,
