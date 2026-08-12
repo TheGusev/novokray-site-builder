@@ -4,7 +4,7 @@ import { Reveal } from "@/components/site/Reveal";
 export function TrustStrip() {
   const items = [
     { icon: Clock4, t: "Выезд за 60 мин", s: "по Новосибирску, 07:00–23:00" },
-    { icon: ShieldCheck, t: "Гарантия до 24 мес.", s: "по договору, бесплатная повторка" },
+    { icon: ShieldCheck, t: "Гарантия до 24 мес.", s: "по договору, повторная обработка бесплатно" },
     { icon: Award, t: "7 лет на рынке", s: "38 000+ заявок по РФ, с 2019" },
     { icon: BadgeCheck, t: "Лицензия и СЭС", s: "сертифицированные препараты" },
   ];
