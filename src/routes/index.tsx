@@ -47,7 +47,7 @@ const TIMELINE = [
   { icon: Phone, t: "Заявка", s: "Звонок или форма", min: "0 мин" },
   { icon: ClipboardCheck, t: "Цена заранее", s: "Фиксируем до выезда", min: "5 мин" },
   { icon: CalendarClock, t: "Приезд специалиста", s: "Без опозданий", min: "60 мин" },
-  { icon: ShieldCheck, t: "Обработка и гарантия", s: "Договор и талон", min: "2 ч" },
+  { icon: ShieldCheck, t: "Обработка и гарантия", s: "Договор и гарантия", min: "2 ч" },
 ];
 
 const GEO_AREA_SLUGS = ["berdsk", "iskitim", "koltsovo", "krasnoobsk", "ob", "mochische", "krivodanovka", "tolmachevo", "baryshevo"] as const;
@@ -65,7 +65,7 @@ const DOCS = [
   { t: "Лицензия Роспотребнадзора", s: `№ ${SITE.legal.licenseNo} от ${SITE.legal.licenseDate}` },
   { t: "Сертификаты препаратов", s: "Все средства 4 класса опасности (малоопасные)." },
   { t: "Договор и акт", s: "На каждый выезд, для физлиц и юрлиц." },
-  { t: "Гарантийный талон", s: "До 24 месяцев с условиями повторной обработки." },
+  { t: "Гарантия по договору", s: "До 24 месяцев с условиями повторной обработки." },
 ];
 
 const REVIEWS = [
