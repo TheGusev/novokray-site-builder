@@ -18,7 +18,7 @@ const STATIC_PAGES = [
   "/services",
   "/price",
   "/faq",
-  "/blog",
+  "/blog?page=1",
   "/video",
   "/contacts",
   "/o-kompanii",
