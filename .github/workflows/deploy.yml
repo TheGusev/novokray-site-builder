@@ -179,7 +179,7 @@ jobs:
               case "$health" in
                 *'"token":true'*) : ;;
                 "") fail "сервис заявок не отвечает на /health."; svc_logs ;;
-                *) [ "$token_ready" = "1" ] && { fail "сервис заявок запущен без токена."; svc_logs; } ;;
+                *) if [ "$token_ready" = "1" ]; then fail "сервис заявок запущен без токена."; svc_logs; fi ;;
               esac
 
               # Боевая проверка канала: заявка реально уходит в Telegram.
