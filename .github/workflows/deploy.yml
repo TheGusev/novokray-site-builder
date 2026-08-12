@@ -37,7 +37,8 @@ jobs:
             export PATH="/root/.bun/bin:$PATH"
 
             bun install
-            bun run build
+            # STATIC_EXPORT=1 — пререндер всех страниц в HTML для nginx.
+            STATIC_EXPORT=1 bun run build
 
             test -f dist/client/index.html
             test -f dist/client/robots.txt
