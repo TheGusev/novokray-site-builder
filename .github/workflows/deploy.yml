@@ -123,20 +123,76 @@ jobs:
               echo "Создан /etc/dez-federation/lead.env — вставьте TELEGRAM_BOT_TOKEN вручную."
             fi
 
-            # Запасной источник: секрет GitHub подставляется только если токен пуст.
+            # Секрет GitHub — основной источник: если он задан, файл синхронизируется с ним.
             token_ready=1
-            if ! grep -qE '^TELEGRAM_BOT_TOKEN=.+' /etc/dez-federation/lead.env; then
-              if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
+            if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
+              if ! grep -qxF "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}" /etc/dez-federation/lead.env; then
                 umask 077
+                grep -q '^TELEGRAM_BOT_TOKEN=' /etc/dez-federation/lead.env \
+                  || echo 'TELEGRAM_BOT_TOKEN=' >> /etc/dez-federation/lead.env
                 sed -i "s|^TELEGRAM_BOT_TOKEN=.*|TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}|" \
                   /etc/dez-federation/lead.env
                 chmod 600 /etc/dez-federation/lead.env
                 umask 022
+                echo "Токен бота обновлён из секрета GitHub."
+              fi
+            elif ! grep -qE '^TELEGRAM_BOT_TOKEN=.+' /etc/dez-federation/lead.env; then
+              token_ready=0
+              fail "TELEGRAM_BOT_TOKEN пуст — заявки в Telegram уходить не будут. Задайте секрет TELEGRAM_BOT_TOKEN в GitHub."
+            fi
+
+            # chat id и порт должны быть заданы явно.
+            grep -q '^TELEGRAM_CHAT_ID=' /etc/dez-federation/lead.env \
+              || echo 'TELEGRAM_CHAT_ID=-5244841627' >> /etc/dez-federation/lead.env
+            grep -q '^LEAD_API_PORT=' /etc/dez-federation/lead.env \
+              || echo 'LEAD_API_PORT=8787' >> /etc/dez-federation/lead.env
+            chmod 600 /etc/dez-federation/lead.env
+
+            # Журнал заявок: сервис пишет туда каждую заявку до отправки в Telegram.
+            mkdir -p /var/log/dez-federation
+            chmod 700 /var/log/dez-federation
+
+            # nginx: без проксирования /api/(lead|dadata) формы не работают. Ставим блок сами.
+            nginx_note="уже настроен"
+            ngx_conf=$(grep -rlE 'server_name[^;]*dez-federation\.ru' /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null | head -n1 || true)
+            if [ -z "$ngx_conf" ]; then
+              nginx_note="конфиг сайта не найден"
+              fail "не найден конфиг nginx с server_name dez-federation.ru — добавьте проксирование /api/lead вручную."
+            elif grep -q 'api/(lead|dadata)' "$ngx_conf"; then
+              :
+            else
+              cp "$ngx_conf" "$ngx_conf.bak-$(date +%Y%m%d%H%M%S)"
+              # Вставляем regex-блок перед первым `location /` в конфиге сайта.
+              awk '
+                !done && $0 ~ /^[ \t]*location[ \t]+\/[ \t]*\{/ {
+                  print "    location ~ ^/api/(lead|dadata)$ {";
+                  print "        proxy_pass http://127.0.0.1:8787;";
+                  print "        proxy_http_version 1.1;";
+                  print "        proxy_set_header Host $host;";
+                  print "        proxy_set_header X-Real-IP $remote_addr;";
+                  print "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;";
+                  print "        proxy_read_timeout 20s;";
+                  print "    }";
+                  print "";
+                  done = 1;
+                }
+                { print }
+                END { if (!done) exit 3 }
+              ' "$ngx_conf" > /tmp/ngx.new && mv /tmp/ngx.new "$ngx_conf" \
+                && echo "вставлен блок проксирования /api/(lead|dadata)" \
+                || { rm -f /tmp/ngx.new; nginx_note="нужна ручная настройка"; fail "в конфиге nginx нет location / — блок проксирования /api/lead добавьте вручную."; }
+              if [ "$nginx_note" = "нужна ручная настройка" ]; then
+                :
+              elif nginx -t 2>&1; then
+                systemctl reload nginx
+                nginx_note="настроен автоматически"
               else
-                token_ready=0
-                fail "TELEGRAM_BOT_TOKEN пуст — заявки в Telegram уходить не будут. Задайте секрет TELEGRAM_BOT_TOKEN в GitHub или вставьте токен в /etc/dez-federation/lead.env и выполните: systemctl restart lead-api"
+                cp "$(ls -t "$ngx_conf".bak-* | head -n1)" "$ngx_conf"
+                nginx_note="автонастройка не удалась, конфиг возвращён"
+                fail "не удалось настроить nginx автоматически — блок проксирования /api/lead нужно добавить вручную."
               fi
             fi
+            echo "nginx /api/lead: $nginx_note"
 
             # Ключ DaData: автозаполнение реквизитов по ИНН на /kp.
             grep -q '^DADATA_API_KEY=' /etc/dez-federation/lead.env \
@@ -228,6 +284,8 @@ jobs:
             echo "=============================="
             echo "ИТОГ ДЕПЛОЯ"
             echo "Сайт обновлён:        $site_ok"
+            echo "Токен бота:           $([ "$token_ready" = "1" ] && echo есть || echo нет)"
+            echo "nginx /api/lead:      $nginx_note"
             echo "Заявки в Telegram:    $tg_ok"
             echo "Автозаполнение ИНН:   $dadata_ok"
             echo "Версия:               ${GITHUB_SHA:-manual}"

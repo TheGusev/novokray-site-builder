@@ -4,12 +4,17 @@
 
 import { buildMessage, clean } from "./leadMessage";
 import { isValidInn, pickParty } from "../src/lib/dadata.parse";
+import { appendFileSync, mkdirSync, renameSync, statSync } from "node:fs";
 
 const PORT = Number(process.env.LEAD_API_PORT ?? 8787);
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID ?? "-5244841627";
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MS = 60_000;
 const MAX_BODY = 8192;
+const LOG_DIR = process.env.LEAD_LOG_DIR ?? "/var/log/dez-federation";
+const LOG_FILE = `${LOG_DIR}/leads.jsonl`;
+const LOG_MAX_BYTES = 10 * 1024 * 1024;
+const RETRY_DELAYS_MS = [5_000, 30_000];
 
 const hits = new Map<string, number[]>();
 const dadataHits = new Map<string, number[]>();
@@ -58,6 +63,67 @@ export function explainTelegramError(status: number, body: string): string {
   return "см. текст ответа Telegram выше";
 }
 
+/** Пишет заявку в файл-журнал: она не теряется, даже если Telegram недоступен. */
+function archiveLead(entry: unknown): boolean {
+  try {
+    mkdirSync(LOG_DIR, { recursive: true, mode: 0o700 });
+    try {
+      if (statSync(LOG_FILE).size > LOG_MAX_BYTES) renameSync(LOG_FILE, `${LOG_FILE}.1`);
+    } catch {
+      /* файла ещё нет */
+    }
+    appendFileSync(LOG_FILE, `${JSON.stringify(entry)}\n`, { mode: 0o600 });
+    return true;
+  } catch (e) {
+    console.error("не удалось записать заявку в журнал", e);
+    return false;
+  }
+}
+
+/** Одна попытка отправки в Telegram. Возвращает true при успехе. */
+async function sendToTelegram(token: string, text: string): Promise<boolean> {
+  const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text,
+      parse_mode: "HTML",
+      disable_web_page_preview: true,
+    }),
+    signal: AbortSignal.timeout(10_000),
+  }).catch((e) => {
+    console.error("telegram request failed", e);
+    return null;
+  });
+
+  if (res && res.ok) return true;
+
+  const body = res ? await res.text().catch(() => "") : "network error";
+  console.error(`telegram failed [${res?.status ?? 0}]: ${body}`);
+  console.error(`причина: ${explainTelegramError(res?.status ?? 0, body)}`);
+  return false;
+}
+
+/** Повторные попытки в фоне: 5 и 30 секунд. */
+function retryLater(token: string, text: string): void {
+  let attempt = 0;
+  const run = () => {
+    const delay = RETRY_DELAYS_MS[attempt];
+    if (delay === undefined) {
+      console.error("заявка не доставлена в Telegram после повторов, она сохранена в журнале");
+      return;
+    }
+    attempt += 1;
+    setTimeout(() => {
+      void sendToTelegram(token, text).then((ok) => {
+        if (!ok) run();
+      });
+    }, delay).unref?.();
+  };
+  run();
+}
+
 async function handleLead(req: Request, ip: string): Promise<Response> {
   const raw = await req.text();
   if (raw.length > MAX_BODY) return json({ ok: false, error: "bad_request" }, 400);
@@ -79,31 +145,21 @@ async function handleLead(req: Request, ip: string): Promise<Response> {
   const phone = normalizePhone(clean(data.phone, 40));
   if (!phone) return json({ ok: false, error: "invalid_phone" }, 422);
 
+  // Сначала журнал — заявка сохранена даже при недоступном Telegram.
+  const archived = archiveLead({ receivedAt: new Date().toISOString(), ip, phone, ...data });
+
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) {
     console.error("TELEGRAM_BOT_TOKEN не задан в /etc/dez-federation/lead.env");
     return json({ ok: false, error: "token_not_configured" }, 503);
   }
 
-  const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: CHAT_ID,
-      text: buildMessage(data, phone),
-      parse_mode: "HTML",
-      disable_web_page_preview: true,
-    }),
-    signal: AbortSignal.timeout(10_000),
-  }).catch((e) => {
-    console.error("telegram request failed", e);
-    return null;
-  });
-
-  if (!res || !res.ok) {
-    const body = res ? await res.text().catch(() => "") : "network error";
-    console.error(`telegram failed [${res?.status ?? 0}]: ${body}`);
-    console.error(`причина: ${explainTelegramError(res?.status ?? 0, body)}`);
+  const text = buildMessage(data, phone);
+  const sent = await sendToTelegram(token, text);
+  if (!sent) {
+    retryLater(token, text);
+    // Заявка в журнале — посетителю отвечаем «принято», иначе форма положит её в очередь повторно.
+    if (archived) return json({ ok: true, queued: true });
     return json({ ok: false, error: "telegram_failed" }, 502);
   }
 

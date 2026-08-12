@@ -298,6 +298,9 @@ journalctl -u lead-api -n 30 --no-pager
 - Лимит 5 заявок в минуту с одного IP, иначе `429`.
 - Телефон нормализуется к `+7XXXXXXXXXX`, некорректный — `422`.
 - Ключ DaData (`DADATA_API_KEY`) читается только сервисом: браузер обращается к `/api/dadata`, ключ в бандл не попадает. Лимит 20 запросов в минуту с IP.
+- Каждая принятая заявка сначала пишется в журнал `/var/log/dez-federation/leads.jsonl` (права 600, ротация при 10 МБ в `leads.jsonl.1`) и только потом уходит в Telegram. Если Telegram недоступен, сервис повторяет отправку через 5 и 30 секунд, а сайту отвечает `{"ok":true,"queued":true}` — заявка не теряется.
+- Токен и настройку nginx деплой делает сам: секрет `TELEGRAM_BOT_TOKEN` из GitHub синхронизируется в `/etc/dez-federation/lead.env`, а блок `location ~ ^/api/(lead|dadata)$` добавляется в конфиг сайта перед `location /` (с бэкапом и откатом при `nginx -t` с ошибкой). В конце лога GitHub Actions печатается сводка: токен, nginx, Telegram, ИНН.
+- Просмотреть последние заявки на сервере: `tail -n 20 /var/log/dez-federation/leads.jsonl`.
 - Токен нигде не попадает в репозиторий и в бандл фронтенда: его читает только systemd через `EnvironmentFile`.
 - Если токен не задан, `/api/lead` отвечает `503 token_not_configured`, а `/health` — `{"ok":true,"token":false}`.
 - Если сервис недоступен, браузер сохраняет заявку в `localStorage` (`offlineQueue`) и отправляет её автоматически при восстановлении связи.
