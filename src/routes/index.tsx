@@ -321,25 +321,21 @@ function HomePage() {
           />
         </Reveal>
 
-        <div className="relative mt-10">
-          <div className="absolute left-6 top-0 hidden h-full w-px bg-gradient-to-b from-primary/40 via-primary/15 to-transparent md:left-1/2 md:hidden" />
-          <div className="absolute left-0 right-0 top-9 hidden h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent md:block" />
-          <div className="grid gap-5 md:grid-cols-4">
-            {TIMELINE.map((st, i) => (
-              <Reveal key={st.t} delay={i * 120} className="relative">
-                <div className="rounded-2xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-1 hover:shadow-elegant">
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-cta-gradient text-accent-foreground shadow-cta">
-                      <st.icon className="h-5 w-5" />
-                    </span>
-                    <span className="rounded-full bg-secondary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">{st.min}</span>
-                  </div>
-                  <div className="mt-4 font-display text-lg font-bold">{st.t}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">{st.s}</div>
+        <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+          {TIMELINE.map((st, i) => (
+            <Reveal key={st.t} delay={i * 90}>
+              <div className="h-full rounded-xl border border-border bg-card p-3.5 shadow-card md:p-4">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cta-gradient text-accent-foreground">
+                    <st.icon className="h-4 w-4" />
+                  </span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary">{st.min}</span>
                 </div>
-              </Reveal>
-            ))}
-          </div>
+                <div className="mt-2.5 font-display text-sm font-bold leading-tight md:text-base">{st.t}</div>
+                <div className="mt-0.5 text-xs text-muted-foreground">{st.s}</div>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </section>
 
@@ -355,7 +351,6 @@ function HomePage() {
           />
           <p className="mt-3 max-w-2xl text-muted-foreground">
             Реальные съёмки с выездов: горячий туман по спальным местам, кухня от тараканов, участок от клещей и комаров.
-            Ролики подгружаются только по клику — страница остаётся быстрой.
           </p>
         </Reveal>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -456,7 +451,7 @@ function HomePage() {
               className="mt-2 font-display text-3xl font-bold md:text-4xl text-balance"
             />
             <p className="mt-4 text-muted-foreground">
-              Выезд бригад в любой район города и пригороды — бесплатно, в течение 60 минут. По области — в день обращения.
+              Выезжаем в любой район города и пригороды — бесплатно, в течение 60 минут. По области — в день обращения.
             </p>
             <a href={SITE.phoneHref} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-elegant transition hover:scale-[1.02]">
               <Phone className="h-4 w-4" /> Уточнить выезд
@@ -658,7 +653,7 @@ function HomePage() {
       <section className="bg-surface py-14">
         <div className="container-x">
           <h2 className="font-display text-2xl font-bold md:text-3xl">Работаем по всей Новосибирской области</h2>
-          <p className="mt-3 max-w-3xl text-muted-foreground">Выезжаем из Новосибирска ежедневно — бригады с оборудованием обслуживают города-спутники и районы области. Цены и гарантии — как в Новосибирске.</p>
+          <p className="mt-3 max-w-3xl text-muted-foreground">Выезжаем из Новосибирска ежедневно — специалисты с оборудованием обслуживают города-спутники и районы области. Цены и гарантии — как в Новосибирске.</p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {CITIES.map((c) => (
               <Link key={c.slug} to="/gorod/$slug" params={{ slug: c.slug }} className="group rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant">
