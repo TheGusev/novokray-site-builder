@@ -179,8 +179,11 @@ jobs:
                 { print }
                 END { if (!done) exit 3 }
               ' "$ngx_conf" > /tmp/ngx.new && mv /tmp/ngx.new "$ngx_conf" \
-                && echo "вставлен блок проксирования /api/(lead|dadata)"
-              if nginx -t 2>&1; then
+                && echo "вставлен блок проксирования /api/(lead|dadata)" \
+                || { rm -f /tmp/ngx.new; nginx_note="нужна ручная настройка"; fail "в конфиге nginx нет location / — блок проксирования /api/lead добавьте вручную."; }
+              if [ "$nginx_note" = "нужна ручная настройка" ]; then
+                :
+              elif nginx -t 2>&1; then
                 systemctl reload nginx
                 nginx_note="настроен автоматически"
               else
