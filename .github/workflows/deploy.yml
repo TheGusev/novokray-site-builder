@@ -37,7 +37,8 @@ jobs:
             export PATH="/root/.bun/bin:$PATH"
 
             bun install
-            bun run build
+            # STATIC_EXPORT=1 — пререндер всех страниц в HTML для nginx.
+            STATIC_EXPORT=1 bun run build
 
             test -f dist/client/index.html
             test -f dist/client/robots.txt
@@ -72,7 +73,7 @@ jobs:
             rsync -a --exclude='*.html' "$release_dir/" /var/www/dez-federation.ru/
             rsync -a --include='*/' --include='*.html' --exclude='*' "$release_dir/" /var/www/dez-federation.ru/
 
-            systemctl reload nginx
+            systemctl reload nginx || fail "nginx не перезагрузился."
 
             if curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/ >/dev/null; then
               site_ok=да
@@ -184,7 +185,7 @@ jobs:
               if [ "$nginx_note" = "нужна ручная настройка" ]; then
                 :
               elif nginx -t 2>&1; then
-                systemctl reload nginx
+                systemctl reload nginx || fail "nginx не перезагрузился."
                 nginx_note="настроен автоматически"
               else
                 cp "$(ls -t "$ngx_conf".bak-* | head -n1)" "$ngx_conf"
@@ -222,9 +223,9 @@ jobs:
 
             if [ "$port_busy" = "0" ]; then
               install -m 644 deploy/lead-api.service /etc/systemd/system/lead-api.service
-              systemctl daemon-reload
-              systemctl enable lead-api
-              systemctl restart lead-api
+              systemctl daemon-reload || fail "systemctl daemon-reload не выполнен."
+              systemctl enable lead-api || fail "не удалось включить автозапуск lead-api."
+              systemctl restart lead-api || { fail "сервис lead-api не перезапустился."; svc_logs; }
 
               for i in $(seq 1 15); do
                 curl --fail --silent http://127.0.0.1:8787/health >/dev/null && break
@@ -293,6 +294,12 @@ jobs:
             echo "=============================="
 
             if [ "$deploy_warnings" != "0" ]; then
-              echo "Сайт выложен, но часть проверок не прошла — смотрите строки «ОШИБКА:» выше."
+              echo "Часть проверок не прошла — смотрите строки «ОШИБКА:» выше."
+            fi
+
+            # Деплой считается неудачным только если сам сайт не выложился.
+            if [ "$site_ok" != "да" ]; then
+              echo "Сайт не отвечает после выкладки — деплой провален."
               exit 1
             fi
+            echo "Сайт выложен успешно."
