@@ -30,6 +30,7 @@ import { Route as DogovorZapolnitRouteImport } from './routes/dogovor.zapolnit'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 import { Route as CategoryDezinfekciyaNovosibirskRouteImport } from './routes/category.dezinfekciya-novosibirsk'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiPublicLeadRouteImport } from './routes/api/public/lead'
 import { Route as ApiPublicDadataRouteImport } from './routes/api/public/dadata'
 
 const VideoRoute = VideoRouteImport.update({
@@ -138,6 +139,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicLeadRoute = ApiPublicLeadRouteImport.update({
+  id: '/api/public/lead',
+  path: '/api/public/lead',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDadataRoute = ApiPublicDadataRouteImport.update({
   id: '/api/public/dadata',
   path: '/api/public/dadata',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/api/public/dadata': typeof ApiPublicDadataRoute
+  '/api/public/lead': typeof ApiPublicLeadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/services': typeof ServicesIndexRoute
   '/api/public/dadata': typeof ApiPublicDadataRoute
+  '/api/public/lead': typeof ApiPublicLeadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/api/public/dadata': typeof ApiPublicDadataRoute
+  '/api/public/lead': typeof ApiPublicLeadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/services/'
     | '/api/public/dadata'
+    | '/api/public/lead'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/services'
     | '/api/public/dadata'
+    | '/api/public/lead'
   id:
     | '__root__'
     | '/'
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/services/'
     | '/api/public/dadata'
+    | '/api/public/lead'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -315,6 +327,7 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
   ApiPublicDadataRoute: typeof ApiPublicDadataRoute
+  ApiPublicLeadRoute: typeof ApiPublicLeadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -466,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/lead': {
+      id: '/api/public/lead'
+      path: '/api/public/lead'
+      fullPath: '/api/public/lead'
+      preLoaderRoute: typeof ApiPublicLeadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/dadata': {
       id: '/api/public/dadata'
       path: '/api/public/dadata'
@@ -499,6 +519,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
   ApiPublicDadataRoute: ApiPublicDadataRoute,
+  ApiPublicLeadRoute: ApiPublicLeadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

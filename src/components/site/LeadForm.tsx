@@ -11,6 +11,7 @@ import type { LucideIcon } from "lucide-react";
 import { SITE } from "@/data/site";
 import { getLeadPrice, formatRub } from "@/data/leadPricing";
 import { sendLead } from "@/lib/leadSender";
+import { notifyLeadResult } from "@/lib/leadToast";
 import { GOALS, trackGoal, trackLead } from "@/lib/analytics";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
@@ -196,11 +197,7 @@ export function LeadForm({
       company,
     });
     setLoading(false);
-    toast.success(
-      sent
-        ? "Заявка отправлена. Перезвоним в течение 10 минут."
-        : "Заявка сохранена — отправим автоматически, как появится связь.",
-    );
+    notifyLeadResult(sent, "Заявка отправлена. Перезвоним в течение 10 минут.");
     setStep(1); setPest(""); setObject(""); setName(""); setPhone(""); setAgree(false);
     onSuccess?.();
   };
@@ -237,11 +234,7 @@ export function LeadForm({
         company,
       });
       setLoading(false);
-      toast.success(
-        sent
-          ? "Заявка отправлена. Перезвоним в течение 10 минут."
-          : "Заявка сохранена — отправим автоматически, как появится связь.",
-      );
+      notifyLeadResult(sent, "Заявка отправлена. Перезвоним в течение 10 минут.");
       setPhone(""); setName(""); setObject(""); setDetails(false);
       onSuccess?.();
     };

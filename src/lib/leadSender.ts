@@ -19,6 +19,9 @@ export interface LeadPayload {
 }
 
 export const LEAD_ENDPOINT = "/api/lead";
+/** Резервный приём на стороне Lovable: работает, даже если сервер сайта недоступен. */
+export const LEAD_FALLBACK_ENDPOINT =
+  "https://novokray-site-builder.lovable.app/api/public/lead";
 const QUEUE_KEY = "offlineQueue";
 const UTM_KEY = "leadUtm";
 const QUEUE_MAX = 20;
@@ -76,6 +79,7 @@ export function normalizePhone(raw: string): string {
 export function buildLeadBody(p: LeadPayload) {
   return {
     ...p,
+    leadId: newLeadId(),
     phone: normalizePhone(p.phone),
     company: p.company ?? "",
     source:
@@ -86,6 +90,15 @@ export function buildLeadBody(p: LeadPayload) {
     device: deviceLabel(),
     sentAt: new Date().toISOString(),
   };
+}
+
+/** Идентификатор заявки: защищает от дублей при отправке в два канала. */
+function newLeadId(): string {
+  const rnd =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2);
+  return `${Date.now().toString(36)}-${rnd}`;
 }
 
 function readQueue(): unknown[] {
@@ -114,11 +127,11 @@ function enqueue(body: unknown) {
   writeQueue(q);
 }
 
-async function post(body: unknown): Promise<boolean> {
+async function post(body: unknown, endpoint: string = LEAD_ENDPOINT): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const res = await fetch(LEAD_ENDPOINT, {
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -134,10 +147,16 @@ async function post(body: unknown): Promise<boolean> {
   }
 }
 
+/** Основной канал — сервер сайта; если он молчит, уходим на резервный. */
+async function deliver(body: unknown): Promise<boolean> {
+  if (await post(body, LEAD_ENDPOINT)) return true;
+  return post(body, LEAD_FALLBACK_ENDPOINT);
+}
+
 /** Отправляет заявку. Если сервер недоступен — кладёт в offline-очередь. */
 export async function sendLead(p: LeadPayload): Promise<boolean> {
   const body = buildLeadBody(p);
-  const ok = await post(body);
+  const ok = await deliver(body);
   if (!ok) enqueue(body);
   return ok;
 }
@@ -148,7 +167,7 @@ export async function flushLeadQueue(): Promise<void> {
   if (!q.length) return;
   const rest: unknown[] = [];
   for (const item of q) {
-    const ok = await post(item);
+    const ok = await deliver(item);
     if (!ok) rest.push(item);
   }
   writeQueue(rest);

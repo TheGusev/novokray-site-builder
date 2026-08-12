@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { FileText, BookOpenCheck, FileCheck2, BadgeCheck, Loader2, Send, Phone, Eye } from "lucide-react";
 import { SITE } from "@/data/site";
 import { sendLead } from "@/lib/leadSender";
+import { notifyLeadResult } from "@/lib/leadToast";
 import { DOCS } from "@/data/docs";
 import { GOALS, trackGoal } from "@/lib/analytics";
 
@@ -51,11 +52,7 @@ export function DocsRequest() {
       docs: DOCS.map((d) => d.title),
     });
     setLoading(false);
-    toast.success(
-      sent
-        ? "Заявка отправлена. Договор пришлём в течение часа."
-        : "Заявка сохранена — отправим автоматически, как появится связь.",
-    );
+    notifyLeadResult(sent, "Заявка отправлена. Договор пришлём в течение часа.");
     setOrg(""); setInn(""); setPhone(""); setAgree(false);
   };
 
