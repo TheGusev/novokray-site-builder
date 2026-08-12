@@ -503,9 +503,6 @@ function ServicePage() {
       {videosForService(s.slug).length > 0 && (
         <section className="container-x pb-4">
           <h2 className="font-display text-3xl font-bold md:text-4xl">Видео с наших выездов</h2>
-          <p className="mt-3 max-w-2xl text-muted-foreground">
-            Ролики подгружаются только по клику — страница остаётся быстрой.
-          </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {videosForService(s.slug).map((v, i) => (
               <Reveal key={v.slug} delay={i * 80}>

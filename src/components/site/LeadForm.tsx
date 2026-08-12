@@ -495,6 +495,9 @@ export function LeadForm({
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <Check className="h-3 w-3 text-success" /> Без спама. Звонок только по вашей заявке.
           </div>
+          <div className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground">
+            <Check className="mt-0.5 h-3 w-3 shrink-0 text-success" /> Приезжаем без надписей на одежде и машине — соседи ничего не узнают.
+          </div>
         </div>
       )}
     </form>
