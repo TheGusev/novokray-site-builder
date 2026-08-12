@@ -185,7 +185,7 @@ function CityPage() {
         <img
           src={COMMON.heroSpray}
           alt={`Санитарная служба ${c.prepositional} — дезинсекция, дератизация и озонирование`}
-          title={`Выезд бригады ${c.prepositional} день в день — Дез-Федерация`}
+          title={`Выезд специалиста ${c.prepositional} день в день — Дез-Федерация`}
           className="absolute inset-0 h-full w-full object-cover opacity-25"
           loading="eager"
         />
