@@ -16,6 +16,7 @@ import { isActiveParty } from "@/lib/dadata.parse";
 import type { ContractBlock } from "@/lib/dogovor/buildPdf";
 import { GOALS, trackGoal } from "@/lib/analytics";
 import { sendLead } from "@/lib/leadSender";
+import { formatPhoneRu, isFullPhoneRu } from "@/lib/phone";
 
 export const Route = createFileRoute("/kp")({
   head: () => ({
@@ -139,7 +140,7 @@ function KpPage() {
 
   /** Уведомление менеджера в Telegram: КП/счёт сформированы на сайте. */
   async function notifyB2b(type: string, formName: string) {
-    if (phone.replace(/\D/g, "").length < 11) return;
+    if (!isFullPhoneRu(phone)) return;
     // Кнопка «Все документы» вызывает генерацию трижды — уведомляем один раз на комплект.
     const key = `${phone}|${companyName}`;
     if (notifiedRef.current === key) return;
@@ -292,7 +293,15 @@ function KpPage() {
               </label>
               <label className="block">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Телефон</span>
-                <input className={inputCls} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (___) ___-__-__" />
+                <input
+                  className={inputCls}
+                  value={phone}
+                  onChange={(e) => setPhone(formatPhoneRu(e.target.value))}
+                  onFocus={(e) => { if (!e.target.value) setPhone("+7 ("); }}
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="+7 (___) ___-__-__"
+                />
               </label>
               <label className="block">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">E-mail</span>
