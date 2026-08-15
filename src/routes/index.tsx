@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Phone, ShieldCheck, CheckCircle2, Quote, Star, ArrowRight, MapPin,
   BadgeCheck, FileText, Award, Building2, Sparkles, ClipboardCheck, HandCoins,
-  CalendarClock, Clock4,
+  CalendarClock, Clock4, MessageCircle, MessageSquare, Send,
 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
