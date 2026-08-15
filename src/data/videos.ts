@@ -60,20 +60,6 @@ export const WORK_VIDEOS: WorkVideo[] = [
     tags: ["клопы", "холодный туман", "спальное место"],
   },
   {
-    slug: "__removed_placeholder",
-    title: "Результат обработки от клопов туманом",
-    description:
-      "Что видит клиент после обработки: погибшие насекомые на обработанных поверхностях уже в первые часы.",
-    src: "/media/rezultat-klopy-tuman.mp4",
-    poster: "/media/rezultat-klopy-tuman-poster.webp",
-    orientation: "landscape",
-    durationSec: 17,
-    sizeBytes: 1646419,
-    services: ["unichtozhenie-klopov"],
-    pest: "Клопы",
-    tags: ["клопы", "результат"],
-  },
-  {
     slug: "obrabotka-ot-tarakanov",
     title: "Обработка квартиры от тараканов",
     description:
