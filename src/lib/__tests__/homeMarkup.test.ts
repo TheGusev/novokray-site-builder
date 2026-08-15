@@ -48,7 +48,7 @@ describe("разметка главной страницы", () => {
   it("есть дата обновления контента", () => {
     if (!alive) return;
     expect(html).toContain("dateModified");
-    expect(/<time datetime="\d{4}-\d{2}-\d{2}"/.test(html)).toBe(true);
+    expect(/<time [^>]*datetime="\d{4}-\d{2}-\d{2}"/i.test(html)).toBe(true);
   });
 
   it("на странице есть форма заявки и семантические теги", () => {
