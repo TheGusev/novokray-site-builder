@@ -13,6 +13,7 @@ import { DISTRICTS } from "@/data/districts";
 import { COMMON, GALLERY, GALLERY_META } from "@/data/images";
 import heroBg from "@/assets/hero-bg.jpg";
 import { LeadFormModal } from "@/components/site/LeadFormModal";
+import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { FAQ } from "@/components/site/FAQ";
@@ -214,6 +215,7 @@ function HomePage() {
             <WaveText
               as="h1"
               text="Санитарная служба №1 в Новосибирске"
+              whole
               duration={5.2}
               className="on-dark mt-5 max-w-3xl font-display text-[34px] font-extrabold leading-[1.02] text-balance md:text-5xl lg:text-6xl"
             />
@@ -256,6 +258,31 @@ function HomePage() {
                 }
               />
             </Reveal>
+
+            {/* Форма прямо на странице — без модального окна */}
+            <div className="mt-6 max-w-xl rounded-2xl border border-white/15 bg-white/95 p-4 text-foreground shadow-elegant backdrop-blur md:p-5">
+              <div className="font-display text-base font-bold">Рассчитать стоимость за 5 секунд</div>
+              <p className="mt-1 text-xs text-muted-foreground">Оставьте телефон — перезвоним за 10 минут и назовём точную цену до выезда. Без спама, конфиденциально.</p>
+              <div className="mt-3">
+                <LeadForm variant="compact" goal="lead_hero_inline" formName="Главная — форма в первом экране" submitLabel="Узнать цену" />
+              </div>
+            </div>
+
+            {/* Каналы связи */}
+            <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
+              <a href={SITE.phoneHref} className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-semibold backdrop-blur hover:bg-white/20">
+                <Phone className="h-4 w-4" /> {SITE.phone}
+              </a>
+              <a href={SITE.whatsappHref} target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-semibold backdrop-blur hover:bg-white/20">
+                <MessageCircle className="h-4 w-4" /> WhatsApp
+              </a>
+              <a href={SITE.telegramHref} target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-semibold backdrop-blur hover:bg-white/20">
+                <Send className="h-4 w-4" /> Telegram {SITE.telegramHandle}
+              </a>
+              <a href={SITE.maxHref} target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-semibold backdrop-blur hover:bg-white/20">
+                <MessageSquare className="h-4 w-4" /> MAX
+              </a>
+            </div>
 
             <StatsRow />
           </div>
