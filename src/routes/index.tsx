@@ -102,6 +102,48 @@ export const Route = createFileRoute("/")({
         "@context": "https://schema.org",
         "@graph": [
           {
+            "@type": "WebPage",
+            "@id": `${SITE.domain}/#webpage`,
+            url: `${SITE.domain}/`,
+            name: `Санитарная служба №1 в Новосибирске — ${SITE.name}`,
+            inLanguage: "ru-RU",
+            isPartOf: { "@id": `${SITE.domain}#website` },
+            about: { "@id": `${SITE.domain}#organization` },
+            author: { "@id": `${SITE.domain}#organization` },
+            publisher: { "@id": `${SITE.domain}#organization` },
+            datePublished: `${SITE.founded}-01-01`,
+            dateModified: SITE.contentUpdated,
+            primaryImageOfPage: `${SITE.domain}/og/default.jpg`,
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
+              { "@type": "ListItem", position: 2, name: "Услуги", item: `${SITE.domain}/services` },
+              { "@type": "ListItem", position: 3, name: "Цены", item: `${SITE.domain}/price` },
+            ],
+          },
+          ...SERVICES_INDEX.map((s) => ({
+            "@type": "Service",
+            "@id": `${SITE.domain}/services/${s.slug}#service`,
+            name: s.title,
+            serviceType: s.title,
+            description: s.metaDescription,
+            url: `${SITE.domain}/services/${s.slug}`,
+            provider: { "@id": `${SITE.domain}#organization` },
+            areaServed: [
+              { "@type": "City", name: SITE.city },
+              { "@type": "AdministrativeArea", name: SITE.region },
+            ],
+            offers: {
+              "@type": "Offer",
+              price: s.priceFrom,
+              priceCurrency: "RUB",
+              url: `${SITE.domain}/services/${s.slug}`,
+              availability: "https://schema.org/InStock",
+            },
+          })),
+          {
             "@type": "FAQPage",
             speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
             mainEntity: HOME_FAQ.map((f) => ({
