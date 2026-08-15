@@ -12,7 +12,9 @@ interface Props {
 
 export function CountUp({ value, duration = 1400, suffix = "", prefix = "", decimals = 0, className = "" }: Props) {
   const { ref, shown } = useReveal<HTMLSpanElement>();
-  const [n, setN] = useState(0);
+  // По умолчанию показываем финальное значение: если анимация не стартует
+  // (блок ещё вне экрана, нет rAF, ошибка наблюдателя) — посетитель видит цифру, а не ноль.
+  const [n, setN] = useState(value);
   const done = useRef(false);
 
   useEffect(() => {
@@ -28,6 +30,7 @@ export function CountUp({ value, duration = 1400, suffix = "", prefix = "", deci
     const start = performance.now();
     let raf = 0;
     let finished = false;
+    setN(0);
     const tick = (t: number) => {
       const p = Math.min(1, (t - start) / duration);
       const eased = 1 - Math.pow(1 - p, 3);
@@ -42,9 +45,12 @@ export function CountUp({ value, duration = 1400, suffix = "", prefix = "", deci
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
-      // Анимацию прервали до конца (например, блок ушёл из зоны видимости) —
+      // Анимацию прервали до конца — показываем финальное значение и
       // разрешаем перезапуск, чтобы на экране не остался ноль.
-      if (!finished) done.current = false;
+      if (!finished) {
+        done.current = false;
+        setN(value);
+      }
     };
   }, [shown, value, duration]);
 
