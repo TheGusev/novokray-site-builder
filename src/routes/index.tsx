@@ -309,6 +309,51 @@ function HomePage() {
 
       <TrustStrip />
 
+      {/* Краткий ответ + цены-ориентир */}
+      <section className="container-x py-10 md:py-14" aria-label="Кратко о службе и ценах">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <article className="speakable rounded-2xl border border-border bg-card p-5 shadow-card md:p-6">
+            <h2 className="font-display text-2xl font-bold md:text-3xl">Кто мы и сколько это стоит</h2>
+            <p className="mt-3 text-muted-foreground">
+              Дез-Федерация — санитарная служба в Новосибирске и Новосибирской области, работает с {SITE.founded} года по лицензии Роспотребнадзора № {SITE.legal.licenseNo}. Мы уничтожаем клопов, тараканов, грызунов и других вредителей, обрабатываем участки, удаляем плесень и запахи, сушим помещения после потопов.
+            </p>
+            <p className="mt-3 text-muted-foreground">
+              Обработка квартиры стоит от 1 900 ₽, цена фиксируется до выезда и включает препараты, работу специалиста и гарантию по договору до 24 месяцев. Специалист приезжает по городу в течение 60 минут, оплата — после обработки.
+            </p>
+            <p className="mt-4 text-xs text-muted-foreground">
+              Материал подготовила служба качества {SITE.legal.name}. Актуально на{" "}
+              <time dateTime={SITE.contentUpdated}>
+                {new Date(SITE.contentUpdated).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
+              </time>.
+            </p>
+          </article>
+
+          <article className="rounded-2xl border border-border bg-surface p-5 shadow-card md:p-6">
+            <h2 className="font-display text-xl font-bold">Сколько стоит обработка</h2>
+            <table className="mt-4 w-full text-sm">
+              <caption className="sr-only">Ориентировочные цены на санитарную обработку в Новосибирске</caption>
+              <tbody>
+                {[
+                  ["1-комнатная квартира", "от 1 900 ₽"],
+                  ["2-комнатная квартира", "от 2 400 ₽"],
+                  ["3-комнатная квартира", "от 2 900 ₽"],
+                  ["Частный дом", "от 3 500 ₽"],
+                  ["Участок", "от 25 ₽/м²"],
+                ].map(([k, v]) => (
+                  <tr key={k} className="border-b border-border/70 last:border-0">
+                    <th scope="row" className="py-2 text-left font-medium">{k}</th>
+                    <td className="py-2 text-right font-bold text-primary">{v}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Link to="/price" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:gap-2.5">
+              Полный прайс и калькулятор <ArrowRight className="h-4 w-4" />
+            </Link>
+          </article>
+        </div>
+      </section>
+
       {/* Priority services */}
       <section className="container-x py-14 md:py-20">
         <div className="flex flex-wrap items-end justify-between gap-4">
