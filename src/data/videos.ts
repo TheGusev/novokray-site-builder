@@ -46,6 +46,34 @@ export const WORK_VIDEOS: WorkVideo[] = [
     tags: ["клопы", "результат"],
   },
   {
+    slug: "spalnoe-mesto-holodnyy-tuman",
+    title: "Обработка спального места генератором холодного тумана",
+    description:
+      "Холодный туман по каркасу кровати, швам и кантам матраса: мелкая капля оседает в стыках и складках, где держатся клопы.",
+    src: "/media/spalnoe-mesto-holodnyy-tuman.mp4",
+    poster: "/media/spalnoe-mesto-holodnyy-tuman-poster.webp",
+    orientation: "portrait",
+    durationSec: 15,
+    sizeBytes: 1143517,
+    services: ["unichtozhenie-klopov"],
+    pest: "Клопы",
+    tags: ["клопы", "холодный туман", "спальное место"],
+  },
+  {
+    slug: "__removed_placeholder",
+    title: "Результат обработки от клопов туманом",
+    description:
+      "Что видит клиент после обработки: погибшие насекомые на обработанных поверхностях уже в первые часы.",
+    src: "/media/rezultat-klopy-tuman.mp4",
+    poster: "/media/rezultat-klopy-tuman-poster.webp",
+    orientation: "landscape",
+    durationSec: 17,
+    sizeBytes: 1646419,
+    services: ["unichtozhenie-klopov"],
+    pest: "Клопы",
+    tags: ["клопы", "результат"],
+  },
+  {
     slug: "obrabotka-ot-tarakanov",
     title: "Обработка квартиры от тараканов",
     description:
