@@ -17,24 +17,35 @@ export function CountUp({ value, duration = 1400, suffix = "", prefix = "", deci
 
   useEffect(() => {
     if (!shown || done.current) return;
-    done.current = true;
     const reduced =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
+    if (reduced || typeof requestAnimationFrame === "undefined") {
+      done.current = true;
       setN(value);
       return;
     }
     const start = performance.now();
     let raf = 0;
+    let finished = false;
     const tick = (t: number) => {
       const p = Math.min(1, (t - start) / duration);
       const eased = 1 - Math.pow(1 - p, 3);
       setN(value * eased);
-      if (p < 1) raf = requestAnimationFrame(tick);
+      if (p < 1) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        finished = true;
+        done.current = true;
+      }
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      // Анимацию прервали до конца (например, блок ушёл из зоны видимости) —
+      // разрешаем перезапуск, чтобы на экране не остался ноль.
+      if (!finished) done.current = false;
+    };
   }, [shown, value, duration]);
 
   const formatted = decimals
