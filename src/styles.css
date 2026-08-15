@@ -428,13 +428,23 @@
 .wave-text.on-dark .wave-char {
   animation-name: wave-text-color-dark;
 }
+@keyframes wave-text-color-flat {
+  0%   { color: var(--color-foreground); }
+  25%  { color: var(--color-primary); }
+  50%  { color: var(--color-accent); }
+  75%  { color: var(--color-primary-glow); }
+  100% { color: var(--color-foreground); }
+}
 .wave-text-whole {
-  animation-name: wave-text-color;
+  animation-name: wave-text-color-flat;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
 }
 .wave-text-whole.on-dark {
   animation-name: wave-text-color-dark;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave-text-whole { animation: none !important; }
 }
 @keyframes wave-text-color-dark {
   0%   { color: #ffffff; }
