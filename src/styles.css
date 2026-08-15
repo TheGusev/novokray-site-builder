@@ -428,6 +428,14 @@
 .wave-text.on-dark .wave-char {
   animation-name: wave-text-color-dark;
 }
+.wave-text-whole {
+  animation-name: wave-text-color;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+.wave-text-whole.on-dark {
+  animation-name: wave-text-color-dark;
+}
 @keyframes wave-text-color-dark {
   0%   { color: #ffffff; }
   35%  { color: oklch(0.85 0.16 35); }

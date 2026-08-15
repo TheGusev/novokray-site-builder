@@ -6,13 +6,29 @@ interface Props {
   className?: string;
   /** Speed of the wave (one full cycle), seconds. */
   duration?: number;
+  /**
+   * Рендерит текст одним текстовым узлом (без разбивки на буквы).
+   * Нужно для заголовков H1: парсеры и поисковые роботы получают цельную
+   * строку, а анимация применяется ко всему элементу.
+   */
+  whole?: boolean;
 }
 
 /**
  * Renders text with a colored "wave" running through letters infinitely.
  * The wave shifts each letter through primary → accent → primary-glow.
  */
-export function WaveText({ text, as: Tag = "span", className = "", duration = 3.2 }: Props) {
+export function WaveText({ text, as: Tag = "span", className = "", duration = 3.2, whole = false }: Props) {
+  if (whole) {
+    return (
+      <Tag
+        className={`wave-text wave-text-whole ${className}`}
+        style={{ animationDuration: `${duration}s` }}
+      >
+        {text}
+      </Tag>
+    );
+  }
   const words = text.split(" ");
   const total = Array.from(text.replace(/\s/g, "")).length || 1;
   let charIdx = 0;
