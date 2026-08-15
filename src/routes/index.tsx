@@ -373,15 +373,17 @@ function HomePage() {
         {/* Mobile: horizontal scroll. Desktop: grid */}
         <div className="mt-8 -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 scroll-snap-x sm:hidden">
           {PRIORITY_SERVICES.map((s) => (
-            <div key={s.slug} className="snap-card w-[78%] shrink-0">
+            <article key={s.slug} className="snap-card w-[78%] shrink-0">
               <ServiceCard service={s} />
-            </div>
+            </article>
           ))}
         </div>
         <div className="mt-8 hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3">
           {PRIORITY_SERVICES.map((s, i) => (
             <Reveal key={s.slug} delay={i * 80}>
-              <ServiceCard service={s} />
+              <article>
+                <ServiceCard service={s} />
+              </article>
             </Reveal>
           ))}
         </div>
@@ -633,7 +635,7 @@ function HomePage() {
           {/* Mobile carousel / desktop grid */}
           <div className="mt-8 -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 scroll-snap-x md:hidden">
             {REVIEWS.map((r) => (
-              <div key={r.n} className="snap-card w-[85%] shrink-0 rounded-2xl border border-border bg-card p-5 shadow-card">
+              <article key={r.n} className="snap-card w-[85%] shrink-0 rounded-2xl border border-border bg-card p-5 shadow-card">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-0.5 text-accent">{Array.from({ length: 5 }).map((_, i) => (<Star key={i} className="h-3.5 w-3.5 fill-current" />))}</div>
                   <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">{r.tag}</span>
@@ -641,12 +643,12 @@ function HomePage() {
                 <Quote className="mt-3 h-5 w-5 text-primary/30" />
                 <p className="mt-2 text-sm text-foreground/90">{r.t}</p>
                 <div className="mt-4 text-xs font-semibold text-muted-foreground">{r.n}</div>
-              </div>
+              </article>
             ))}
           </div>
           <div className="mt-8 hidden gap-5 md:grid md:grid-cols-3">
             {REVIEWS.slice(0, 3).map((r, i) => (
-              <Reveal key={r.n} delay={i * 100} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+              <Reveal key={r.n} as="article" delay={i * 100} className="rounded-2xl border border-border bg-card p-6 shadow-card">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-0.5 text-accent">{Array.from({ length: 5 }).map((_, i2) => (<Star key={i2} className="h-4 w-4 fill-current" />))}</div>
                   <span className="rounded-full bg-secondary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">{r.tag}</span>
