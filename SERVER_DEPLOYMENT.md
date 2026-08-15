@@ -124,10 +124,22 @@ server {
     location / {
         # HTML не кешируем вовсе: телефон с уже сохранённой старой страницей
         # обязан получить свежую версию после каждого деплоя.
-        try_files $uri $uri/ $uri.html /index.html;
+        # ВАЖНО для SEO: сначала <path>.html, и только потом каталог.
+        # Иначе nginx находит каталог /services/ и отвечает 301 на /services/,
+        # а canonical и sitemap указывают адрес без слэша — лишний редирект
+        # на каждой посадочной странице.
+        try_files $uri $uri.html $uri/index.html /index.html;
         add_header Cache-Control "no-store" always;
     }
 }
+```
+
+Проверка отсутствия редиректов на посадочных:
+
+```bash
+for p in /services /price /video /blog/kak-otlichit-ukus-klopa /gorod/berdsk /uslugi/spec-uslugi; do
+  printf '%s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code}' https://dez-federation.ru$p)"
+done   # ожидается 200 у всех
 ```
 
 Если модуль Brotli установлен (`nginx -V 2>&1 | grep -o brotli`), раскомментируйте блок `brotli` выше. Без установленного модуля эти директивы добавлять нельзя — nginx не стартует.

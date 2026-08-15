@@ -73,6 +73,21 @@ jobs:
             rsync -a --exclude='*.html' "$release_dir/" /var/www/dez-federation.ru/
             rsync -a --include='*/' --include='*.html' --exclude='*' "$release_dir/" /var/www/dez-federation.ru/
 
+            # SEO: убираем 301 на посадочных. Каталог /services/ существует, и при
+            # порядке "$uri/" раньше "$uri.html" nginx отвечает редиректом со слэшем,
+            # хотя canonical и sitemap указывают адрес без слэша.
+            nginx_conf=$(grep -rl 'dez-federation.ru' /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null | head -n1 || true)
+            if [ -n "$nginx_conf" ] && grep -q 'try_files \$uri \$uri/ \$uri.html /index.html;' "$nginx_conf"; then
+              cp "$nginx_conf" "$nginx_conf.bak.$(date +%s)"
+              sed -i 's|try_files \$uri \$uri/ \$uri.html /index.html;|try_files \$uri \$uri.html \$uri/index.html /index.html;|' "$nginx_conf"
+              if nginx -t; then
+                echo "nginx: порядок try_files исправлен, редирект со слэшем убран."
+              else
+                mv "$nginx_conf.bak."* "$nginx_conf" 2>/dev/null || true
+                fail "nginx -t не прошёл после правки try_files, конфиг возвращён."
+              fi
+            fi
+
             systemctl reload nginx || fail "nginx не перезагрузился."
 
             if curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/ >/dev/null; then
@@ -88,6 +103,14 @@ jobs:
             for p in /blog /docs/dogovor-obrazec.pdf; do
               curl --fail --silent --show-error --resolve dez-federation.ru:443:127.0.0.1 "https://dez-federation.ru$p" >/dev/null \
                 || fail "страница $p не отвечает."
+            done
+
+            # Посадочные обязаны отвечать 200 без редиректа: адрес в sitemap и
+            # canonical должен совпадать с фактически отданным URL.
+            for p in / /services /price /video /blog /gorod/berdsk /uslugi/spec-uslugi; do
+              code=$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
+                --resolve dez-federation.ru:443:127.0.0.1 "https://dez-federation.ru$p" || true)
+              [ "$code" = "200" ] || fail "страница $p вернула $code вместо 200 (лишний редирект?)."
             done
 
             # 2. МЕДИА: ролики должны отдаваться файлом, а не HTML-заглушкой SPA.
