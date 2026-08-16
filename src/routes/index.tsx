@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Phone, ShieldCheck, CheckCircle2, Quote, Star, ArrowRight, MapPin,
   BadgeCheck, FileText, Award, Building2, Sparkles, ClipboardCheck, HandCoins,
-  CalendarClock, Clock4, MessageCircle, MessageSquare, Send,
+  CalendarClock, Clock4,
 } from "lucide-react";
 import { SITE } from "@/data/site";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
@@ -13,7 +13,6 @@ import { DISTRICTS } from "@/data/districts";
 import { COMMON, GALLERY, GALLERY_META } from "@/data/images";
 import heroBg from "@/assets/hero-bg.jpg";
 import { LeadFormModal } from "@/components/site/LeadFormModal";
-import { LeadForm } from "@/components/site/LeadForm";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { FAQ } from "@/components/site/FAQ";
@@ -103,48 +102,6 @@ export const Route = createFileRoute("/")({
         "@context": "https://schema.org",
         "@graph": [
           {
-            "@type": "WebPage",
-            "@id": `${SITE.domain}/#webpage`,
-            url: `${SITE.domain}/`,
-            name: `Санитарная служба №1 в Новосибирске — ${SITE.name}`,
-            inLanguage: "ru-RU",
-            isPartOf: { "@id": `${SITE.domain}#website` },
-            about: { "@id": `${SITE.domain}#organization` },
-            author: { "@id": `${SITE.domain}#organization` },
-            publisher: { "@id": `${SITE.domain}#organization` },
-            datePublished: `${SITE.founded}-01-01`,
-            dateModified: SITE.contentUpdated,
-            primaryImageOfPage: `${SITE.domain}/og/default.jpg`,
-          },
-          {
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
-              { "@type": "ListItem", position: 2, name: "Услуги", item: `${SITE.domain}/services` },
-              { "@type": "ListItem", position: 3, name: "Цены", item: `${SITE.domain}/price` },
-            ],
-          },
-          ...SERVICES_INDEX.map((s) => ({
-            "@type": "Service",
-            "@id": `${SITE.domain}/services/${s.slug}#service`,
-            name: s.title,
-            serviceType: s.title,
-            description: s.metaDescription,
-            url: `${SITE.domain}/services/${s.slug}`,
-            provider: { "@id": `${SITE.domain}#organization` },
-            areaServed: [
-              { "@type": "City", name: SITE.city },
-              { "@type": "AdministrativeArea", name: SITE.region },
-            ],
-            offers: {
-              "@type": "Offer",
-              price: s.priceFrom,
-              priceCurrency: "RUB",
-              url: `${SITE.domain}/services/${s.slug}`,
-              availability: "https://schema.org/InStock",
-            },
-          })),
-          {
             "@type": "FAQPage",
             speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
             mainEntity: HOME_FAQ.map((f) => ({
@@ -215,7 +172,6 @@ function HomePage() {
             <WaveText
               as="h1"
               text="Санитарная служба №1 в Новосибирске"
-              whole
               duration={5.2}
               className="on-dark mt-5 max-w-3xl font-display text-[34px] font-extrabold leading-[1.02] text-balance md:text-5xl lg:text-6xl"
             />
@@ -259,31 +215,6 @@ function HomePage() {
               />
             </Reveal>
 
-            {/* Форма прямо на странице — без модального окна */}
-            <div className="mt-6 max-w-xl rounded-2xl border border-white/15 bg-white/95 p-4 text-foreground shadow-elegant backdrop-blur md:p-5">
-              <div className="font-display text-base font-bold">Рассчитать стоимость за 5 секунд</div>
-              <p className="mt-1 text-xs text-muted-foreground">Оставьте телефон — перезвоним за 10 минут и назовём точную цену до выезда. Без спама, конфиденциально.</p>
-              <div className="mt-3">
-                <LeadForm variant="compact" goal="lead_hero_inline" formName="Главная — форма в первом экране" submitLabel="Узнать цену" />
-              </div>
-            </div>
-
-            {/* Каналы связи */}
-            <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
-              <a href={SITE.phoneHref} className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-semibold backdrop-blur hover:bg-white/20">
-                <Phone className="h-4 w-4" /> {SITE.phone}
-              </a>
-              <a href={SITE.whatsappHref} target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-semibold backdrop-blur hover:bg-white/20">
-                <MessageCircle className="h-4 w-4" /> WhatsApp
-              </a>
-              <a href={SITE.telegramHref} target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-semibold backdrop-blur hover:bg-white/20">
-                <Send className="h-4 w-4" /> Telegram {SITE.telegramHandle}
-              </a>
-              <a href={SITE.maxHref} target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 font-semibold backdrop-blur hover:bg-white/20">
-                <MessageSquare className="h-4 w-4" /> MAX
-              </a>
-            </div>
-
             <StatsRow />
           </div>
         </div>
@@ -309,51 +240,6 @@ function HomePage() {
 
       <TrustStrip />
 
-      {/* Краткий ответ + цены-ориентир */}
-      <section className="container-x py-10 md:py-14" aria-label="Кратко о службе и ценах">
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-          <article className="speakable rounded-2xl border border-border bg-card p-5 shadow-card md:p-6">
-            <h2 className="font-display text-2xl font-bold md:text-3xl">Кто мы и сколько это стоит</h2>
-            <p className="mt-3 text-muted-foreground">
-              Дез-Федерация — санитарная служба в Новосибирске и Новосибирской области, работает с {SITE.founded} года по лицензии Роспотребнадзора № {SITE.legal.licenseNo}. Мы уничтожаем клопов, тараканов, грызунов и других вредителей, обрабатываем участки, удаляем плесень и запахи, сушим помещения после потопов.
-            </p>
-            <p className="mt-3 text-muted-foreground">
-              Обработка квартиры стоит от 1 900 ₽, цена фиксируется до выезда и включает препараты, работу специалиста и гарантию по договору до 24 месяцев. Специалист приезжает по городу в течение 60 минут, оплата — после обработки.
-            </p>
-            <p className="mt-4 text-xs text-muted-foreground">
-              Материал подготовила служба качества {SITE.legal.name}. Актуально на{" "}
-              <time dateTime={SITE.contentUpdated}>
-                {new Date(SITE.contentUpdated).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
-              </time>.
-            </p>
-          </article>
-
-          <article className="rounded-2xl border border-border bg-surface p-5 shadow-card md:p-6">
-            <h2 className="font-display text-xl font-bold">Сколько стоит обработка</h2>
-            <table className="mt-4 w-full text-sm">
-              <caption className="sr-only">Ориентировочные цены на санитарную обработку в Новосибирске</caption>
-              <tbody>
-                {[
-                  ["1-комнатная квартира", "от 1 900 ₽"],
-                  ["2-комнатная квартира", "от 2 400 ₽"],
-                  ["3-комнатная квартира", "от 2 900 ₽"],
-                  ["Частный дом", "от 3 500 ₽"],
-                  ["Участок", "от 25 ₽/м²"],
-                ].map(([k, v]) => (
-                  <tr key={k} className="border-b border-border/70 last:border-0">
-                    <th scope="row" className="py-2 text-left font-medium">{k}</th>
-                    <td className="py-2 text-right font-bold text-primary">{v}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <Link to="/price" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:gap-2.5">
-              Полный прайс и калькулятор <ArrowRight className="h-4 w-4" />
-            </Link>
-          </article>
-        </div>
-      </section>
-
       {/* Priority services */}
       <section className="container-x py-14 md:py-20">
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -373,17 +259,15 @@ function HomePage() {
         {/* Mobile: horizontal scroll. Desktop: grid */}
         <div className="mt-8 -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 scroll-snap-x sm:hidden">
           {PRIORITY_SERVICES.map((s) => (
-            <article key={s.slug} className="snap-card w-[78%] shrink-0">
+            <div key={s.slug} className="snap-card w-[78%] shrink-0">
               <ServiceCard service={s} />
-            </article>
+            </div>
           ))}
         </div>
         <div className="mt-8 hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3">
           {PRIORITY_SERVICES.map((s, i) => (
             <Reveal key={s.slug} delay={i * 80}>
-              <article>
-                <ServiceCard service={s} />
-              </article>
+              <ServiceCard service={s} />
             </Reveal>
           ))}
         </div>
@@ -635,7 +519,7 @@ function HomePage() {
           {/* Mobile carousel / desktop grid */}
           <div className="mt-8 -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 scroll-snap-x md:hidden">
             {REVIEWS.map((r) => (
-              <article key={r.n} className="snap-card w-[85%] shrink-0 rounded-2xl border border-border bg-card p-5 shadow-card">
+              <div key={r.n} className="snap-card w-[85%] shrink-0 rounded-2xl border border-border bg-card p-5 shadow-card">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-0.5 text-accent">{Array.from({ length: 5 }).map((_, i) => (<Star key={i} className="h-3.5 w-3.5 fill-current" />))}</div>
                   <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">{r.tag}</span>
@@ -643,12 +527,12 @@ function HomePage() {
                 <Quote className="mt-3 h-5 w-5 text-primary/30" />
                 <p className="mt-2 text-sm text-foreground/90">{r.t}</p>
                 <div className="mt-4 text-xs font-semibold text-muted-foreground">{r.n}</div>
-              </article>
+              </div>
             ))}
           </div>
           <div className="mt-8 hidden gap-5 md:grid md:grid-cols-3">
             {REVIEWS.slice(0, 3).map((r, i) => (
-              <Reveal key={r.n} as="article" delay={i * 100} className="rounded-2xl border border-border bg-card p-6 shadow-card">
+              <Reveal key={r.n} delay={i * 100} className="rounded-2xl border border-border bg-card p-6 shadow-card">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-0.5 text-accent">{Array.from({ length: 5 }).map((_, i2) => (<Star key={i2} className="h-4 w-4 fill-current" />))}</div>
                   <span className="rounded-full bg-secondary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">{r.tag}</span>

@@ -7,14 +7,15 @@ Disallow: /admin
 Disallow: /api/
 Disallow: /lovable/
 Disallow: /dogovor/zapolnit
-# Параметрические дубли блога (фильтры, поиск, пагинация)
-Disallow: /blog?
-Disallow: /blog/?
-# Рекламные метки
-Disallow: /*?*utm_
-Disallow: /*?*yclid=
-Disallow: /*?*gclid=
-Disallow: /*?*fbclid=
+Disallow: /*?utm_
+Disallow: /*?yclid=
+Disallow: /*?gclid=
+Disallow: /blog?cat=
+Disallow: /blog?tag=
+Disallow: /blog?hf=
+Disallow: /blog?geo=
+Disallow: /blog?q=
+Disallow: /blog?page=
 
 # OpenAI — training
 User-agent: GPTBot
@@ -48,12 +49,6 @@ Allow: /
 
 User-agent: Yandex
 Allow: /
-Disallow: /admin
-Disallow: /api/
-Disallow: /lovable/
-Disallow: /dogovor/zapolnit
-Disallow: /blog?
-Disallow: /blog/?
 
 User-agent: Googlebot
 Allow: /

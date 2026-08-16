@@ -43,53 +43,27 @@ async function main() {
   mkdirSync(OUT, { recursive: true });
 
   // --- sitemap.xml ---
-  // Состав карты берём из единого списка маршрутов (src/lib/all-routes.ts),
-  // чтобы новая страница не могла выпасть из индексации.
-  // Закрыто в robots.txt — в карту не попадает.
-  const ROBOTS_DISALLOWED = ["/dogovor/zapolnit"];
-  // lastmod ставим только там, где есть настоящая дата изменения контента:
-  // у статей — дата публикации/обновления, у витрин — дата ручной актуализации.
-  const contentUpdated = SITE.contentUpdated ?? null;
-  const CONTENT_PAGES = new Set(["/", "/services", "/price", "/category/dezinfekciya-novosibirsk"]);
-  const PRIORITY = [
-    [/^\/$/, "1.0", "weekly"],
-    [/^\/services\/[^/]+$/, "0.9", "weekly"],
-    [/^\/services$/, "0.9", "weekly"],
-    [/^\/category\//, "0.9", "weekly"],
-    [/^\/uslugi\//, "0.85", "weekly"],
-    [/^\/gorod\//, "0.85", "weekly"],
-    [/^\/raion\//, "0.8", "weekly"],
-    [/^\/(price|blog)$/, "0.8", "weekly"],
-    [/^\/(garantii|contacts|faq|kp|video)$/, "0.7", "monthly"],
-    [/^\/o-kompanii$/, "0.6", "monthly"],
-    [/^\/blog\//, "0.6", "monthly"],
-    [/^\/docs\//, "0.4", "yearly"],
-    [/^\/karta-sayta$/, "0.3", "monthly"],
-    [/^\/(privacy|terms)$/, "0.2", "yearly"],
+  const entries = [
+    { path: "/", changefreq: "weekly", priority: "1.0", lastmod: today },
+    { path: "/services", changefreq: "weekly", priority: "0.9", lastmod: today },
+    { path: "/category/dezinfekciya-novosibirsk", changefreq: "weekly", priority: "0.9", lastmod: today },
+    { path: "/price", changefreq: "monthly", priority: "0.8", lastmod: today },
+    { path: "/garantii", changefreq: "monthly", priority: "0.7", lastmod: today },
+    { path: "/o-kompanii", changefreq: "monthly", priority: "0.6", lastmod: today },
+    { path: "/contacts", changefreq: "monthly", priority: "0.7", lastmod: today },
+    { path: "/faq", changefreq: "monthly", priority: "0.7", lastmod: today },
+    { path: "/kp", changefreq: "monthly", priority: "0.7", lastmod: today },
+    { path: "/blog", changefreq: "weekly", priority: "0.8", lastmod: today },
+    { path: "/karta-sayta", changefreq: "monthly", priority: "0.3", lastmod: today },
+    { path: "/privacy", changefreq: "yearly", priority: "0.2", lastmod: today },
+    { path: "/terms", changefreq: "yearly", priority: "0.2", lastmod: today },
+    ...HUB_SLUGS.map((slug) => ({ path: `/uslugi/${slug}`, changefreq: "weekly", priority: "0.85", lastmod: today })),
+    ...CITIES.map((c) => ({ path: `/gorod/${c.slug}`, changefreq: "weekly", priority: "0.85", lastmod: today })),
+    ...DISTRICTS.map((d) => ({ path: `/raion/${d.slug}`, changefreq: "weekly", priority: "0.8", lastmod: today })),
+    ...SERVICES.map((s) => ({ path: `/services/${s.slug}`, changefreq: "weekly", priority: "0.9", lastmod: today })),
+    ...POSTS.map((p) => ({ path: `/blog/${p.slug}`, changefreq: "monthly", priority: "0.6", lastmod: p.date })),
+    ...DOCS.map((d) => ({ path: `/docs/${d.slug}`, changefreq: "yearly", priority: "0.4", lastmod: today })),
   ];
-  const postDate = new Map(POSTS.map((p) => [`/blog/${p.slug}`, p.updatedAt ?? p.date]));
-  const allPaths = [
-    ...STATIC_PATHS,
-    ...HUB_SLUGS.map((s) => `/uslugi/${s}`),
-    ...SERVICES.map((s) => `/services/${s.slug}`),
-    ...CITIES.map((c) => `/gorod/${c.slug}`),
-    ...DISTRICTS.map((d) => `/raion/${d.slug}`),
-    ...POSTS.map((p) => `/blog/${p.slug}`),
-    ...DOCS.map((d) => `/docs/${d.slug}`),
-  ];
-  const entries = [...new Set(allPaths)]
-    .filter((p) => !ROBOTS_DISALLOWED.some((d) => p === d || p.startsWith(`${d}/`)))
-    .map((path) => {
-      const rule = PRIORITY.find(([re]) => re.test(path));
-      const lastmod = postDate.get(path) ?? (CONTENT_PAGES.has(path) ? contentUpdated : null);
-      return {
-        path,
-        priority: rule ? rule[1] : "0.5",
-        changefreq: rule ? rule[2] : "monthly",
-        ...(lastmod ? { lastmod } : {}),
-      };
-    })
-    .sort((a, b) => Number(b.priority) - Number(a.priority) || a.path.localeCompare(b.path));
   const urls = entries.map((e) => [
     `  <url>`,
     `    <loc>${BASE}${e.path}</loc>`,

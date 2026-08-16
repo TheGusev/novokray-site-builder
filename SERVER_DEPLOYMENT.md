@@ -54,21 +54,11 @@ server {
     include mime.types;
     default_type application/octet-stream;
 
-    # HSTS + базовые заголовки безопасности (проверяется SEO-аудитами)
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
     gzip_comp_level 6;
-    gzip_types text/plain text/css application/json application/javascript application/xml application/xml+rss image/svg+xml text/html;
-
-    # Brotli — только если собран модуль ngx_brotli (проверка: nginx -V | grep brotli)
-    # brotli on;
-    # brotli_comp_level 5;
-    # brotli_types text/plain text/css application/json application/javascript application/xml image/svg+xml text/html;
+    gzip_types text/plain text/css application/json application/javascript application/xml image/svg+xml;
 
     location ^~ /assets/ {
         try_files $uri =404;
@@ -124,33 +114,13 @@ server {
     location / {
         # HTML не кешируем вовсе: телефон с уже сохранённой старой страницей
         # обязан получить свежую версию после каждого деплоя.
-        # ВАЖНО для SEO: сначала <path>.html, и только потом каталог.
-        # Иначе nginx находит каталог /services/ и отвечает 301 на /services/,
-        # а canonical и sitemap указывают адрес без слэша — лишний редирект
-        # на каждой посадочной странице.
-        try_files $uri $uri.html $uri/index.html /index.html;
+        try_files $uri $uri/ $uri.html /index.html;
         add_header Cache-Control "no-store" always;
     }
 }
 ```
 
-Проверка отсутствия редиректов на посадочных:
-
-```bash
-for p in /services /price /video /blog/kak-otlichit-ukus-klopa /gorod/berdsk /uslugi/spec-uslugi; do
-  printf '%s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code}' https://dez-federation.ru$p)"
-done   # ожидается 200 у всех
-```
-
-Если модуль Brotli установлен (`nginx -V 2>&1 | grep -o brotli`), раскомментируйте блок `brotli` выше. Без установленного модуля эти директивы добавлять нельзя — nginx не стартует.
-
-Проверка после применения:
-
-```bash
-curl -sI https://dez-federation.ru/ | grep -i strict-transport-security
-curl -sI -H 'Accept-Encoding: br,gzip' https://dez-federation.ru/assets/ | grep -i content-encoding
-curl -s -o /dev/null -w 'ttfb=%{time_starttransfer}\n' https://dez-federation.ru/
-```
+Если модуль Brotli установлен, дополнительно включите `brotli on;` и типы `text/css application/javascript application/json image/svg+xml`. Без установленного модуля эти директивы добавлять нельзя.
 
 ## Контрольные команды на сервере
 
