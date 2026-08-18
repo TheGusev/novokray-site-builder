@@ -20,7 +20,38 @@ import {
   aggregateOfferNode,
   geoServices,
   type AreaServed,
+  offerCatalogNode,
 } from "@/lib/serviceSchema";
+import { faqPageNode, localBusinessNode, type QaItem } from "@/lib/orgSchema";
+
+/**
+ * Вопросы района. Один источник для видимого блока FAQ и разметки FAQPage —
+ * тексты обязаны совпадать, иначе разметка считается несоответствующей контенту.
+ */
+function districtFaq(d: DistrictInfo): QaItem[] {
+  return [
+    {
+      q: `Вы работаете ${d.prepositional}?`,
+      a: `Да. Специалист Дез-Федерация выезжает ${d.prepositional} ежедневно с 07:00 до 23:00. Время в пути — до 60 минут.`,
+    },
+    {
+      q: `Сколько стоит обработка ${d.prepositional}?`,
+      a: `Выезд бесплатный, оплачивается только обработка. Цена фиксируется до приезда — от 1 500 ₽ за квартиру.`,
+    },
+    {
+      q: `Какие услуги доступны ${d.prepositional}?`,
+      a: `Все 13 направлений: клопы, тараканы, грызуны, плесень, озонирование, сушка после потопов, обработка участков, фумигация.`,
+    },
+    {
+      q: `Даёте ли гарантию?`,
+      a: `Да, гарантия по договору — до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени.`,
+    },
+    {
+      q: `Работаете с ТСЖ и УК ${d.prepositional}?`,
+      a: `Да. Заключаем договоры с УК и ТСЖ, ведём журнал по СанПиН, обрабатываем подъезды, подвалы и придомовые территории.`,
+    },
+  ];
+}
 
 export const Route = createFileRoute("/raion/$slug")({
   loader: ({ params }): { district: DistrictInfo } => {
@@ -54,44 +85,21 @@ export const Route = createFileRoute("/raion/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
-              {
-                "@type": "LocalBusiness",
-                "@id": `${SITE.domain}/raion/${params.slug}#localbusiness`,
+              localBusinessNode({
+                id: `${pageUrl}#localbusiness`,
                 name: `${SITE.name} — ${d.full}`,
-                parentOrganization: { "@id": `${SITE.domain}#organization` },
-                url: `${SITE.domain}/raion/${params.slug}`,
-                telephone: SITE.phone,
-                email: SITE.email,
-                priceRange: "1500-25000",
-                makesOffer: geoItems.map((s) => makesOfferNode(s, areas)),
+                url: pageUrl,
+                parent: true,
                 areaServed: {
                   "@type": "AdministrativeArea",
                   name: d.full,
                   containedInPlace: { "@type": "City", name: SITE.city },
                 },
-                address: {
-                  "@type": "PostalAddress",
-                  addressCountry: "RU",
-                  addressRegion: SITE.region,
-                  addressLocality: SITE.city,
+                extra: {
+                  makesOffer: geoItems.map((s) => makesOfferNode(s, areas)),
+                  hasOfferCatalog: { "@id": `${pageUrl}#catalog` },
                 },
-                openingHoursSpecification: [
-                  {
-                    "@type": "OpeningHoursSpecification",
-                    dayOfWeek: [
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                      "Sunday",
-                    ],
-                    opens: "07:00",
-                    closes: "23:00",
-                  },
-                ],
-              },
+              }),
               {
                 "@type": "BreadcrumbList",
                 itemListElement: [
@@ -117,6 +125,13 @@ export const Route = createFileRoute("/raion/$slug")({
                 useRefs: true,
               }),
               aggregateOfferNode(geoItems, pageUrl),
+              offerCatalogNode(geoItems, {
+                id: `${pageUrl}#catalog`,
+                name: `Услуги санитарной обработки ${d.prepositional} Новосибирска`,
+                url: pageUrl,
+                areas,
+              }),
+              faqPageNode(districtFaq(d), pageUrl),
               videoJsonLd(
                 WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG],
                 SITE.domain,
