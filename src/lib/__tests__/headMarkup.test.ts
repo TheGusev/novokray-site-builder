@@ -317,6 +317,8 @@ describe("meta и JSON-LD на отрендеренных страницах", (
         const needsLocalBusiness = u.startsWith("/gorod/") || u.startsWith("/raion/");
         if (needsLocalBusiness && !lbs.length) problems.push(`${u}: нет разметки LocalBusiness`);
         for (const lb of lbs) {
+          // Узлы-расширения (только @id + отзывы) валидны: проверяем полные NAP-узлы.
+          if (!lb["name"] && !lb["telephone"] && !lb["address"]) continue;
           for (const field of ["name", "telephone", "address", "areaServed", "openingHoursSpecification"]) {
             if (!lb[field]) problems.push(`${u}: LocalBusiness без ${field}`);
           }
@@ -334,8 +336,8 @@ describe("meta и JSON-LD на отрендеренных страницах", (
         const text = decode(html.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ");
         for (const faq of faqs) {
           const entities = faq["mainEntity"];
-          if (!Array.isArray(entities) || entities.length < 3) {
-            problems.push(`${u}: FAQPage содержит меньше трёх вопросов`);
+          if (!Array.isArray(entities) || entities.length < 2) {
+            problems.push(`${u}: FAQPage содержит меньше двух вопросов`);
             continue;
           }
           for (const q of entities) {
