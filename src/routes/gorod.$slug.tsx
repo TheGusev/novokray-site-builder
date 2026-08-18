@@ -13,6 +13,14 @@ import { TldrBlock } from "@/components/site/TldrBlock";
 import { VideoTeaser } from "@/components/site/VideoTeaser";
 import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG, videoJsonLd } from "@/data/videos";
 import { geoAnchor, GEO_CROSSLINK_LIMIT } from "@/data/interlinking";
+import {
+  serviceNode,
+  serviceListNode,
+  makesOfferNode,
+  aggregateOfferNode,
+  geoServices,
+  type AreaServed,
+} from "@/lib/serviceSchema";
 
 export const Route = createFileRoute("/gorod/$slug")({
   loader: ({ params }): { city: CityInfo } => {
@@ -25,6 +33,10 @@ export const Route = createFileRoute("/gorod/$slug")({
     if (!c) return { meta: [{ title: "Город не найден" }] };
     const title = `Санитарная служба ${c.prepositional} — дезинфекция, дезинсекция, дератизация | ${SITE.name}`;
     const description = `Дезинфекция и уничтожение вредителей ${c.prepositional}: выезд из Новосибирска за ${c.travelMin} минут, цена от 1 500 ₽, гарантия по договору, лицензия Роспотребнадзора. 13 направлений санитарной обработки.`;
+    const pageUrl = `${SITE.domain}/gorod/${params.slug}`;
+    const areas: AreaServed[] = [{ kind: "city", name: c.name }];
+    const geoItems = geoServices();
+    const schemaOpts = { pageUrl, areas, nameSuffix: c.prepositional };
     return {
       meta: [
         { title },
@@ -54,6 +66,7 @@ export const Route = createFileRoute("/gorod/$slug")({
                 telephone: SITE.phone,
                 email: SITE.email,
                 priceRange: "1500-25000",
+                makesOffer: geoItems.map((s) => makesOfferNode(s, areas)),
                 areaServed: {
                   "@type": "City",
                   name: c.name,
