@@ -1,14 +1,20 @@
-import { useEffect, useRef, useState } from "react";
-import { Eraser, Check, PenLine } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Eraser, Check, PenLine, Lock } from "lucide-react";
 
 interface Props {
   label: string;
   hint?: string;
   onChange: (png: ArrayBuffer | null) => void;
+  /** Холст заблокирован: подписывать нельзя (например, мастер ещё не подписал). */
+  disabled?: boolean;
+  /** Текст блокировки под холстом. */
+  lockedHint?: string;
+  /** Изменение значения очищает холст извне (сброс подписи клиента). */
+  resetKey?: number;
 }
 
 /** Холст для подписи пальцем или мышью. Отдаёт обрезанный PNG с прозрачным фоном. */
-export function SignaturePad({ label, hint, onChange }: Props) {
+export function SignaturePad({ label, hint, onChange, disabled = false, lockedHint, resetKey = 0 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawing = useRef(false);
   const dirty = useRef(false);
@@ -62,7 +68,7 @@ export function SignaturePad({ label, hint, onChange }: Props) {
     drawing.current = false;
   };
 
-  const clear = () => {
+  const clear = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
@@ -74,7 +80,17 @@ export function SignaturePad({ label, hint, onChange }: Props) {
     setHasInk(false);
     setSaved(false);
     onChange(null);
-  };
+  }, [onChange]);
+
+  // Внешний сброс: мастер стёр свою подпись — подпись клиента аннулируется.
+  const firstReset = useRef(true);
+  useEffect(() => {
+    if (firstReset.current) {
+      firstReset.current = false;
+      return;
+    }
+    clear();
+  }, [resetKey, clear]);
 
   const save = async () => {
     const canvas = canvasRef.current;
@@ -96,25 +112,29 @@ export function SignaturePad({ label, hint, onChange }: Props) {
       </div>
       <canvas
         ref={canvasRef}
-        onPointerDown={start}
-        onPointerMove={move}
+        onPointerDown={disabled ? undefined : start}
+        onPointerMove={disabled ? undefined : move}
         onPointerUp={end}
         onPointerLeave={end}
         onPointerCancel={end}
-        className="h-36 w-full cursor-crosshair rounded-lg border border-dashed border-input bg-background"
+        className={`h-36 w-full rounded-lg border border-dashed border-input bg-background ${disabled ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-crosshair"}`}
         style={{ touchAction: "none" }}
+        aria-disabled={disabled}
         aria-label={label}
       />
       <div className="mt-2 flex items-center justify-between gap-2">
-        <span className="text-xs text-muted-foreground">{hint ?? "Распишитесь пальцем или мышью"}</span>
+        <span className={`inline-flex items-center gap-1 text-xs ${disabled ? "font-semibold text-amber-600" : "text-muted-foreground"}`}>
+          {disabled && <Lock className="h-3.5 w-3.5" />}
+          {disabled ? (lockedHint ?? "Холст заблокирован") : (hint ?? "Распишитесь пальцем или мышью")}
+        </span>
         <div className="flex gap-2">
-          <button type="button" onClick={clear} className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs font-semibold hover:bg-secondary">
+          <button type="button" onClick={clear} disabled={disabled} className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs font-semibold hover:bg-secondary disabled:opacity-40">
             <Eraser className="h-3.5 w-3.5" /> Очистить
           </button>
           <button
             type="button"
             onClick={save}
-            disabled={!hasInk}
+            disabled={!hasInk || disabled}
             className="inline-flex items-center gap-1 rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground disabled:opacity-40"
           >
             <Check className="h-3.5 w-3.5" /> Готово
