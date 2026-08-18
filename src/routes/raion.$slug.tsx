@@ -12,6 +12,7 @@ import { TrustStrip } from "@/components/site/TrustStrip";
 import { TldrBlock } from "@/components/site/TldrBlock";
 import { VideoTeaser } from "@/components/site/VideoTeaser";
 import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG } from "@/data/videos";
+import { geoAnchor, GEO_CROSSLINK_LIMIT } from "@/data/interlinking";
 
 export const Route = createFileRoute("/raion/$slug")({
   loader: ({ params }): { district: DistrictInfo } => {
@@ -224,6 +225,21 @@ function DistrictPage() {
             Все услуги →
           </Link>
         </div>
+        <div className="mt-6 rounded-2xl border border-border bg-card p-5">
+          <div className="text-sm font-bold text-foreground">Частые запросы {d.prepositional}</div>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            {topServices.map((s) => (
+              <Link
+                key={s.slug}
+                to="/services/$slug"
+                params={{ slug: s.slug }}
+                className="text-primary underline decoration-primary/30 underline-offset-4 hover:decoration-primary"
+              >
+                {geoAnchor(s.slug, d.prepositional)}
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="container-x pb-14">
@@ -296,7 +312,9 @@ function DistrictPage() {
       <section className="container-x py-14">
         <h2 className="font-display text-xl font-bold">Другие районы Новосибирска</h2>
         <div className="mt-4 flex flex-wrap gap-2">
-          {DISTRICTS.filter((x) => x.slug !== d.slug).map((x) => (
+          {DISTRICTS.filter((x) => x.slug !== d.slug)
+            .slice(0, GEO_CROSSLINK_LIMIT)
+            .map((x) => (
             <Link
               key={x.slug}
               to="/raion/$slug"
