@@ -10,6 +10,8 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { TldrBlock } from "@/components/site/TldrBlock";
+import { VideoTeaser } from "@/components/site/VideoTeaser";
+import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG } from "@/data/videos";
 
 export const Route = createFileRoute("/raion/$slug")({
   loader: ({ params }): { district: DistrictInfo } => {
@@ -222,6 +224,15 @@ function DistrictPage() {
             Все услуги →
           </Link>
         </div>
+      </section>
+
+      <section className="container-x pb-14">
+        <VideoTeaser
+          compact
+          video={WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG]}
+          heading={`Как мы работаем на выездах ${d.prepositional}`}
+          text="Порядок работ одинаковый на всех адресах: осмотр, обработка проблемных зон, рекомендации и гарантия по договору."
+        />
       </section>
 
       <section className="bg-surface py-14">
