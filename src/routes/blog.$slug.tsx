@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Calendar, Clock, ArrowLeft, MapPin, Download, FileText, ExternalLink, ListTree } from "lucide-react";
 import { SITE } from "@/data/site";
+import { faqPageNode, webPageNode } from "@/lib/orgSchema";
 import { POSTS, CATEGORY_BY_SLUG, type BlogPost, type BlogCategory } from "@/data/blog";
 import { SERVICES_BY_SLUG } from "@/data/services";
 import { BLOG_COVERS, BLOG_IMAGE_META } from "@/data/images";
@@ -47,9 +48,17 @@ export const Route = createFileRoute("/blog/$slug")({
     const wc = loaderData.words;
     const cover = BLOG_COVERS[p.slug];
     const ogImage = typeof cover === "string" ? `${SITE.domain}${cover}` : `${SITE.domain}/og/default.jpg`;
+    const postUrl = `${SITE.domain}/blog/${params.slug}`;
     const graph: unknown[] = [
+      webPageNode({
+        url: postUrl,
+        name: p.title,
+        description: p.excerpt,
+        primaryEntityId: `${postUrl}#article`,
+      }),
       {
         "@type": "Article",
+        "@id": `${postUrl}#article`,
         headline: p.title,
         description: p.excerpt,
         image: ogImage,
@@ -57,7 +66,7 @@ export const Route = createFileRoute("/blog/$slug")({
         dateModified: p.updatedAt ?? p.date,
         author: { "@type": "Person", name: "Алексей Дроздов", jobTitle: "Главный дезинфектор, Дез-Федерация", worksFor: { "@id": `${SITE.domain}#organization` } },
         publisher: { "@type": "Organization", "@id": `${SITE.domain}#organization`, name: SITE.name, logo: { "@type": "ImageObject", url: `${SITE.domain}/logo.png` } },
-        mainEntityOfPage: `${SITE.domain}/blog/${params.slug}`,
+        mainEntityOfPage: { "@id": `${postUrl}#webpage` },
         articleSection: section,
         keywords: p.tags.join(", "),
         wordCount: wc,
@@ -66,6 +75,7 @@ export const Route = createFileRoute("/blog/$slug")({
       },
       {
         "@type": "BreadcrumbList",
+        "@id": `${postUrl}#breadcrumb`,
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
           { "@type": "ListItem", position: 2, name: "Библиотека", item: SITE.domain + "/blog" },
@@ -75,10 +85,11 @@ export const Route = createFileRoute("/blog/$slug")({
       },
     ];
     if (p.faq?.length) {
-      graph.push({
-        "@type": "FAQPage",
-        mainEntity: p.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
-      });
+      graph.push(
+        faqPageNode(p.faq, `${SITE.domain}/blog/${params.slug}`, {
+          aboutId: `${SITE.domain}/blog/${params.slug}#article`,
+        }),
+      );
     }
     const bv = primaryVideoForService(getBlogOffer(p.category, p.relatedServices).service);
     if (bv) graph.push(videoJsonLd(bv, SITE.domain, `${SITE.domain}/blog/${params.slug}`));

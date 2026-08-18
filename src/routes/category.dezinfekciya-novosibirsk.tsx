@@ -10,7 +10,7 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { WaveText } from "@/components/site/WaveText";
 import { FAQ } from "@/components/site/FAQ";
 import { serviceListNode, aggregateOfferNode, groupedOfferCatalogNode } from "@/lib/serviceSchema";
-import { faqPageNode, localBusinessNode, type QaItem } from "@/lib/orgSchema";
+import { faqPageNode, localBusinessNode, webPageNode, type QaItem } from "@/lib/orgSchema";
 
 const PAGE_URL = `${SITE.domain}/category/dezinfekciya-novosibirsk`;
 
@@ -54,12 +54,12 @@ export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
         "@context": "https://schema.org",
         "@graph": [
           {
-            "@type": "CollectionPage",
-            name: `Дезинфекция в Новосибирске — ${SITE.name}`,
-            url: `${SITE.domain}/category/dezinfekciya-novosibirsk`,
-            inLanguage: "ru-RU",
-            isPartOf: { "@id": `${SITE.domain}#website` },
-            about: { "@id": `${SITE.domain}#localbusiness` },
+            ...webPageNode({
+              type: "CollectionPage",
+              url: PAGE_URL,
+              name: `Дезинфекция в Новосибирске — ${SITE.name}`,
+              primaryEntityId: `${PAGE_URL}#catalog`,
+            }),
             speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
           },
           serviceListNode(SERVICES_INDEX, {
@@ -67,7 +67,7 @@ export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
             listName: "Услуги дезинфекции в Новосибирске",
           }),
           groupedOfferCatalogNode(PAGE_URL, `${PAGE_URL}#catalog`),
-          faqPageNode(CATEGORY_FAQ, PAGE_URL),
+          faqPageNode(CATEGORY_FAQ, PAGE_URL, { aboutId: `${PAGE_URL}#catalog` }),
           localBusinessNode({
             id: `${PAGE_URL}#localbusiness`,
             url: PAGE_URL,
@@ -80,6 +80,7 @@ export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
           ),
           {
             "@type": "BreadcrumbList",
+            "@id": `${PAGE_URL}#breadcrumb`,
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
               { "@type": "ListItem", position: 2, name: "Дезинфекция в Новосибирске", item: `${SITE.domain}/category/dezinfekciya-novosibirsk` },

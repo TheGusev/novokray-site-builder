@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SITE } from "@/data/site";
+import { webPageNode } from "@/lib/orgSchema";
 import { SERVICES } from "@/data/services";
 import { COMMON } from "@/data/images";
 import { ServiceCard } from "@/components/site/ServiceCard";
@@ -23,8 +24,14 @@ export const Route = createFileRoute("/services/")({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
+          webPageNode({
+            type: "CollectionPage",
+            url: `${SITE.domain}/services`,
+            name: "Услуги санитарной обработки в Новосибирске",
+          }),
           {
             "@type": "BreadcrumbList",
+            "@id": `${SITE.domain}/services#breadcrumb`,
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
               { "@type": "ListItem", position: 2, name: "Услуги", item: SITE.domain + "/services" },
