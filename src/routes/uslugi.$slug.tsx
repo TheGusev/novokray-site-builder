@@ -9,6 +9,7 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { WaveText } from "@/components/site/WaveText";
+import { serviceListNode, aggregateOfferNode } from "@/lib/serviceSchema";
 
 interface Hub {
   slug: string;
@@ -118,6 +119,7 @@ export const Route = createFileRoute("/uslugi/$slug")({
               },
               {
                 "@type": "ItemList",
+                name: h.title,
                 numberOfItems: items.length,
                 itemListElement: items.map((s, i) => ({
                   "@type": "ListItem",
