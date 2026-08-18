@@ -805,16 +805,35 @@ function DogovorBuilderPage() {
             </Block>
 
             <Block title="5. Подписание">
+              <div className="col-span-full">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                    Шаг {signStep} из 3
+                  </span>
+                  <span className="text-xs text-muted-foreground">{signStepHint}</span>
+                </div>
+                <div className="mt-2 grid grid-cols-3 gap-1.5">
+                  {["Мастер", "Заказчик", "PDF"].map((s, i) => (
+                    <div key={s} className="text-center">
+                      <div className={`h-1.5 rounded-full ${signStep > i ? "bg-primary" : "bg-border"}`} />
+                      <div className={`mt-1 text-[11px] font-semibold ${signStep > i ? "text-primary" : "text-muted-foreground"}`}>{s}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="col-span-full grid gap-3 sm:grid-cols-2">
                 <SignaturePad
-                  label="Подпись мастера"
+                  label="1/3 · Подпись мастера"
                   hint="Сначала расписывается мастер"
-                  onChange={setMasterSign}
+                  onChange={onMasterSignChange}
                 />
                 <SignaturePad
-                  label="Подпись заказчика"
-                  hint="Затем передайте экран клиенту"
+                  label="2/3 · Подпись заказчика"
+                  hint="Передайте экран клиенту"
                   onChange={setClientSign}
+                  disabled={!masterSigned}
+                  lockedHint="Сначала подписывает мастер"
+                  resetKey={clientResetKey}
                 />
               </div>
               <p className="col-span-full text-xs text-muted-foreground">
