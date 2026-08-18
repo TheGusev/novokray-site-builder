@@ -10,8 +10,13 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { WaveText } from "@/components/site/WaveText";
 import { FAQ } from "@/components/site/FAQ";
-import { serviceListNode, aggregateOfferNode, offerCatalogNode } from "@/lib/serviceSchema";
-import { faqPageNode, type QaItem } from "@/lib/orgSchema";
+import {
+  serviceNode,
+  serviceListNode,
+  aggregateOfferNode,
+  offerCatalogNode,
+} from "@/lib/serviceSchema";
+import { faqPageNode, webPageNode, type QaItem } from "@/lib/orgSchema";
 
 interface Hub {
   slug: string;
@@ -139,28 +144,37 @@ export const Route = createFileRoute("/uslugi/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
-              {
-                "@type": "CollectionPage",
-                "@id": `${SITE.domain}/uslugi/${params.slug}#page`,
+              webPageNode({
+                type: "CollectionPage",
+                url: `${SITE.domain}/uslugi/${params.slug}`,
                 name: h.h1,
                 description: h.metaDescription,
-                url: `${SITE.domain}/uslugi/${params.slug}`,
-                isPartOf: { "@id": `${SITE.domain}#website` },
-                about: { "@id": `${SITE.domain}#organization` },
-              },
+                primaryEntityId: `${SITE.domain}/uslugi/${params.slug}#catalog`,
+              }),
+              ...items.map((s2) =>
+                serviceNode(s2, {
+                  pageUrl: `${SITE.domain}/uslugi/${params.slug}`,
+                  catalogId: `${SITE.domain}/uslugi/${params.slug}#catalog`,
+                }),
+              ),
               serviceListNode(items, {
                 pageUrl: `${SITE.domain}/uslugi/${params.slug}`,
                 listName: h.title,
+                useRefs: true,
               }),
               aggregateOfferNode(items, `${SITE.domain}/uslugi/${params.slug}`),
               offerCatalogNode(items, {
                 id: `${SITE.domain}/uslugi/${params.slug}#catalog`,
                 name: h.title,
                 url: `${SITE.domain}/uslugi/${params.slug}`,
+                serviceRefs: true,
               }),
-              faqPageNode(hubFaq(h), `${SITE.domain}/uslugi/${params.slug}`),
+              faqPageNode(hubFaq(h), `${SITE.domain}/uslugi/${params.slug}`, {
+                aboutId: `${SITE.domain}/uslugi/${params.slug}#catalog`,
+              }),
               {
                 "@type": "BreadcrumbList",
+                "@id": `${SITE.domain}/uslugi/${params.slug}#breadcrumb`,
                 itemListElement: [
                   { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
                   {

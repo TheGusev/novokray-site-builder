@@ -1,6 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight, FlaskConical } from "lucide-react";
 import { SITE } from "@/data/site";
+import { faqPageNode, webPageNode } from "@/lib/orgSchema";
+import { orderActionNode } from "@/lib/serviceSchema";
 import { typo } from "@/lib/typography";
 import { type Service } from "@/data/services";
 import { getServiceIcon } from "@/data/serviceIcons";
@@ -91,10 +93,20 @@ export const Route = createFileRoute("/services/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
+              webPageNode({
+                type: "ItemPage",
+                url,
+                name: s.h1,
+                description: s.metaDescription,
+                primaryEntityId: `${url}#service`,
+              }),
               {
                 "@type": "Service",
-                "@id": `${SITE.domain}/services/${params.slug}#service`,
+                "@id": `${url}#service`,
                 name: s.h1,
+                mainEntityOfPage: { "@id": `${url}#webpage` },
+                subjectOf: { "@id": `${url}#faq` },
+                potentialAction: orderActionNode(url, s.title),
                 serviceType: s.title,
                 provider: { "@id": `${SITE.domain}#organization` },
                 areaServed: [
@@ -106,7 +118,12 @@ export const Route = createFileRoute("/services/$slug")({
                 description: s.metaDescription,
                 hasOfferCatalog: {
                   "@type": "OfferCatalog",
+                  "@id": `${url}#catalog`,
                   name: `Прайс: ${s.title}`,
+                  url,
+                  inLanguage: "ru-RU",
+                  provider: { "@id": `${SITE.domain}#organization` },
+                  numberOfItems: s.prices.length,
                   itemListElement: s.prices.map((p, i) => ({
                     "@type": "Offer",
                     position: i + 1,
@@ -129,6 +146,9 @@ export const Route = createFileRoute("/services/$slug")({
               },
               {
                 "@type": "HowTo",
+                "@id": `${url}#howto`,
+                mainEntityOfPage: { "@id": `${url}#webpage` },
+                about: { "@id": `${url}#service` },
                 name: `Этапы работ: ${s.title.toLowerCase()} — пошагово`,
                 description: s.lead,
                 totalTime: "PT2H",
@@ -144,6 +164,7 @@ export const Route = createFileRoute("/services/$slug")({
               },
               {
                 "@type": "BreadcrumbList",
+                "@id": `${url}#breadcrumb`,
                 itemListElement: [
                   { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
                   {
@@ -161,12 +182,7 @@ export const Route = createFileRoute("/services/$slug")({
                 ],
               },
               {
-                "@type": "FAQPage",
-                mainEntity: s.faq.map((f) => ({
-                  "@type": "Question",
-                  name: f.q,
-                  acceptedAnswer: { "@type": "Answer", text: f.a },
-                })),
+                ...faqPageNode(s.faq, url, { aboutId: `${url}#service` }),
                 speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
               },
               ...(primaryVideoForService(s.slug)

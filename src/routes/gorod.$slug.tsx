@@ -22,7 +22,32 @@ import {
   type AreaServed,
   offerCatalogNode,
 } from "@/lib/serviceSchema";
-import { localBusinessNode } from "@/lib/orgSchema";
+import { localBusinessNode, faqPageNode, webPageNode, type QaItem } from "@/lib/orgSchema";
+
+function cityFaq(c: CityInfo): QaItem[] {
+  return [
+    {
+      q: `Вы работаете ${c.prepositional}?`,
+      a: `Да. Специалист Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
+    },
+    {
+      q: `Сколько стоит выезд ${c.prepositional}?`,
+      a: `Выезд бесплатный — оплачивается только обработка. Цена фиксируется по телефону до приезда, без скрытых платежей.`,
+    },
+    {
+      q: `Какие услуги доступны ${c.prepositional}?`,
+      a: `Все 13 направлений: клопы, тараканы, грызуны, плесень, озонирование, сушка после потопов, обработка участков от клещей и комаров, фумигация, дезодорация.`,
+    },
+    {
+      q: `Даёте ли гарантию ${c.prepositional}?`,
+      a: `Да, гарантия по договору такая же, как в Новосибирске — до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени.`,
+    },
+    {
+      q: `За сколько приедет специалист ${c.prepositional}?`,
+      a: `Стандартное время выезда — ${c.travelMin}–${c.travelMin + 20} минут с момента подтверждения заявки. В пиковые часы возможны задержки до 1,5 часов.`,
+    },
+  ];
+}
 
 export const Route = createFileRoute("/gorod/$slug")({
   loader: ({ params }): { city: CityInfo } => {
@@ -38,7 +63,8 @@ export const Route = createFileRoute("/gorod/$slug")({
     const pageUrl = `${SITE.domain}/gorod/${params.slug}`;
     const areas: AreaServed[] = [{ kind: "city", name: c.name }];
     const geoItems = geoServices();
-    const schemaOpts = { pageUrl, areas, nameSuffix: c.prepositional };
+    const catalogId = `${pageUrl}#catalog`;
+    const schemaOpts = { pageUrl, areas, nameSuffix: c.prepositional, catalogId };
     return {
       meta: [
         { title },
@@ -59,6 +85,12 @@ export const Route = createFileRoute("/gorod/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
+              webPageNode({
+                url: pageUrl,
+                name: title,
+                description,
+                primaryEntityId: `${pageUrl}#localbusiness`,
+              }),
               localBusinessNode({
                 id: `${pageUrl}#localbusiness`,
                 name: `${SITE.name} — ${c.name}`,
@@ -70,12 +102,13 @@ export const Route = createFileRoute("/gorod/$slug")({
                   containedInPlace: { "@type": "AdministrativeArea", name: SITE.region },
                 },
                 extra: {
-                  makesOffer: geoItems.map((s) => makesOfferNode(s, areas)),
+                  makesOffer: geoItems.map((s) => makesOfferNode(s, areas, `${pageUrl}#service-${s.slug}`)),
                   hasOfferCatalog: { "@id": `${pageUrl}#catalog` },
                 },
               }),
               {
                 "@type": "BreadcrumbList",
+                "@id": `${pageUrl}#breadcrumb`,
                 itemListElement: [
                   { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
                   {
@@ -100,49 +133,13 @@ export const Route = createFileRoute("/gorod/$slug")({
               }),
               aggregateOfferNode(geoItems, pageUrl),
               offerCatalogNode(geoItems, {
-                id: `${pageUrl}#catalog`,
+                id: catalogId,
                 name: `Услуги санитарной обработки ${c.prepositional}`,
                 url: pageUrl,
                 areas,
+                serviceRefs: true,
               }),
-              {
-                "@type": "FAQPage",
-                mainEntity: [
-                  {
-                    "@type": "Question",
-                    name: `Вы работаете ${c.prepositional}?`,
-                    acceptedAnswer: {
-                      "@type": "Answer",
-                      text: `Да. Специалист Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
-                    },
-                  },
-                  {
-                    "@type": "Question",
-                    name: `Сколько стоит выезд ${c.prepositional}?`,
-                    acceptedAnswer: {
-                      "@type": "Answer",
-                      text: `Выезд бесплатный — оплачивается только сама обработка. Стоимость рассчитывается по типу объекта, цена фиксируется до приезда.`,
-                    },
-                  },
-                  {
-                    "@type": "Question",
-                    name: `Какие услуги доступны ${c.prepositional}?`,
-                    acceptedAnswer: {
-                      "@type": "Answer",
-                      text: `Все 13 направлений санитарной обработки: уничтожение клопов, тараканов, грызунов, обработка от плесени, озонирование, сушка после потопов, обработка участков от клещей и комаров, фумигация, дезодорация.`,
-                    },
-                  },
-                  {
-                    "@type": "Question",
-                    name: `Даёте ли гарантию ${c.prepositional}?`,
-                    acceptedAnswer: {
-                      "@type": "Answer",
-                      text: `Да, гарантия по договору такая же, как в Новосибирске — до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени.`,
-                    },
-                  },
-                ],
-                speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
-              },
+              faqPageNode(cityFaq(c), pageUrl, { aboutId: catalogId }),
               videoJsonLd(
                 WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG],
                 SITE.domain,
@@ -161,28 +158,7 @@ function CityPage() {
   const { city: c } = Route.useLoaderData() as { city: CityInfo };
   const topServices = [...SERVICES].sort((a, b) => b.priority - a.priority).slice(0, 8);
 
-  const faq = [
-    {
-      q: `Вы работаете ${c.prepositional}?`,
-      a: `Да. Специалист Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
-    },
-    {
-      q: `Сколько стоит выезд ${c.prepositional}?`,
-      a: `Выезд бесплатный — оплачивается только обработка. Цена фиксируется по телефону до приезда, без скрытых платежей.`,
-    },
-    {
-      q: `Какие услуги доступны ${c.prepositional}?`,
-      a: `Все 13 направлений: клопы, тараканы, грызуны, плесень, озонирование, сушка после потопов, обработка участков от клещей и комаров, фумигация, дезодорация.`,
-    },
-    {
-      q: `Даёте ли гарантию ${c.prepositional}?`,
-      a: `Да, гарантия по договору такая же, как в Новосибирске — до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени.`,
-    },
-    {
-      q: `За сколько приедет специалист ${c.prepositional}?`,
-      a: `Стандартное время выезда — ${c.travelMin}–${c.travelMin + 20} минут с момента подтверждения заявки. В пиковые часы возможны задержки до 1,5 часов.`,
-    },
-  ];
+  const faq = cityFaq(c);
 
   return (
     <>

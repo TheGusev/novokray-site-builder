@@ -94,14 +94,54 @@ export interface QaItem {
   a: string;
 }
 
+export interface WebPageOptions {
+  url: string;
+  name: string;
+  description?: string;
+  /** Тип страницы: WebPage / CollectionPage / ItemPage. */
+  type?: "WebPage" | "CollectionPage" | "ItemPage";
+  /** @id главной сущности страницы (услуга, каталог, гео-филиал). */
+  primaryEntityId?: string;
+}
+
+/**
+ * Корневой узел страницы. Через него связываются все остальные узлы графа:
+ * услуги, каталоги и FAQ ссылаются на него полем isPartOf / mainEntityOfPage.
+ */
+export function webPageNode(o: WebPageOptions) {
+  return {
+    "@type": o.type ?? "WebPage",
+    "@id": `${o.url}#webpage`,
+    url: o.url,
+    name: o.name,
+    ...(o.description ? { description: o.description } : {}),
+    inLanguage: "ru-RU",
+    isPartOf: { "@id": `${SITE.domain}#website` },
+    about: { "@id": `${SITE.domain}#organization` },
+    ...(o.primaryEntityId ? { mainEntity: { "@id": o.primaryEntityId } } : {}),
+    breadcrumb: { "@id": `${o.url}#breadcrumb` },
+  };
+}
+
+interface FaqOptions {
+  /** @id сущности, которой посвящены вопросы: услуга или каталог страницы. */
+  aboutId?: string;
+  /** По умолчанию FAQ считается частью WebPage этой же страницы. */
+  isPartOfId?: string;
+}
+
 /**
  * FAQPage из тех же вопросов, что видит пользователь на странице.
  * pageUrl нужен для уникального @id, если FAQ соседствует с другими узлами.
  */
-export function faqPageNode(items: QaItem[], pageUrl: string) {
+export function faqPageNode(items: QaItem[], pageUrl: string, o: FaqOptions = {}) {
   return {
     "@type": "FAQPage",
     "@id": `${pageUrl}#faq`,
+    url: pageUrl,
+    inLanguage: "ru-RU",
+    isPartOf: { "@id": o.isPartOfId ?? `${pageUrl}#webpage` },
+    about: { "@id": o.aboutId ?? `${pageUrl}#webpage` },
     mainEntity: items.map((f) => ({
       "@type": "Question",
       name: f.q,

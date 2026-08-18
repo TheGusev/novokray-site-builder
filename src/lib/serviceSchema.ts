@@ -40,6 +40,10 @@ interface ServiceNodeOptions {
   nameSuffix?: string;
   /** Описание, если нужно переопределить metaDescription. */
   description?: string;
+  /** @id каталога предложений этой страницы: услуга ссылается на него. */
+  catalogId?: string;
+  /** Связь с WebPage страницы; по умолчанию `${pageUrl}#webpage`. */
+  webPageId?: string;
 }
 
 /** Узел Service с ценовым Offer. url всегда ведёт на страницу услуги — она первоисточник. */
@@ -58,7 +62,27 @@ export function serviceNode(s: ServiceIndexItem, o: ServiceNodeOptions) {
     url: serviceUrl,
     provider: { "@id": `${SITE.domain}#organization` },
     areaServed: areaJson,
+    mainEntityOfPage: { "@id": o.webPageId ?? `${o.pageUrl}#webpage` },
+    ...(o.catalogId ? { hasOfferCatalog: { "@id": o.catalogId } } : {}),
+    potentialAction: orderActionNode(serviceUrl, s.title),
     offers: offerNode(s, { areas, url: serviceUrl }),
+  };
+}
+
+/** Действие «оставить заявку»: корректная schema.org-связка услуги с заказом. */
+export function orderActionNode(url: string, name: string) {
+  return {
+    "@type": "OrderAction",
+    name: `Оставить заявку: ${name}`,
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${url}#zayavka`,
+      actionPlatform: [
+        "https://schema.org/DesktopWebPlatform",
+        "https://schema.org/MobileWebPlatform",
+      ],
+    },
+    deliveryMethod: "https://schema.org/OnSitePickup",
   };
 }
 
@@ -86,15 +110,22 @@ export function offerNode(
 }
 
 /** Offer, привязанный к LocalBusiness через makesOffer (с itemOffered). */
-export function makesOfferNode(s: ServiceIndexItem, areas: AreaServed[]) {
+export function makesOfferNode(
+  s: ServiceIndexItem,
+  areas: AreaServed[],
+  /** @id узла Service в графе страницы — тогда itemOffered будет ссылкой. */
+  serviceRefId?: string,
+) {
   return {
     ...offerNode(s, { areas }),
-    itemOffered: {
-      "@type": "Service",
-      name: s.title,
-      serviceType: s.title,
-      url: `${SITE.domain}/services/${s.slug}`,
-    },
+    itemOffered: serviceRefId
+      ? { "@id": serviceRefId }
+      : {
+          "@type": "Service",
+          name: s.title,
+          serviceType: s.title,
+          url: `${SITE.domain}/services/${s.slug}`,
+        },
   };
 }
 
@@ -134,17 +165,32 @@ export const CATALOG_GROUPS: Array<{ id: string; name: string }> = [
 /** OfferCatalog: витрина предложений с ценами «от». */
 export function offerCatalogNode(
   items: ServiceIndexItem[],
-  o: { name: string; url: string; id?: string; areas?: AreaServed[] },
+  o: {
+    name: string;
+    url: string;
+    id?: string;
+    areas?: AreaServed[];
+    /** Узлы Service уже есть в графе страницы — ссылаемся на них по @id. */
+    serviceRefs?: boolean;
+    /** Базовый URL для @id узлов Service (по умолчанию — url каталога). */
+    refPageUrl?: string;
+    /** Родительский каталог: проставляет isPartOf. */
+    partOfId?: string;
+  },
 ) {
   const areas = o.areas ?? DEFAULT_AREA;
+  const refBase = o.refPageUrl ?? o.url;
   return {
     "@type": "OfferCatalog",
     ...(o.id ? { "@id": o.id } : {}),
     name: o.name,
     url: o.url,
+    inLanguage: "ru-RU",
+    provider: { "@id": `${SITE.domain}#organization` },
+    ...(o.partOfId ? { isPartOf: { "@id": o.partOfId } } : {}),
     numberOfItems: items.length,
     itemListElement: items.map((s, i) => ({
-      ...makesOfferNode(s, areas),
+      ...makesOfferNode(s, areas, o.serviceRefs ? `${refBase}#service-${s.slug}` : undefined),
       position: i + 1,
     })),
   };
@@ -152,16 +198,26 @@ export function offerCatalogNode(
 
 /** Каталог верхнего уровня: группы услуг вложенными OfferCatalog. */
 export function groupedOfferCatalogNode(url: string, id?: string) {
+  const rootId = id ?? `${url}#catalog`;
   const groups = CATALOG_GROUPS.map((g) => {
     const items = SERVICES_INDEX.filter((s) => s.category === g.id);
-    return items.length > 0 ? offerCatalogNode(items, { name: g.name, url }) : null;
+    if (items.length === 0) return null;
+    return offerCatalogNode(items, {
+      name: g.name,
+      url,
+      id: `${rootId}-${g.id}`,
+      partOfId: rootId,
+    });
   }).filter(Boolean);
   return {
     "@type": "OfferCatalog",
-    ...(id ? { "@id": id } : {}),
+    "@id": rootId,
     name: `Санитарная обработка — каталог услуг, ${SITE.city}`,
     url,
+    inLanguage: "ru-RU",
+    provider: { "@id": `${SITE.domain}#organization` },
     numberOfItems: groups.length,
+    hasPart: groups.map((g) => ({ "@id": (g as { "@id": string })["@id"] })),
     itemListElement: groups,
   };
 }

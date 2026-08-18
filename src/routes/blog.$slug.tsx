@@ -75,10 +75,11 @@ export const Route = createFileRoute("/blog/$slug")({
       },
     ];
     if (p.faq?.length) {
-      graph.push({
-        "@type": "FAQPage",
-        mainEntity: p.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
-      });
+      graph.push(
+        faqPageNode(p.faq, `${SITE.domain}/blog/${params.slug}`, {
+          aboutId: `${SITE.domain}/blog/${params.slug}#article`,
+        }),
+      );
     }
     const bv = primaryVideoForService(getBlogOffer(p.category, p.relatedServices).service);
     if (bv) graph.push(videoJsonLd(bv, SITE.domain, `${SITE.domain}/blog/${params.slug}`));

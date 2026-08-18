@@ -367,6 +367,80 @@ describe("meta и JSON-LD на отрендеренных страницах", (
           if (!Array.isArray(items) || items.length === 0)
             problems.push(`${u}: OfferCatalog «${String(cat["name"])}» без позиций`);
         }
+
+        // Связность графа: все ссылки {"@id": ...} должны разрешаться либо
+        // внутри страницы, либо в глобальных узлах сайта (Organization/WebSite).
+        const GLOBAL_IDS = new Set([
+          `${SITE.domain}#organization`,
+          `${SITE.domain}#website`,
+          `${SITE.domain}#localbusiness`,
+          `${SITE.domain}#catalog`,
+        ]);
+        const definedIds = new Set<string>(GLOBAL_IDS);
+        const refs: string[] = [];
+        const typedNodes: Record<string, unknown>[] = [];
+        for (const raw of blocks) {
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(decode(raw));
+          } catch {
+            continue;
+          }
+          const walk = (node: unknown) => {
+            if (Array.isArray(node)) return node.forEach(walk);
+            if (!node || typeof node !== "object") return;
+            const obj = node as Record<string, unknown>;
+            const id = obj["@id"];
+            const keys = Object.keys(obj);
+            if (typeof id === "string") {
+              if (keys.length === 1) refs.push(id);
+              else definedIds.add(id);
+            }
+            if (obj["@type"]) typedNodes.push(obj);
+            for (const v of Object.values(obj)) walk(v);
+          };
+          walk(parsed);
+        }
+        for (const ref of refs) {
+          if (!definedIds.has(ref)) problems.push(`${u}: ссылка @id ${ref} никуда не ведёт`);
+        }
+
+        // WebPage-узел и его связи: страницы услуг, гео и каталогов.
+        const needsWebPage =
+          needsService || u === "/category/dezinfekciya-novosibirsk";
+        const pageNodes = typedNodes.filter((n) => {
+          const t = n["@type"];
+          return t === "WebPage" || t === "CollectionPage" || t === "ItemPage";
+        });
+        if (needsWebPage && u !== "/services" && !pageNodes.length)
+          problems.push(`${u}: нет узла WebPage/CollectionPage/ItemPage`);
+        for (const page of pageNodes) {
+          if (!page["isPartOf"]) problems.push(`${u}: WebPage без isPartOf (WebSite)`);
+          if (!page["about"]) problems.push(`${u}: WebPage без about (Organization)`);
+        }
+
+        // FAQPage должен быть привязан к странице и к сущности (услуге/каталогу).
+        for (const faq of faqs) {
+          if (!faq["isPartOf"]) problems.push(`${u}: FAQPage без isPartOf`);
+          if (!faq["about"]) problems.push(`${u}: FAQPage без about`);
+        }
+
+        // Service должен ссылаться на страницу, которая его показывает.
+        for (const svc of services) {
+          if (!svc["mainEntityOfPage"])
+            problems.push(`${u}: Service «${String(svc["name"])}» без mainEntityOfPage`);
+        }
+
+        // Каталоги: провайдер обязателен, чтобы OfferCatalog не висел в воздухе.
+        for (const cat of catalogs) {
+          if (cat["@id"] && !cat["provider"])
+            problems.push(`${u}: OfferCatalog «${String(cat["name"])}» без provider`);
+        }
+
+        // SSR: JSON-LD должен быть в исходном HTML внутри <head>, без участия JS.
+        const head = html.split("</head>")[0] ?? "";
+        if (!/application\/ld\+json/.test(head))
+          problems.push(`${u}: JSON-LD отсутствует в <head> серверного HTML`);
       }),
     );
 

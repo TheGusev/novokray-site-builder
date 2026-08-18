@@ -6,6 +6,7 @@ import {
   CalendarClock, Clock4,
 } from "lucide-react";
 import { SITE } from "@/data/site";
+import { faqPageNode, webPageNode } from "@/lib/orgSchema";
 import { PRIORITY_SERVICES, SERVICES } from "@/data/services";
 import { SERVICES_INDEX } from "@/data/servicesIndex";
 import { CITIES } from "@/data/cities";
@@ -101,14 +102,16 @@ export const Route = createFileRoute("/")({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
+          webPageNode({
+            url: `${SITE.domain}/`,
+            name: `${SITE.name} — санитарная служба в Новосибирске`,
+            primaryEntityId: `${SITE.domain}#localbusiness`,
+          }),
           {
-            "@type": "FAQPage",
+            ...faqPageNode(HOME_FAQ, `${SITE.domain}/`, {
+              aboutId: `${SITE.domain}#localbusiness`,
+            }),
             speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
-            mainEntity: HOME_FAQ.map((f) => ({
-              "@type": "Question",
-              name: f.q,
-              acceptedAnswer: { "@type": "Answer", text: f.a },
-            })),
           },
           {
             "@type": "ItemList",

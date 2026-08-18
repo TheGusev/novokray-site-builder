@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SITE } from "@/data/site";
+import { faqPageNode, webPageNode } from "@/lib/orgSchema";
 import { SERVICES } from "@/data/services";
 import { COMMON } from "@/data/images";
 import { FAQ } from "@/components/site/FAQ";
@@ -51,13 +52,17 @@ export const Route = createFileRoute("/faq")({
       type: "application/ld+json",
       children: JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "FAQPage",
-        speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable", "[itemprop='acceptedAnswer']"] },
-        mainEntity: ALL_FAQ.map((f) => ({
-          "@type": "Question",
-          name: f.q,
-          acceptedAnswer: { "@type": "Answer", text: f.a },
-        })),
+        "@graph": [
+          webPageNode({
+            url: `${SITE.domain}/faq`,
+            name: "Вопросы и ответы о санитарной обработке",
+            primaryEntityId: `${SITE.domain}/faq#faq`,
+          }),
+          {
+            ...faqPageNode(ALL_FAQ, `${SITE.domain}/faq`),
+            speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable", "[itemprop='acceptedAnswer']"] },
+          },
+        ],
       }),
     }, {
       type: "application/ld+json",

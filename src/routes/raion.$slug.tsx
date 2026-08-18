@@ -22,7 +22,7 @@ import {
   type AreaServed,
   offerCatalogNode,
 } from "@/lib/serviceSchema";
-import { faqPageNode, localBusinessNode, type QaItem } from "@/lib/orgSchema";
+import { faqPageNode, localBusinessNode, webPageNode, type QaItem } from "@/lib/orgSchema";
 
 /**
  * Вопросы района. Один источник для видимого блока FAQ и разметки FAQPage —
@@ -67,7 +67,8 @@ export const Route = createFileRoute("/raion/$slug")({
     const pageUrl = `${SITE.domain}/raion/${params.slug}`;
     const areas: AreaServed[] = [{ kind: "district", name: d.full, city: SITE.city }];
     const geoItems = geoServices();
-    const schemaOpts = { pageUrl, areas, nameSuffix: `${d.prepositional} Новосибирска` };
+    const catalogId = `${pageUrl}#catalog`;
+    const schemaOpts = { pageUrl, areas, nameSuffix: `${d.prepositional} Новосибирска`, catalogId };
     return {
       meta: [
         { title },
@@ -85,6 +86,12 @@ export const Route = createFileRoute("/raion/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
+              webPageNode({
+                url: pageUrl,
+                name: title,
+                description,
+                primaryEntityId: `${pageUrl}#localbusiness`,
+              }),
               localBusinessNode({
                 id: `${pageUrl}#localbusiness`,
                 name: `${SITE.name} — ${d.full}`,
@@ -96,12 +103,13 @@ export const Route = createFileRoute("/raion/$slug")({
                   containedInPlace: { "@type": "City", name: SITE.city },
                 },
                 extra: {
-                  makesOffer: geoItems.map((s) => makesOfferNode(s, areas)),
+                  makesOffer: geoItems.map((s) => makesOfferNode(s, areas, `${pageUrl}#service-${s.slug}`)),
                   hasOfferCatalog: { "@id": `${pageUrl}#catalog` },
                 },
               }),
               {
                 "@type": "BreadcrumbList",
+                "@id": `${pageUrl}#breadcrumb`,
                 itemListElement: [
                   { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
                   {
@@ -126,12 +134,13 @@ export const Route = createFileRoute("/raion/$slug")({
               }),
               aggregateOfferNode(geoItems, pageUrl),
               offerCatalogNode(geoItems, {
-                id: `${pageUrl}#catalog`,
+                id: catalogId,
                 name: `Услуги санитарной обработки ${d.prepositional} Новосибирска`,
                 url: pageUrl,
                 areas,
+                serviceRefs: true,
               }),
-              faqPageNode(districtFaq(d), pageUrl),
+              faqPageNode(districtFaq(d), pageUrl, { aboutId: catalogId }),
               videoJsonLd(
                 WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG],
                 SITE.domain,
