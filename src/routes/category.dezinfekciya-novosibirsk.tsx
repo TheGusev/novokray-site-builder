@@ -12,10 +12,10 @@ import { WaveText } from "@/components/site/WaveText";
 export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
   head: () => ({
     meta: [
-      { title: `Дезинфекция в Новосибирске — все виды санитарной обработки | ${SITE.name}` },
-      { name: "description", content: "Дезинфекция в Новосибирске и области: уничтожение вредителей, обработка от плесени, озонирование, дератизация. 13 направлений, выезд за 60 минут, лицензия." },
-      { property: "og:title", content: "Дезинфекция в Новосибирске" },
-      { property: "og:description", content: "Все виды санитарной обработки в Новосибирске и области." },
+      { title: `Какая обработка нужна: путеводитель по услугам | ${SITE.name}` },
+      { name: "description", content: "Путеводитель по санитарным обработкам: чем отличаются дезинфекция, дезинсекция и дератизация, что назначают при клопах, тараканах, плесени и запахах, куда переходить за заявкой." },
+      { property: "og:title", content: "Какая обработка нужна: путеводитель по услугам" },
+      { property: "og:description", content: "Сравнение направлений санитарной обработки и переход на страницу нужной услуги." },
       { property: "og:url", content: `${SITE.domain}/category/dezinfekciya-novosibirsk` },
     ],
     links: [{ rel: "canonical", href: `${SITE.domain}/category/dezinfekciya-novosibirsk` }],
