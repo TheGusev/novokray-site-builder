@@ -11,6 +11,8 @@ import { ServiceCard } from "@/components/site/ServiceCard";
 import { renderBodyBlocks, extractToc } from "@/lib/mdx-lite";
 import { getBlogOffer } from "@/data/blogPestMap";
 import { InlineLeadCta } from "@/components/site/InlineLeadCta";
+import { VideoTeaser } from "@/components/site/VideoTeaser";
+import { primaryVideoForService } from "@/data/videos";
 import { BlogStickyCta } from "@/components/site/BlogStickyCta";
 import { GOALS } from "@/lib/analytics";
 import { typo } from "@/lib/typography";
@@ -118,6 +120,7 @@ function PostPage() {
   const offer = getBlogOffer(p.category, p.relatedServices);
   const blocks = renderBodyBlocks(p.body);
   const cutIndex = Math.max(1, Math.round(blocks.length * 0.4));
+  const postVideo = primaryVideoForService(offer.service);
 
   return (
     <>
@@ -176,6 +179,15 @@ function PostPage() {
             </div>
             <div className="mt-2">
               {blocks.slice(0, cutIndex)}
+              {postVideo && (
+                <div className="not-prose my-8 rounded-2xl border border-border bg-card p-5 shadow-card">
+                  <VideoTeaser
+                    compact
+                    video={postVideo}
+                    heading="Видео: так проходит обработка"
+                  />
+                </div>
+              )}
               <InlineLeadCta
                 offer={offer}
                 context={p.title}
