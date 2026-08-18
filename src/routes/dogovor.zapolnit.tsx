@@ -375,6 +375,25 @@ function DogovorBuilderPage() {
     setError(null);
   };
 
+  // Порядок подписания: мастер → заказчик → PDF.
+  const masterSigned = Boolean(masterSign ?? signature);
+  const clientSigned = Boolean(clientSign);
+  const signStep = !masterSigned ? 1 : !clientSigned ? 2 : 3;
+  const signStepHint = !masterSigned
+    ? "Расписывается мастер"
+    : !clientSigned
+      ? "Передайте экран заказчику"
+      : "Обе подписи получены — можно формировать PDF";
+
+  /** Очистка подписи мастера аннулирует подпись заказчика. */
+  const onMasterSignChange = (png: ArrayBuffer | null) => {
+    setMasterSign(png);
+    if (!png) {
+      setClientSign(null);
+      setClientResetKey((k) => k + 1);
+    }
+  };
+
   const onGenerate = async () => {
     setError(null);
     if (totalErrors > 0) {
