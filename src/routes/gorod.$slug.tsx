@@ -117,6 +117,7 @@ export const Route = createFileRoute("/gorod/$slug")({
               serviceListNode(geoItems, {
                 ...schemaOpts,
                 listName: `Санитарная обработка ${c.prepositional}`,
+                useRefs: true,
               }),
               aggregateOfferNode(geoItems, pageUrl),
               {
