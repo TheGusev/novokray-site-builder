@@ -33,9 +33,11 @@ export function VideoTeaser({ video, heading, text, compact = false, className =
         <Film className="h-6 w-6 text-primary" /> {typo(heading)}
       </h2>
       {text && <p className="mt-2 max-w-2xl text-muted-foreground">{typo(text)}</p>}
-      <div className={`mt-6 grid items-start gap-6 ${compact ? "sm:grid-cols-[minmax(0,260px)_auto]" : "sm:grid-cols-[minmax(0,320px)_auto]"} sm:justify-start`}>
-        <VideoCard video={video} schema={false} />
-        <div className="flex flex-col items-start gap-4 pt-1">{button}</div>
+      <div className="mt-6 flex flex-col items-start gap-6 sm:flex-row sm:items-start">
+        <div className={`w-full ${compact ? "sm:w-[260px]" : "sm:w-[320px]"} shrink-0`}>
+          <VideoCard video={video} schema={false} />
+        </div>
+        {button}
       </div>
     </div>
   );
