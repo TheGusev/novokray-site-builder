@@ -57,44 +57,21 @@ export const Route = createFileRoute("/gorod/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
-              {
-                "@type": "LocalBusiness",
-                "@id": `${SITE.domain}/gorod/${params.slug}#localbusiness`,
+              localBusinessNode({
+                id: `${pageUrl}#localbusiness`,
                 name: `${SITE.name} — ${c.name}`,
-                parentOrganization: { "@id": `${SITE.domain}#organization` },
-                url: `${SITE.domain}/gorod/${params.slug}`,
-                telephone: SITE.phone,
-                email: SITE.email,
-                priceRange: "1500-25000",
-                makesOffer: geoItems.map((s) => makesOfferNode(s, areas)),
+                url: pageUrl,
+                parent: true,
                 areaServed: {
                   "@type": "City",
                   name: c.name,
                   containedInPlace: { "@type": "AdministrativeArea", name: SITE.region },
                 },
-                address: {
-                  "@type": "PostalAddress",
-                  addressCountry: "RU",
-                  addressRegion: SITE.region,
-                  addressLocality: c.name,
+                extra: {
+                  makesOffer: geoItems.map((s) => makesOfferNode(s, areas)),
+                  hasOfferCatalog: { "@id": `${pageUrl}#catalog` },
                 },
-                openingHoursSpecification: [
-                  {
-                    "@type": "OpeningHoursSpecification",
-                    dayOfWeek: [
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                      "Sunday",
-                    ],
-                    opens: "07:00",
-                    closes: "23:00",
-                  },
-                ],
-              },
+              }),
               {
                 "@type": "BreadcrumbList",
                 itemListElement: [
@@ -120,6 +97,12 @@ export const Route = createFileRoute("/gorod/$slug")({
                 useRefs: true,
               }),
               aggregateOfferNode(geoItems, pageUrl),
+              offerCatalogNode(geoItems, {
+                id: `${pageUrl}#catalog`,
+                name: `Услуги санитарной обработки ${c.prepositional}`,
+                url: pageUrl,
+                areas,
+              }),
               {
                 "@type": "FAQPage",
                 mainEntity: [
