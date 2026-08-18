@@ -194,6 +194,10 @@ function HubPage() {
         <h2 className="font-display text-2xl font-bold md:text-3xl">
           {items.length} направлений в разделе
         </h2>
+        <p className="mt-2 max-w-3xl text-muted-foreground">
+          Цена, порядок работ и форма заявки — на странице конкретной услуги: это основная
+          страница по вашему запросу.
+        </p>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((s) => (
             <ServiceCard key={s.slug} service={s} />
