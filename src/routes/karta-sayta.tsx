@@ -56,6 +56,17 @@ export const Route = createFileRoute("/karta-sayta")({
             name: MAIN_SECTIONS.map((s) => s.label),
             url: MAIN_SECTIONS.map((s) => `${SITE.domain}${s.to}`),
           },
+          {
+            "@type": "ItemList",
+            name: "Разделы сайта Дез-Федерация.ру",
+            numberOfItems: MAIN_SECTIONS.length,
+            itemListElement: MAIN_SECTIONS.map((s, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: s.label,
+              url: `${SITE.domain}${s.to}`,
+            })),
+          },
         ],
       }),
     }],
