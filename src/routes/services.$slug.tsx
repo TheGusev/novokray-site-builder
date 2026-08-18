@@ -18,6 +18,7 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ServiceCard } from "@/components/site/ServiceCard";
+import { landingsForService, OBJECTS, landingPriceFrom } from "@/data/landings";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
@@ -202,6 +203,7 @@ function ServicePage() {
   const s = data.service;
   const Icon = getServiceIcon(s.slug);
   const related = data.related;
+  const objectLandings = landingsForService(s.slug);
   const hero = SERVICE_IMAGES[s.slug];
   const warranty = WARRANTY_BY_SLUG[s.slug] ?? "по договору";
   const imgMeta = SERVICE_IMAGE_META[s.slug];
@@ -606,6 +608,38 @@ function ServicePage() {
             : `Частые вопросы: ${s.title.toLowerCase()}`
         }
       />
+
+      {/* Обработка по типам объектов — НЧ/СНЧ-интенты */}
+      {objectLandings.length > 0 && (
+        <section className="container-x pb-16">
+          <h2 className="font-display text-2xl font-bold md:text-3xl">
+            Обработка по типам объектов
+          </h2>
+          <p className="mt-2 max-w-2xl text-muted-foreground">
+            Технология, подготовка и цена отличаются от объекта к объекту. Выберите свой —
+            там расписано, что именно делаем и сколько это стоит.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {objectLandings.map((l) => (
+              <Link
+                key={l.slug}
+                to="/obrabotka/$slug"
+                params={{ slug: l.slug }}
+                className="group rounded-xl border border-border bg-card p-4 transition hover:border-primary/60 hover:shadow-sm"
+              >
+                <span className="block font-medium group-hover:text-primary">
+                  {OBJECTS[l.object]?.prepositional
+                    ? `Обработка ${OBJECTS[l.object]!.prepositional}`
+                    : l.h1}
+                </span>
+                <span className="mt-1 block text-sm text-muted-foreground">
+                  от {landingPriceFrom(l).toLocaleString("ru-RU")} ₽
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Related */}
       {related.length > 0 && (
