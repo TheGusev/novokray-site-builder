@@ -4,6 +4,7 @@ import { POSTS } from "@/data/blog";
 import { SITE } from "@/data/site";
 import { CITIES } from "@/data/cities";
 import { DISTRICTS } from "@/data/districts";
+import { LANDINGS, landingPriceFrom } from "@/data/landings";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 
 const HUBS = [
@@ -116,6 +117,24 @@ function SiteMapPage() {
                     {s.title}
                   </Link>
                   <span className="shrink-0 text-xs text-muted-foreground">от&nbsp;{s.priceFrom.toLocaleString("ru-RU")}&nbsp;₽</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section aria-labelledby="sm-objects" className="md:col-span-2">
+            <h2 id="sm-objects" className="mb-4 font-display text-xl font-bold">
+              Обработка по объектам ({LANDINGS.length})
+            </h2>
+            <ul className="grid gap-2 md:grid-cols-2">
+              {LANDINGS.map((l) => (
+                <li key={l.slug} className="flex items-baseline justify-between gap-3 border-b border-border/60 py-2">
+                  <Link to="/obrabotka/$slug" params={{ slug: l.slug }} className="text-foreground hover:text-primary">
+                    {l.h1}
+                  </Link>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    от&nbsp;{landingPriceFrom(l).toLocaleString("ru-RU")}&nbsp;₽
+                  </span>
                 </li>
               ))}
             </ul>
