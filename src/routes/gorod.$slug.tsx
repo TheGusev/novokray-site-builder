@@ -20,7 +20,9 @@ import {
   aggregateOfferNode,
   geoServices,
   type AreaServed,
+  offerCatalogNode,
 } from "@/lib/serviceSchema";
+import { localBusinessNode } from "@/lib/orgSchema";
 
 export const Route = createFileRoute("/gorod/$slug")({
   loader: ({ params }): { city: CityInfo } => {
