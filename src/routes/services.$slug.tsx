@@ -169,6 +169,9 @@ export const Route = createFileRoute("/services/$slug")({
                 })),
                 speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
               },
+              ...(primaryVideoForService(s.slug)
+                ? [videoJsonLd(primaryVideoForService(s.slug)!, SITE.domain, url)]
+                : []),
             ],
           }),
         },
