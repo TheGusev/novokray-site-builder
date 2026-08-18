@@ -23,6 +23,7 @@ function drawArcText(
   const widths = chars.map((ch) => font.widthOfTextAtSize(ch, size));
   const totalW = widths.reduce((s, w) => s + w, 0) + size * 0.18 * (chars.length - 1);
   const totalAngle = (totalW / radius) * (180 / Math.PI);
+  // clockwise: угол убывает (верхняя дуга читается слева направо)
   const dir = clockwise ? -1 : 1;
   let angle = angleCenter - (dir * totalAngle) / 2;
 
@@ -31,8 +32,8 @@ function drawArcText(
     const step = ((w + size * 0.18) / radius) * (180 / Math.PI);
     const mid = angle + (dir * step) / 2;
     const rad = (mid * Math.PI) / 180;
-    // базовая точка символа: смещаем на половину ширины против направления письма
-    const rotation = clockwise ? mid + 90 : mid - 90;
+    // буквы верхней дуги «стоят» наружу, нижней — внутрь
+    const rotation = clockwise ? mid - 90 : mid + 90;
     const rotRad = (rotation * Math.PI) / 180;
     const px = cx + Math.cos(rad) * radius - (Math.cos(rotRad) * w) / 2;
     const py = cy + Math.sin(rad) * radius - (Math.sin(rotRad) * w) / 2;
@@ -67,10 +68,10 @@ export function drawStamp(page: PDFPage, font: PDFFont, bold: PDFFont, o: StampO
   page.drawCircle({ x: cx, y: cy, size: r - 20, borderColor: INK, borderWidth: 0.8, opacity: 0, borderOpacity: op });
 
   drawArcText(page, "ООО «САНИТАРНЫЕ РЕШЕНИЯ»", {
-    cx, cy, radius: r - 11, size: 6.4, font: bold, angleCenter: 90, clockwise: false, opacity: op,
+    cx, cy, radius: r - 12, size: 6.2, font: bold, angleCenter: 90, clockwise: true, opacity: op,
   });
   drawArcText(page, `ИНН ${SITE.legal.inn} · ОГРН ${SITE.legal.ogrn}`, {
-    cx, cy, radius: r - 11, size: 5.2, font, angleCenter: 270, clockwise: true, opacity: op,
+    cx, cy, radius: r - 13, size: 5, font, angleCenter: 270, clockwise: false, opacity: op,
   });
 
   const center: Array<{ t: string; f: PDFFont; s: number }> = [
