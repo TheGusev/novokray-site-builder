@@ -14,6 +14,8 @@ export interface WorkVideo {
   /** Тема лид-формы */
   pest: string;
   tags: string[];
+  /** Главный ролик услуги: показываем его на посадочной странице */
+  primary?: boolean;
 }
 
 export const WORK_VIDEOS: WorkVideo[] = [
@@ -30,6 +32,7 @@ export const WORK_VIDEOS: WorkVideo[] = [
     services: ["unichtozhenie-klopov"],
     pest: "Клопы",
     tags: ["клопы", "горячий туман", "квартира"],
+    primary: true,
   },
   {
     slug: "rezultat-klopy-tuman",
@@ -72,6 +75,7 @@ export const WORK_VIDEOS: WorkVideo[] = [
     services: ["unichtozhenie-tarakanov"],
     pest: "Тараканы",
     tags: ["тараканы", "кухня", "барьер"],
+    primary: true,
   },
   {
     slug: "kompleksnaya-obrabotka",
@@ -118,6 +122,15 @@ export const UCHASTOK_PHOTO = {
 export function videosForService(slug: string): WorkVideo[] {
   return WORK_VIDEOS.filter((v) => v.services.includes(slug));
 }
+
+/** Один главный ролик услуги — для посадочных страниц. */
+export function primaryVideoForService(slug: string): WorkVideo | undefined {
+  const list = videosForService(slug);
+  return list.find((v) => v.primary) ?? list[0];
+}
+
+/** Ролик по умолчанию для гео-страниц (наглядная обработка спального места). */
+export const GEO_VIDEO_SLUG = "obrabotka-spalnogo-mesta";
 
 /** Размер кадра ролика (съёмка на телефон). */
 export function videoDimensions(v: WorkVideo) {
