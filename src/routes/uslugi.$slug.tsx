@@ -9,7 +9,9 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { WaveText } from "@/components/site/WaveText";
-import { serviceListNode, aggregateOfferNode } from "@/lib/serviceSchema";
+import { FAQ } from "@/components/site/FAQ";
+import { serviceListNode, aggregateOfferNode, offerCatalogNode } from "@/lib/serviceSchema";
+import { faqPageNode, type QaItem } from "@/lib/orgSchema";
 
 interface Hub {
   slug: string;
@@ -79,6 +81,35 @@ const HUBS: Hub[] = [
 
 const HUBS_BY_SLUG: Record<string, Hub> = Object.fromEntries(HUBS.map((h) => [h.slug, h]));
 
+/**
+ * Вопросы раздела. Один источник для видимого блока FAQ и разметки FAQPage —
+ * тексты должны совпадать дословно.
+ */
+function hubFaq(h: Hub): QaItem[] {
+  return [
+    {
+      q: `Что входит в услуги раздела «${h.title}»?`,
+      a: `Осмотр объекта, подбор препарата под ситуацию, сама обработка, рекомендации по уборке и договор с гарантией. Выезд и расчёт стоимости бесплатны, платите только за выполненную работу.`,
+    },
+    {
+      q: "Сколько времени занимает обработка?",
+      a: "Стандартная квартира или офис до 60 м² — от 40 до 90 минут. Большие площади, участки и склады рассчитываем отдельно: специалист называет точное время после осмотра.",
+    },
+    {
+      q: "Нужно ли готовить помещение заранее?",
+      a: "Достаточно убрать продукты и посуду, освободить доступ к плинтусам и мебели, вывести людей и животных на 2–3 часа. Полную памятку специалист присылает после подтверждения заявки.",
+    },
+    {
+      q: "Какая гарантия и что делать, если проблема вернётся?",
+      a: "Гарантия фиксируется в договоре: до 12 месяцев на уничтожение вредителей и до 24 месяцев на обработку от плесени. Если проблема вернулась в этот срок — приезжаем повторно бесплатно.",
+    },
+    {
+      q: "Безопасно ли это для детей и домашних животных?",
+      a: "Да. Работаем препаратами 4 класса опасности — малоопасными для человека. После проветривания и влажной уборки в помещение можно возвращаться с детьми, аллергиками и питомцами.",
+    },
+  ];
+}
+
 export const Route = createFileRoute("/uslugi/$slug")({
   loader: ({ params }): { hub: Hub } => {
     const hub = HUBS_BY_SLUG[params.slug];
@@ -122,6 +153,12 @@ export const Route = createFileRoute("/uslugi/$slug")({
                 listName: h.title,
               }),
               aggregateOfferNode(items, `${SITE.domain}/uslugi/${params.slug}`),
+              offerCatalogNode(items, {
+                id: `${SITE.domain}/uslugi/${params.slug}#catalog`,
+                name: h.title,
+                url: `${SITE.domain}/uslugi/${params.slug}`,
+              }),
+              faqPageNode(hubFaq(h), `${SITE.domain}/uslugi/${params.slug}`),
               {
                 "@type": "BreadcrumbList",
                 itemListElement: [
@@ -225,6 +262,8 @@ function HubPage() {
           <LeadForm title="Заявка на обработку" subtitle="Перезвоним в течение 10 минут." />
         </div>
       </section>
+
+      <FAQ items={hubFaq(h)} title={`Частые вопросы: ${h.title.toLowerCase()}`} />
     </>
   );
 }
