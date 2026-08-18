@@ -61,7 +61,7 @@ server {
     gzip_types text/plain text/css application/json application/javascript application/xml image/svg+xml;
 
     # --- Канонизация URL: один адрес страницы = один ответ 200 ---
-    # /path/index.html -> /path, /path/ -> /path, /PATH -> /path.
+    # /path/index.html -> /path, /path/ -> /path (кроме корня).
     # Без этих правил три разных URL отдают одну страницу и Яндекс/Google видят дубли.
     location ~ ^(?<clean>/.*)/index\.html$ {
         return 301 $clean$is_args$args;
