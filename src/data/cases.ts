@@ -32,7 +32,7 @@ export const WORK_CASES: WorkCase[] = [
     work: "Горячий туман по спальне, отдельная проливка каркаса кровати и матраса, барьер по плинтусу и розеткам.",
     result: "На контрольном осмотре через 14 дней новых укусов и следов нет, повторный выезд не потребовался.",
     pests: ["klopy"],
-    objects: ["kvartira", "komnata", "obschezhitie", "gостиница"],
+    objects: ["kvartira", "obschezhitie", "detsad"],
   },
   {
     video: "spalnoe-mesto-holodnyy-tuman",
@@ -41,7 +41,7 @@ export const WORK_CASES: WorkCase[] = [
     work: "Холодный туман генератором по всей площади, акцент на спальное место и мягкую мебель.",
     result: "Обработка заняла около часа, помещение проветрено к вечеру того же дня.",
     pests: ["klopy"],
-    objects: ["kvartira", "studiya", "komnata"],
+    objects: ["kvartira", "dom", "avto"],
   },
   {
     video: "obrabotka-ot-tarakanov",
@@ -50,7 +50,7 @@ export const WORK_CASES: WorkCase[] = [
     work: "Холодный туман по всей площади, гелевые приманки в узлах кормления, барьер на вентиляции и вводах коммуникаций.",
     result: "Активность прекратилась в течение недели, гарантия зафиксирована в договоре.",
     pests: ["tarakany"],
-    objects: ["kvartira", "kafe", "ofis", "obschezhitie", "sklad"],
+    objects: ["kvartira", "kafe", "ofis", "obschezhitie", "sklad", "dom"],
   },
   {
     video: "kompleksnaya-obrabotka",
@@ -58,8 +58,8 @@ export const WORK_CASES: WorkCase[] = [
     problem: "Требовалась подготовка помещения к приёму людей и закрывающие документы.",
     work: "Комплексная обработка: дезинсекция плюс дезинфекция поверхностей и санузлов.",
     result: "Выданы договор, акт и сведения для журнала производственного контроля.",
-    pests: ["tarakany", "gryzuny", "muravi"],
-    objects: ["ofis", "kafe", "sklad", "proizvodstvo", "detskiy-sad", "salon"],
+    pests: ["tarakany", "gryzuny", "muravi", "blokhi", "plesen"],
+    objects: ["ofis", "kafe", "sklad", "detsad", "kvartira", "dom", "avto"],
   },
   {
     video: "obrabotka-uchastka",
@@ -67,8 +67,8 @@ export const WORK_CASES: WorkCase[] = [
     problem: "Клещи в траве по периметру и комары у водоёма.",
     work: "Обработка территории по периметру и зонам отдыха, акцент на высокую траву, кустарник и границу с лесом.",
     result: "Сезонная защита, повторная обработка по регламенту через 3–4 недели.",
-    pests: ["kleschi", "komary", "moshka", "osy"],
-    objects: ["uchastok", "dacha", "dom", "territoriya"],
+    pests: ["kleshchi", "komary", "osy"],
+    objects: ["uchastok", "dacha", "dom"],
   },
 ];
 
