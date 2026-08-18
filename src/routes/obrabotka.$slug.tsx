@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { CheckCircle2, Phone, ShieldCheck, ClipboardList, AlertTriangle } from "lucide-react";
+import { CheckCircle2, Phone, ShieldCheck, ClipboardList, AlertTriangle, Clock, PlayCircle } from "lucide-react";
 import { SITE } from "@/data/site";
 import { typo } from "@/lib/typography";
 import {
@@ -10,6 +10,8 @@ import {
   landingPrices,
   landingPriceFrom,
   LANDING_POST_TITLES,
+  landingAnswer,
+  landingOffers,
   type Landing,
 } from "@/data/landings";
 import { SERVICES_INDEX } from "@/data/servicesIndex";
@@ -22,6 +24,8 @@ import { TldrBlock } from "@/components/site/TldrBlock";
 import { Reveal } from "@/components/site/Reveal";
 import { faqPageNode, webPageNode } from "@/lib/orgSchema";
 import { orderActionNode, offerNode, DEFAULT_AREA } from "@/lib/serviceSchema";
+import { caseFor } from "@/data/cases";
+import { WORK_VIDEOS } from "@/data/videos";
 
 
 export const Route = createFileRoute("/obrabotka/$slug")({
@@ -78,10 +82,10 @@ export const Route = createFileRoute("/obrabotka/$slug")({
                   "@type": a.kind === "city" ? "City" : "AdministrativeArea",
                   name: a.name,
                 })),
-                offers: offerNode(
-                  { slug: params.slug, title: l.h1, priceFrom },
-                  { url: pageUrl },
-                ),
+                offers: [
+                  offerNode({ slug: params.slug, title: l.h1, priceFrom }, { url: pageUrl }),
+                  ...landingOffers(l, pageUrl),
+                ],
                 potentialAction: orderActionNode(pageUrl, l.h1),
               },
               {
@@ -132,6 +136,9 @@ function LandingPage() {
   const prices = landingPrices(l);
   const faq = landingFaq(l);
   const service = SERVICES_INDEX.find((s) => s.slug === pest.serviceSlug);
+  const answer = landingAnswer(l);
+  const workCase = caseFor(l.pest, l.object);
+  const caseVideo = workCase ? WORK_VIDEOS.find((v) => v.slug === workCase.video) : undefined;
   const siblings = LANDINGS.filter(
     (x) => x.slug !== l.slug && (x.pest === l.pest || x.object === l.object),
   ).slice(0, 6);
@@ -206,6 +213,18 @@ function LandingPage() {
       </section>
 
       <TrustStrip />
+
+      {/* Прямой ответ: короткая выжимка фактов — её цитируют ИИ-ассистенты и голосовой поиск */}
+      <section className="container-x pt-10 md:pt-12">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-card md:p-6">
+          <h2 className="font-display text-lg font-bold md:text-xl">
+            {typo(`Коротко: обработка ${obj.genitive} от ${pest.genitive} в Новосибирске`)}
+          </h2>
+          <p className="speakable mt-3 text-[15px] leading-relaxed text-muted-foreground">
+            {typo(answer)}
+          </p>
+        </div>
+      </section>
 
       <section className="container-x py-12 md:py-16">
         <div className="grid gap-10 lg:grid-cols-2">
@@ -321,6 +340,91 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Кластер срочности: закрываем запросы «срочно / сегодня / ночью» без отдельных пустых URL */}
+      <section className="container-x pb-4">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
+          <h2 className="flex items-center gap-2 font-display text-2xl font-bold md:text-3xl">
+            <Clock className="h-6 w-6 text-primary" />
+            {typo("Нужно срочно — приедем сегодня")}
+          </h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {[
+              {
+                t: "Сегодня и в день обращения",
+                d: "Принимаем заявки ежедневно с 07:00 до 23:00. По Новосибирску специалист выезжает от 60 минут, свободные слоты держим под срочные вызовы.",
+              },
+              {
+                t: "Вечером и ночью",
+                d: `Для ${obj.genitive} работаем в нерабочие часы: обработка проходит после закрытия или когда дома нет людей, к утру помещение готово.`,
+              },
+              {
+                t: "Выходные и праздники",
+                d: "Суббота и воскресенье — обычные рабочие дни, наценки за выходной нет. Область: Бердск, Искитим, Кольцово, Обь, Краснообск.",
+              },
+            ].map((b) => (
+              <div key={b.t} className="rounded-xl border border-border/70 bg-secondary/30 p-4">
+                <h3 className="font-semibold">{typo(b.t)}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{typo(b.d)}</p>
+              </div>
+            ))}
+          </div>
+          <a
+            href={SITE.phoneHref}
+            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-cta-gradient px-5 py-3 font-semibold text-accent-foreground shadow-cta"
+          >
+            <Phone className="h-4 w-4" /> Срочный выезд: {SITE.phone}
+          </a>
+        </div>
+      </section>
+
+      {/* Кейс с подтверждающим роликом — без выдуманных отзывов */}
+      {workCase && caseVideo && (
+        <section className="container-x py-12 md:py-16">
+          <h2 className="font-display text-2xl font-bold md:text-3xl">
+            {typo("Случай из практики")}
+          </h2>
+          <div className="mt-6 grid gap-6 overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-card lg:grid-cols-[1.3fr_1fr]">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+                {typo(workCase.object)}
+              </p>
+              <dl className="mt-4 space-y-3 text-[15px] leading-relaxed">
+                <div>
+                  <dt className="font-semibold">С чем обратились</dt>
+                  <dd className="text-muted-foreground">{typo(workCase.problem)}</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold">Что сделали</dt>
+                  <dd className="text-muted-foreground">{typo(workCase.work)}</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold">Результат</dt>
+                  <dd className="text-muted-foreground">{typo(workCase.result)}</dd>
+                </div>
+              </dl>
+            </div>
+            <Link
+              to="/video"
+              className="group relative block overflow-hidden rounded-xl border border-border"
+              aria-label={`Смотреть видео: ${caseVideo.title}`}
+            >
+              <img
+                src={caseVideo.poster}
+                alt={caseVideo.title}
+                loading="lazy"
+                className="h-full max-h-72 w-full object-cover transition group-hover:scale-[1.02]"
+              />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+                <PlayCircle className="h-14 w-14 text-white/90" />
+              </span>
+              <span className="absolute bottom-0 left-0 right-0 bg-black/60 p-3 text-sm text-white">
+                {typo(caseVideo.title)}
+              </span>
+            </Link>
+          </div>
+        </section>
+      )}
 
       <FAQ items={faq} title={`Вопросы: обработка ${obj.genitive} от ${pest.genitive}`} />
 

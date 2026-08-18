@@ -74,8 +74,33 @@ const GEO_QUERIES: CoreQuery[] = [
   })),
 ];
 
+/**
+ * Кластер срочности. Отдельных URL под «срочно/сегодня/ночью» не делаем —
+ * это привело бы к дублям; запросы закреплены за уже существующими
+ * посадочными, где на странице есть блок «Нужно срочно — приедем сегодня».
+ */
+const URGENCY_QUERIES: CoreQuery[] = [
+  { q: "сэс новосибирск срочно", tier: "sch", target: "/" },
+  { q: "дезинсекция срочно новосибирск", tier: "nch", target: "/uslugi/unichtozhenie-vrediteley" },
+  { q: "обработка от насекомых сегодня новосибирск", tier: "nch", target: "/uslugi/unichtozhenie-vrediteley" },
+  { q: "сэс новосибирск круглосуточно", tier: "nch", target: "/contacts" },
+  { q: "дезинсекция в выходные новосибирск", tier: "snch", target: "/contacts" },
+  ...LANDINGS.flatMap((l) => {
+    const pest = PESTS[l.pest];
+    const obj = OBJECTS[l.object];
+    return [
+      {
+        q: `срочная обработка ${obj.genitive} от ${pest.genitive} новосибирск`,
+        tier: "snch" as Tier,
+        target: `/obrabotka/${l.slug}`,
+      },
+    ];
+  }),
+];
+
 export const SEMANTIC_CORE: CoreQuery[] = [
   ...HEAD,
+  ...URGENCY_QUERIES,
   ...SERVICE_QUERIES,
   ...LANDING_QUERIES,
   ...GEO_QUERIES,

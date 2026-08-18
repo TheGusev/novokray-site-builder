@@ -640,6 +640,47 @@ export function landingPriceFrom(l: Landing): number {
   return nums.length ? Math.min(...nums) : 1500;
 }
 
+/**
+ * Прямой ответ для ИИ-выдачи и голосовых ассистентов: 40–60 слов,
+ * все факты берём из прайса и карточек услуг, ничего не выдумываем.
+ * Один и тот же текст идёт в speakable-блок страницы и в llms-full.txt.
+ */
+export function landingAnswer(l: Landing): string {
+  const pest = PESTS[l.pest];
+  const obj = OBJECTS[l.object];
+  const price = landingPriceFrom(l).toLocaleString("ru-RU");
+  return (
+    `Обработка ${obj.genitive} от ${pest.genitive} в Новосибирске стоит от ${price} ₽. ` +
+    `Метод — ${pest.method}. Работаем ежедневно с 07:00 до 23:00, выезд по городу от 60 минут, ` +
+    `по области — в день обращения. Цену специалист называет до начала работ и фиксирует в договоре. ` +
+    `Гарантия ${pest.warranty}: при возврате проблемы повторная обработка бесплатная. ` +
+    `Лицензия Роспотребнадзора, препараты 4 класса опасности.`
+  );
+}
+
+/**
+ * Offer на каждую строку прайса: поисковики показывают вилку цен
+ * в сниппете, а ИИ-ассистенты цитируют конкретную позицию, а не «от N ₽».
+ */
+export function landingOffers(l: Landing, pageUrl: string) {
+  return landingPrices(l).map((row) => {
+    const value = Number(row.price.replace(/\D/g, ""));
+    return {
+      "@type": "Offer",
+      name: `${row.label} — обработка от ${PESTS[l.pest].genitive}`,
+      url: pageUrl,
+      availability: "https://schema.org/InStock",
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        minPrice: value,
+        priceCurrency: "RUB",
+        valueAddedTaxIncluded: true,
+        description: `от ${value.toLocaleString("ru-RU").replace(/\u00a0/g, " ")} RUB`,
+      },
+    };
+  });
+}
+
 /** Посадочные, относящиеся к услуге (для блока перелинковки на /services/:slug). */
 export function landingsForService(serviceSlug: string): Landing[] {
   return LANDINGS.filter((l) => PESTS[l.pest]?.serviceSlug === serviceSlug);
