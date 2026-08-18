@@ -65,7 +65,7 @@ export function drawStamp(page: PDFPage, font: PDFFont, bold: PDFFont, o: StampO
 
   page.drawCircle({ x: cx, y: cy, size: r, borderColor: INK, borderWidth: 2, opacity: 0, borderOpacity: op });
   page.drawCircle({ x: cx, y: cy, size: r - 5, borderColor: INK, borderWidth: 0.8, opacity: 0, borderOpacity: op });
-  page.drawCircle({ x: cx, y: cy, size: r - 20, borderColor: INK, borderWidth: 0.8, opacity: 0, borderOpacity: op });
+  page.drawCircle({ x: cx, y: cy, size: r - 21, borderColor: INK, borderWidth: 0.8, opacity: 0, borderOpacity: op });
 
   drawArcText(page, "ООО «САНИТАРНЫЕ РЕШЕНИЯ»", {
     cx, cy, radius: r - 12, size: 6.2, font: bold, angleCenter: 90, clockwise: true, opacity: op,
@@ -74,13 +74,15 @@ export function drawStamp(page: PDFPage, font: PDFFont, bold: PDFFont, o: StampO
     cx, cy, radius: r - 13, size: 5, font, angleCenter: 270, clockwise: false, opacity: op,
   });
 
+  const lic = SITE.legal.licenseNo.replace(/^№\s*/, "");
   const center: Array<{ t: string; f: PDFFont; s: number }> = [
-    { t: "РОССИЯ", f: font, s: 5 },
-    { t: SITE.city.toUpperCase(), f: bold, s: 6.6 },
-    { t: "лицензия №", f: font, s: 4.4 },
-    { t: SITE.legal.licenseNo, f: font, s: 4.4 },
-  ];
-  let y = cy + 12;
+    { t: "РОССИЯ", f: font, s: 4.6 },
+    { t: SITE.city.toUpperCase(), f: bold, s: 6.2 },
+    { t: "лицензия", f: font, s: 3.9 },
+    { t: lic.slice(0, 12), f: font, s: 3.9 },
+    { t: lic.slice(12), f: font, s: 3.9 },
+  ].filter((l) => l.t.length > 0);
+  let y = cy + 11;
   for (const line of center) {
     const w = line.f.widthOfTextAtSize(line.t, line.s);
     page.drawText(line.t, { x: cx - w / 2, y, size: line.s, font: line.f, color: INK, opacity: op });
