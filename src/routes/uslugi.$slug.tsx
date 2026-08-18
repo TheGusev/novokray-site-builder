@@ -9,6 +9,7 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { WaveText } from "@/components/site/WaveText";
+import { serviceListNode, aggregateOfferNode } from "@/lib/serviceSchema";
 
 interface Hub {
   slug: string;
@@ -116,16 +117,11 @@ export const Route = createFileRoute("/uslugi/$slug")({
                 isPartOf: { "@id": `${SITE.domain}#website` },
                 about: { "@id": `${SITE.domain}#organization` },
               },
-              {
-                "@type": "ItemList",
-                numberOfItems: items.length,
-                itemListElement: items.map((s, i) => ({
-                  "@type": "ListItem",
-                  position: i + 1,
-                  url: `${SITE.domain}/services/${s.slug}`,
-                  name: s.title,
-                })),
-              },
+              serviceListNode(items, {
+                pageUrl: `${SITE.domain}/uslugi/${params.slug}`,
+                listName: h.title,
+              }),
+              aggregateOfferNode(items, `${SITE.domain}/uslugi/${params.slug}`),
               {
                 "@type": "BreadcrumbList",
                 itemListElement: [

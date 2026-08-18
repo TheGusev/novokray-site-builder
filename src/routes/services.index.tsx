@@ -5,6 +5,8 @@ import { COMMON } from "@/data/images";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { WaveText } from "@/components/site/WaveText";
+import { SERVICES_INDEX } from "@/data/servicesIndex";
+import { serviceListNode, aggregateOfferNode } from "@/lib/serviceSchema";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
@@ -20,10 +22,19 @@ export const Route = createFileRoute("/services/")({
       type: "application/ld+json",
       children: JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
-          { "@type": "ListItem", position: 2, name: "Услуги", item: SITE.domain + "/services" },
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Главная", item: SITE.domain + "/" },
+              { "@type": "ListItem", position: 2, name: "Услуги", item: SITE.domain + "/services" },
+            ],
+          },
+          serviceListNode(SERVICES_INDEX, {
+            pageUrl: `${SITE.domain}/services`,
+            listName: "Услуги санитарной обработки в Новосибирске",
+          }),
+          aggregateOfferNode(SERVICES_INDEX, `${SITE.domain}/services`),
         ],
       }),
     }],

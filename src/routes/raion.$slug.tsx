@@ -13,6 +13,14 @@ import { TldrBlock } from "@/components/site/TldrBlock";
 import { VideoTeaser } from "@/components/site/VideoTeaser";
 import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG, videoJsonLd } from "@/data/videos";
 import { geoAnchor, GEO_CROSSLINK_LIMIT } from "@/data/interlinking";
+import {
+  serviceNode,
+  serviceListNode,
+  makesOfferNode,
+  aggregateOfferNode,
+  geoServices,
+  type AreaServed,
+} from "@/lib/serviceSchema";
 
 export const Route = createFileRoute("/raion/$slug")({
   loader: ({ params }): { district: DistrictInfo } => {
@@ -25,6 +33,10 @@ export const Route = createFileRoute("/raion/$slug")({
     if (!d) return { meta: [{ title: "Район не найден" }] };
     const title = `Санитарная служба ${d.prepositional} Новосибирска — дезинфекция, клопы, тараканы | ${SITE.name}`;
     const description = `Дезинфекция и уничтожение вредителей ${d.prepositional} Новосибирска: выезд за 60 минут, цена от 1 500 ₽, гарантия по договору, лицензия Роспотребнадзора. 13 направлений санитарной обработки.`;
+    const pageUrl = `${SITE.domain}/raion/${params.slug}`;
+    const areas: AreaServed[] = [{ kind: "district", name: d.full, city: SITE.city }];
+    const geoItems = geoServices();
+    const schemaOpts = { pageUrl, areas, nameSuffix: `${d.prepositional} Новосибирска` };
     return {
       meta: [
         { title },
@@ -51,6 +63,7 @@ export const Route = createFileRoute("/raion/$slug")({
                 telephone: SITE.phone,
                 email: SITE.email,
                 priceRange: "1500-25000",
+                makesOffer: geoItems.map((s) => makesOfferNode(s, areas)),
                 areaServed: {
                   "@type": "AdministrativeArea",
                   name: d.full,
@@ -97,6 +110,13 @@ export const Route = createFileRoute("/raion/$slug")({
                   },
                 ],
               },
+              ...geoItems.map((s) => serviceNode(s, schemaOpts)),
+              serviceListNode(geoItems, {
+                ...schemaOpts,
+                listName: `Санитарная обработка ${d.prepositional} Новосибирска`,
+                useRefs: true,
+              }),
+              aggregateOfferNode(geoItems, pageUrl),
               videoJsonLd(
                 WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG],
                 SITE.domain,

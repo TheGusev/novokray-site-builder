@@ -8,6 +8,7 @@ import { ServiceCard } from "@/components/site/ServiceCard";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { WaveText } from "@/components/site/WaveText";
+import { serviceListNode, aggregateOfferNode } from "@/lib/serviceSchema";
 
 export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
   head: () => ({
@@ -33,17 +34,14 @@ export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
             about: { "@id": `${SITE.domain}#localbusiness` },
             speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
           },
-          {
-            "@type": "ItemList",
-            name: "Услуги дезинфекции в Новосибирске",
-            numberOfItems: SERVICES_INDEX.length,
-            itemListElement: SERVICES_INDEX.map((s, i) => ({
-              "@type": "ListItem",
-              position: i + 1,
-              url: `${SITE.domain}/services/${s.slug}`,
-              name: s.title,
-            })),
-          },
+          serviceListNode(SERVICES_INDEX, {
+            pageUrl: `${SITE.domain}/category/dezinfekciya-novosibirsk`,
+            listName: "Услуги дезинфекции в Новосибирске",
+          }),
+          aggregateOfferNode(
+            SERVICES_INDEX,
+            `${SITE.domain}/category/dezinfekciya-novosibirsk`,
+          ),
           {
             "@type": "BreadcrumbList",
             itemListElement: [
