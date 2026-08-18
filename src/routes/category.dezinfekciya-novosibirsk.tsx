@@ -12,10 +12,10 @@ import { WaveText } from "@/components/site/WaveText";
 export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
   head: () => ({
     meta: [
-      { title: `Дезинфекция в Новосибирске — все виды санитарной обработки | ${SITE.name}` },
-      { name: "description", content: "Дезинфекция в Новосибирске и области: уничтожение вредителей, обработка от плесени, озонирование, дератизация. 13 направлений, выезд за 60 минут, лицензия." },
-      { property: "og:title", content: "Дезинфекция в Новосибирске" },
-      { property: "og:description", content: "Все виды санитарной обработки в Новосибирске и области." },
+      { title: `Какая обработка нужна: путеводитель по услугам | ${SITE.name}` },
+      { name: "description", content: "Путеводитель по санитарным обработкам: чем отличаются дезинфекция, дезинсекция и дератизация, что назначают при клопах, тараканах, плесени и запахах, куда переходить за заявкой." },
+      { property: "og:title", content: "Какая обработка нужна: путеводитель по услугам" },
+      { property: "og:description", content: "Сравнение направлений санитарной обработки и переход на страницу нужной услуги." },
       { property: "og:url", content: `${SITE.domain}/category/dezinfekciya-novosibirsk` },
     ],
     links: [{ rel: "canonical", href: `${SITE.domain}/category/dezinfekciya-novosibirsk` }],
@@ -69,9 +69,9 @@ function CategoryPage() {
         <img src={COMMON.heroSpray} alt="Дезинфекция помещений в Новосибирске — обработка квартир, офисов и общепита" title="Дезинфекция по СанПиН с актом и сертификатом — Дез-Федерация" className="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent" />
         <div className="container-x relative py-12 md:py-16">
-          <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Дезинфекция в Новосибирске" duration={4} /></h1>
+          <h1 className="font-display text-3xl font-extrabold md:text-5xl"><WaveText className="on-dark" text="Какая обработка нужна: путеводитель по услугам" duration={4} /></h1>
           <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/90 md:text-lg">
-            Дезинфекция в Новосибирске под ключ — санитарная служба Дез-Федерация выполняет 13 видов обработки: уничтожение клопов, тараканов, грызунов, обработка от плесени, озонирование, сушка после потопов, фумигация и дезодорация. Выезд по городу за 60 минут, обслуживаем физлиц и юрлиц по всей Новосибирской области.
+            Страница-навигатор: помогает понять, какая именно обработка нужна в вашей ситуации, и перейти на страницу услуги, где указаны цена, порядок работ и форма заявки. Дезинфекция — против микробов и вирусов, дезинсекция — против насекомых, дератизация — против грызунов.
           </p>
           <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-white/80">
             Используем сертифицированные средства 4 класса опасности (малоопасные), без запаха после высыхания и безопасные для детей, аллергиков, домашних животных и аквариумов. На каждую обработку — договор, акт, гарантия по договору до 24 месяцев и бесплатная повторная обработка при возврате проблемы.

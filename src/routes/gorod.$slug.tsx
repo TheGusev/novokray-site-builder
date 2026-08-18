@@ -10,6 +10,9 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { FAQ } from "@/components/site/FAQ";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { TldrBlock } from "@/components/site/TldrBlock";
+import { VideoTeaser } from "@/components/site/VideoTeaser";
+import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG } from "@/data/videos";
+import { geoAnchor, GEO_CROSSLINK_LIMIT } from "@/data/interlinking";
 
 export const Route = createFileRoute("/gorod/$slug")({
   loader: ({ params }): { city: CityInfo } => {
@@ -263,6 +266,30 @@ function CityPage() {
             Все услуги →
           </Link>
         </div>
+        <div className="mt-6 rounded-2xl border border-border bg-card p-5">
+          <div className="text-sm font-bold text-foreground">Частые запросы {c.prepositional}</div>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            {topServices.map((s) => (
+              <Link
+                key={s.slug}
+                to="/services/$slug"
+                params={{ slug: s.slug }}
+                className="text-primary underline decoration-primary/30 underline-offset-4 hover:decoration-primary"
+              >
+                {geoAnchor(s.slug, c.prepositional)}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container-x pb-14">
+        <VideoTeaser
+          compact
+          video={WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG]}
+          heading={`Как мы работаем на выездах ${c.prepositional}`}
+          text="Один и тот же порядок работ на всех объектах: осмотр, обработка проблемных зон, рекомендации и гарантия по договору."
+        />
       </section>
 
       <section className="bg-surface py-14">
@@ -316,7 +343,9 @@ function CityPage() {
       <section className="container-x py-14">
         <h2 className="font-display text-xl font-bold">Другие города области</h2>
         <div className="mt-4 flex flex-wrap gap-2">
-          {CITIES.filter((x) => x.slug !== c.slug).map((x) => (
+          {CITIES.filter((x) => x.slug !== c.slug)
+            .slice(0, GEO_CROSSLINK_LIMIT)
+            .map((x) => (
             <Link
               key={x.slug}
               to="/gorod/$slug"
