@@ -18,7 +18,8 @@ async function loadData() {
   const { POSTS } = await load("src/data/blog.ts");
   const { DOCS } = await load("src/data/docs.ts");
   const { STATIC_PATHS, HUB_SLUGS } = await load("src/lib/all-routes.ts");
-  return { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS };
+  const { WORK_VIDEOS, VIDEO_UPLOAD_DATE } = await load("src/data/videos.ts");
+  return { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE };
 }
 
 function pickOutDir() {
@@ -36,50 +37,97 @@ function pickOutDir() {
 }
 
 async function main() {
-  const { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS } = await loadData();
+  const { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE } = await loadData();
   const BASE = SITE.domain.replace(/\/$/, "");
   const today = new Date().toISOString().slice(0, 10);
   const OUT = pickOutDir();
   mkdirSync(OUT, { recursive: true });
 
-  // --- sitemap.xml ---
-  const entries = [
-    { path: "/", changefreq: "weekly", priority: "1.0", lastmod: today },
-    { path: "/services", changefreq: "weekly", priority: "0.9", lastmod: today },
-    { path: "/category/dezinfekciya-novosibirsk", changefreq: "weekly", priority: "0.9", lastmod: today },
-    { path: "/price", changefreq: "monthly", priority: "0.8", lastmod: today },
-    { path: "/garantii", changefreq: "monthly", priority: "0.7", lastmod: today },
-    { path: "/o-kompanii", changefreq: "monthly", priority: "0.6", lastmod: today },
-    { path: "/contacts", changefreq: "monthly", priority: "0.7", lastmod: today },
-    { path: "/faq", changefreq: "monthly", priority: "0.7", lastmod: today },
-    { path: "/kp", changefreq: "monthly", priority: "0.7", lastmod: today },
-    { path: "/blog", changefreq: "weekly", priority: "0.8", lastmod: today },
-    { path: "/video", changefreq: "monthly", priority: "0.6", lastmod: today },
-    { path: "/karta-sayta", changefreq: "monthly", priority: "0.3", lastmod: today },
-    { path: "/privacy", changefreq: "yearly", priority: "0.2", lastmod: today },
-    { path: "/terms", changefreq: "yearly", priority: "0.2", lastmod: today },
-    ...HUB_SLUGS.map((slug) => ({ path: `/uslugi/${slug}`, changefreq: "weekly", priority: "0.85", lastmod: today })),
-    ...CITIES.map((c) => ({ path: `/gorod/${c.slug}`, changefreq: "weekly", priority: "0.85", lastmod: today })),
-    ...DISTRICTS.map((d) => ({ path: `/raion/${d.slug}`, changefreq: "weekly", priority: "0.8", lastmod: today })),
-    ...SERVICES.map((s) => ({ path: `/services/${s.slug}`, changefreq: "weekly", priority: "0.9", lastmod: today })),
-    ...POSTS.map((p) => ({ path: `/blog/${p.slug}`, changefreq: "monthly", priority: "0.6", lastmod: p.date })),
-    ...DOCS.map((d) => ({ path: `/docs/${d.slug}`, changefreq: "yearly", priority: "0.4", lastmod: today })),
+  const xmlEscape = (s) => String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+
+  // --- sitemap-pages.xml (посадочные, без lastmod: настоящей даты изменения нет) ---
+  const pageEntries = [
+    { path: "/", changefreq: "weekly", priority: "1.0" },
+    { path: "/services", changefreq: "weekly", priority: "0.9" },
+    { path: "/category/dezinfekciya-novosibirsk", changefreq: "weekly", priority: "0.9" },
+    { path: "/price", changefreq: "monthly", priority: "0.8" },
+    { path: "/garantii", changefreq: "monthly", priority: "0.7" },
+    { path: "/o-kompanii", changefreq: "monthly", priority: "0.6" },
+    { path: "/contacts", changefreq: "monthly", priority: "0.7" },
+    { path: "/faq", changefreq: "monthly", priority: "0.7" },
+    { path: "/kp", changefreq: "monthly", priority: "0.7" },
+    { path: "/blog", changefreq: "weekly", priority: "0.8" },
+    { path: "/video", changefreq: "monthly", priority: "0.6" },
+    { path: "/karta-sayta", changefreq: "monthly", priority: "0.3" },
+    { path: "/privacy", changefreq: "yearly", priority: "0.2" },
+    { path: "/terms", changefreq: "yearly", priority: "0.2" },
+    ...HUB_SLUGS.map((slug) => ({ path: `/uslugi/${slug}`, changefreq: "weekly", priority: "0.85" })),
+    ...CITIES.map((c) => ({ path: `/gorod/${c.slug}`, changefreq: "weekly", priority: "0.85" })),
+    ...DISTRICTS.map((d) => ({ path: `/raion/${d.slug}`, changefreq: "weekly", priority: "0.8" })),
+    ...SERVICES.map((s) => ({ path: `/services/${s.slug}`, changefreq: "weekly", priority: "0.9" })),
+    ...DOCS.map((d) => ({ path: `/docs/${d.slug}`, changefreq: "yearly", priority: "0.4" })),
   ];
-  const urls = entries.map((e) => [
-    `  <url>`,
-    `    <loc>${BASE}${e.path}</loc>`,
-    e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
-    e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
-    e.priority ? `    <priority>${e.priority}</priority>` : null,
-    `  </url>`,
-  ].filter(Boolean).join("\n"));
-  const sitemap = [
+  const blogEntries = POSTS.map((p) => ({ path: `/blog/${p.slug}`, changefreq: "monthly", priority: "0.6", lastmod: p.date }));
+
+  const renderUrlset = (entries) => [
     `<?xml version="1.0" encoding="UTF-8"?>`,
-    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`,
-    ...urls,
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+    ...entries.map((e) => [
+      `  <url>`,
+      `    <loc>${BASE}${e.path}</loc>`,
+      e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
+      e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
+      e.priority ? `    <priority>${e.priority}</priority>` : null,
+      `  </url>`,
+    ].filter(Boolean).join("\n")),
     `</urlset>`,
   ].join("\n");
-  writeFileSync(resolve(OUT, "sitemap.xml"), sitemap, "utf8");
+
+  writeFileSync(resolve(OUT, "sitemap-pages.xml"), renderUrlset(pageEntries), "utf8");
+  writeFileSync(resolve(OUT, "sitemap-blog.xml"), renderUrlset(blogEntries), "utf8");
+
+  // --- sitemap-video.xml (расширение Google Video) ---
+  // Все ролики живут на одной странице /video, поэтому это один <url> с несколькими <video:video>
+  // (повторяющиеся <loc> в видео-карте недопустимы).
+  const videoSitemap = [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">`,
+    `  <url>`,
+    `    <loc>${BASE}/video</loc>`,
+    ...WORK_VIDEOS.map((v) => [
+      `    <video:video>`,
+      `      <video:thumbnail_loc>${BASE}${v.poster}</video:thumbnail_loc>`,
+      `      <video:title>${xmlEscape(v.title)}</video:title>`,
+      `      <video:description>${xmlEscape(v.description)}</video:description>`,
+      `      <video:content_loc>${BASE}${v.src}</video:content_loc>`,
+      `      <video:player_loc>${BASE}/video#${v.slug}</video:player_loc>`,
+      `      <video:duration>${v.durationSec}</video:duration>`,
+      `      <video:publication_date>${VIDEO_UPLOAD_DATE}</video:publication_date>`,
+      `      <video:family_friendly>yes</video:family_friendly>`,
+      `      <video:requires_subscription>no</video:requires_subscription>`,
+      `      <video:live>no</video:live>`,
+      ...v.tags.slice(0, 32).map((t) => `      <video:tag>${xmlEscape(t)}</video:tag>`),
+      `    </video:video>`,
+    ].join("\n")),
+    `  </url>`,
+    `</urlset>`,
+  ].join("\n");
+  writeFileSync(resolve(OUT, "sitemap-video.xml"), videoSitemap, "utf8");
+
+  // --- sitemap.xml (индекс) ---
+  const newestPost = POSTS.map((p) => p.date).filter(Boolean).sort().slice(-1)[0];
+  const sitemapIndex = [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+    `  <sitemap><loc>${BASE}/sitemap-pages.xml</loc></sitemap>`,
+    `  <sitemap><loc>${BASE}/sitemap-blog.xml</loc>${newestPost ? `<lastmod>${newestPost}</lastmod>` : ""}</sitemap>`,
+    `  <sitemap><loc>${BASE}/sitemap-video.xml</loc><lastmod>${VIDEO_UPLOAD_DATE}</lastmod></sitemap>`,
+    `</sitemapindex>`,
+  ].join("\n");
+  writeFileSync(resolve(OUT, "sitemap.xml"), sitemapIndex, "utf8");
+  const entries = [...pageEntries, ...blogEntries];
 
   // --- yandex-recrawl.txt (абсолютные URL) ---
   const priority1 = STATIC_PATHS;
@@ -190,7 +238,9 @@ AddDefaultCharset UTF-8
   writeFileSync(resolve(OUT, ".htaccess"), htaccess, "utf8");
 
   console.log(`[generate-static] Записано в ${OUT}:`);
-  console.log(`  sitemap.xml (${entries.length} URL)`);
+  console.log(`  sitemap.xml (индекс из 3 карт)`);
+  console.log(`  sitemap-pages.xml (${pageEntries.length} URL), sitemap-blog.xml (${blogEntries.length} URL), sitemap-video.xml (${WORK_VIDEOS.length} видео)`);
+  console.log(`  всего страниц в картах: ${entries.length}`);
   console.log(`  yandex-recrawl.txt (${total} URL, абсолютные)`);
   console.log(`  yandex-recrawl-rel.txt (${total} URL, относительные)`);
   console.log(`  .htaccess (SPA fallback + HTTPS + кэш)`);

@@ -59,6 +59,16 @@ export const Route = createFileRoute("/faq")({
           acceptedAnswer: { "@type": "Answer", text: f.a },
         })),
       }),
+    }, {
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
+          { "@type": "ListItem", position: 2, name: "Вопросы и ответы", item: `${SITE.domain}/faq` },
+        ],
+      }),
     }],
   }),
   component: FAQPage,

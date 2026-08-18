@@ -12,6 +12,17 @@ export const Route = createFileRoute("/terms")({
       { property: "og:url", content: `${SITE.domain}/terms` },
     ],
     links: [{ rel: "canonical", href: `${SITE.domain}/terms` }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
+          { "@type": "ListItem", position: 2, name: "Пользовательское соглашение", item: `${SITE.domain}/terms` },
+        ],
+      }),
+    }],
   }),
   component: TermsPage,
 });

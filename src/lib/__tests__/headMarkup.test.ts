@@ -146,6 +146,78 @@ describe("meta и JSON-LD на отрендеренных страницах", (
           (u.startsWith("/services/") && !!primaryVideoForService(u.split("/")[2]!));
         if (needsVideo && !html.includes("VideoObject"))
           problems.push(`${u}: нет разметки VideoObject`);
+
+        // BreadcrumbList: обязателен на всех страницах кроме главной.
+        if (u !== "/" && !html.includes("BreadcrumbList"))
+          problems.push(`${u}: нет разметки BreadcrumbList`);
+
+        // Обязательные поля VideoObject по требованиям Google.
+        for (const raw of blocks) {
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(decode(raw));
+          } catch {
+            continue;
+          }
+          const nodes: Record<string, unknown>[] = [];
+          const collect = (node: unknown) => {
+            if (Array.isArray(node)) return node.forEach(collect);
+            if (!node || typeof node !== "object") return;
+            const obj = node as Record<string, unknown>;
+            if (obj["@graph"]) collect(obj["@graph"]);
+            if (obj["@type"] === "VideoObject") nodes.push(obj);
+          };
+          collect(parsed);
+          for (const v of nodes) {
+            for (const field of ["name", "description", "thumbnailUrl", "uploadDate", "contentUrl", "duration"]) {
+              if (!v[field]) problems.push(`${u}: VideoObject без поля ${field}`);
+            }
+            const content = v["contentUrl"];
+            if (typeof content === "string" && !content.startsWith("http"))
+              problems.push(`${u}: VideoObject contentUrl не абсолютный (${content})`);
+            const thumbs = v["thumbnailUrl"];
+            const firstThumb = Array.isArray(thumbs) ? thumbs[0] : thumbs;
+            if (typeof firstThumb === "string" && !firstThumb.startsWith("http"))
+              problems.push(`${u}: VideoObject thumbnailUrl не абсолютный (${firstThumb})`);
+            const dur = v["duration"];
+            if (typeof dur === "string" && !/^PT(\d+H)?(\d+M)?(\d+S)?$/.test(dur))
+              problems.push(`${u}: VideoObject duration «${dur}» не в формате ISO 8601`);
+          }
+        }
+
+        // BreadcrumbList: позиции по порядку, item — абсолютный URL.
+        for (const raw of blocks) {
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(decode(raw));
+          } catch {
+            continue;
+          }
+          const lists: Record<string, unknown>[] = [];
+          const collect = (node: unknown) => {
+            if (Array.isArray(node)) return node.forEach(collect);
+            if (!node || typeof node !== "object") return;
+            const obj = node as Record<string, unknown>;
+            if (obj["@graph"]) collect(obj["@graph"]);
+            if (obj["@type"] === "BreadcrumbList") lists.push(obj);
+          };
+          collect(parsed);
+          for (const list of lists) {
+            const items = list["itemListElement"];
+            if (!Array.isArray(items) || items.length < 2) {
+              problems.push(`${u}: BreadcrumbList короче двух уровней`);
+              continue;
+            }
+            items.forEach((it, i) => {
+              const el = it as Record<string, unknown>;
+              if (el["position"] !== i + 1) problems.push(`${u}: BreadcrumbList position ${String(el["position"])} ≠ ${i + 1}`);
+              if (!el["name"]) problems.push(`${u}: BreadcrumbList без name на позиции ${i + 1}`);
+              const item = el["item"];
+              if (typeof item === "string" && !item.startsWith("http"))
+                problems.push(`${u}: BreadcrumbList item не абсолютный (${item})`);
+            });
+          }
+        }
       }),
     );
 

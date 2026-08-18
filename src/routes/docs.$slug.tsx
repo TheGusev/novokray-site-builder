@@ -24,6 +24,18 @@ export const Route = createFileRoute("/docs/$slug")({
         { property: "og:url", content: d ? `${SITE.domain}/docs/${d.slug}` : `${SITE.domain}/garantii` },
       ],
       links: d ? [{ rel: "canonical", href: `${SITE.domain}/docs/${d.slug}` }] : [],
+      scripts: d ? [{
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
+            { "@type": "ListItem", position: 2, name: "Гарантии", item: `${SITE.domain}/garantii` },
+            { "@type": "ListItem", position: 3, name: d.title, item: `${SITE.domain}/docs/${d.slug}` },
+          ],
+        }),
+      }] : [],
     };
   },
   notFoundComponent: () => (

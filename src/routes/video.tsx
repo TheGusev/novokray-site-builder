@@ -29,7 +29,16 @@ export const Route = createFileRoute("/video")({
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
-          "@graph": WORK_VIDEOS.map((v) => videoJsonLd(v, SITE.domain)),
+          "@graph": [
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
+                { "@type": "ListItem", position: 2, name: "Видео работ", item: `${SITE.domain}/video` },
+              ],
+            },
+            ...WORK_VIDEOS.map((v) => videoJsonLd(v, SITE.domain)),
+          ],
         }),
       },
     ],

@@ -107,12 +107,62 @@ jobs:
             echo "media range code: $range_code"
             [ "$range_code" = "206" ] || fail "Range-запрос к /media/*.mp4 вернул $range_code вместо 206."
 
-            # Канонизация: /price/ и /price/index.html обязаны 301-редиректить на /price.
+            # 2.1 КАНОНИЗАЦИЯ URL. Один адрес страницы — без слэша и без index.html,
+            # ровно так, как указано в <link rel="canonical"> и в sitemap.
+            canon_note="уже настроена"
+            canon_conf=$(grep -rlE 'server_name[^;]*dez-federation\.ru' /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null | head -n1 || true)
+            if [ -z "$canon_conf" ]; then
+              canon_note="конфиг сайта не найден"
+              fail "не найден конфиг nginx с server_name dez-federation.ru — канонизацию URL добавьте вручную."
+            elif grep -q 'canonical-url-normalization' "$canon_conf"; then
+              :
+            else
+              cp "$canon_conf" "$canon_conf.bak-canon-$(date +%Y%m%d%H%M%S)"
+              # try_files с $uri/ заставляет nginx самому редиректить на слэш — получился бы цикл.
+              sed -i 's|try_files \$uri \$uri/ /index.html|try_files $uri $uri.html $uri/index.html /index.html|g' "$canon_conf"
+              awk '
+                !done && $0 ~ /^[ \t]*location[ \t]+\/[ \t]*\{/ {
+                  print "    # canonical-url-normalization (managed by deploy)";
+                  print "    if ($request_uri ~ ^/index\\.html(\\?|$)) { return 301 /$is_args$args; }";
+                  print "    if ($request_uri ~ ^(?<nosl_i>/.+)/index\\.html(\\?|$)) { return 301 $nosl_i$is_args$args; }";
+                  print "    if ($request_uri ~ ^(?<nosl>/.+)/(\\?|$)) { return 301 $nosl$is_args$args; }";
+                  print "";
+                  done = 1;
+                }
+                { print }
+                END { if (!done) exit 3 }
+              ' "$canon_conf" > /tmp/ngx.canon && mv /tmp/ngx.canon "$canon_conf" \
+                || { rm -f /tmp/ngx.canon; canon_note="нужна ручная настройка"; fail "в конфиге nginx нет location / — канонизацию URL добавьте вручную."; }
+              if [ "$canon_note" = "нужна ручная настройка" ]; then
+                :
+              elif nginx -t 2>&1; then
+                systemctl reload nginx || fail "nginx не перезагрузился после канонизации URL."
+                canon_note="настроена автоматически"
+              else
+                cp "$(ls -t "$canon_conf".bak-canon-* | head -n1)" "$canon_conf"
+                canon_note="автонастройка не удалась, конфиг возвращён"
+                fail "не удалось настроить канонизацию URL автоматически — см. SERVER_DEPLOYMENT.md."
+              fi
+            fi
+            echo "nginx канонизация URL: $canon_note"
+
+            # Проверка: /price/ и /price/index.html обязаны 301-редиректить на /price без цепочек.
             for probe in /price/ /price/index.html; do
               redir=$(curl --silent --show-error -o /dev/null -w '%{http_code} %{redirect_url}' \
                 --resolve dez-federation.ru:443:127.0.0.1 "https://dez-federation.ru$probe" || true)
               echo "canonical $probe -> $redir"
-              case "$redir" in 301*) ;; *) fail "$probe не редиректит 301 на /price — добавьте блок канонизации URL из SERVER_DEPLOYMENT.md.";; esac
+              case "$redir" in
+                "301 https://dez-federation.ru/price") ;;
+                *) fail "$probe отдал «$redir», ожидался 301 на https://dez-federation.ru/price." ;;
+              esac
+            done
+
+            # Канонический URL обязан отвечать 200 без редиректа (иначе цикл).
+            for probe in / /price /video /blog /services /faq /kp; do
+              code=$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
+                --resolve dez-federation.ru:443:127.0.0.1 "https://dez-federation.ru$probe" || true)
+              echo "canonical 200-check $probe -> $code"
+              [ "$code" = "200" ] || fail "$probe вернул $code вместо 200 — проверьте канонизацию URL в nginx."
             done
 
             # Отсутствующий файл обязан быть 404, а не HTML главной страницы.
