@@ -871,6 +871,11 @@ function DogovorBuilderPage() {
                   Ошибок в блоках: {totalErrors}. Исправьте, чтобы сформировать PDF.
                 </p>
               )}
+              {totalErrors === 0 && !(masterSign ?? signature) && !clientSign && (
+                <p className="mt-2 text-center text-[11px] text-amber-600">
+                  Договор будет без подписей — заполните блок «Подписание».
+                </p>
+              )}
 
               <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
                 PDF собирается у вас в браузере. Шрифт — PT Sans, формат А4, страницы добавляются автоматически.
