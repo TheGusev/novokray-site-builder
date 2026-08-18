@@ -11,7 +11,7 @@ import { FAQ } from "@/components/site/FAQ";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { TldrBlock } from "@/components/site/TldrBlock";
 import { VideoTeaser } from "@/components/site/VideoTeaser";
-import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG } from "@/data/videos";
+import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG, videoJsonLd } from "@/data/videos";
 import { geoAnchor, GEO_CROSSLINK_LIMIT } from "@/data/interlinking";
 
 export const Route = createFileRoute("/gorod/$slug")({

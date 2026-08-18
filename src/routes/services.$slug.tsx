@@ -21,7 +21,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { TldrBlock } from "@/components/site/TldrBlock";
 import { VideoTeaser } from "@/components/site/VideoTeaser";
-import { primaryVideoForService } from "@/data/videos";
+import { primaryVideoForService, videoJsonLd } from "@/data/videos";
 
 const WARRANTY_BY_SLUG: Record<string, string> = {
   "unichtozhenie-klopov": "до 12 месяцев",
