@@ -80,6 +80,8 @@ export const Route = createFileRoute("/blog/$slug")({
         mainEntity: p.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
       });
     }
+    const bv = primaryVideoForService(getBlogOffer(p.category, p.relatedServices).service);
+    if (bv) graph.push(videoJsonLd(bv, SITE.domain, `${SITE.domain}/blog/${params.slug}`));
     if (p.howto) {
       graph.push({
         "@type": "HowTo",
