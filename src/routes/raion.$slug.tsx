@@ -11,7 +11,7 @@ import { FAQ } from "@/components/site/FAQ";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { TldrBlock } from "@/components/site/TldrBlock";
 import { VideoTeaser } from "@/components/site/VideoTeaser";
-import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG } from "@/data/videos";
+import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG, videoJsonLd } from "@/data/videos";
 import { geoAnchor, GEO_CROSSLINK_LIMIT } from "@/data/interlinking";
 
 export const Route = createFileRoute("/raion/$slug")({
@@ -97,6 +97,11 @@ export const Route = createFileRoute("/raion/$slug")({
                   },
                 ],
               },
+              videoJsonLd(
+                WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG],
+                SITE.domain,
+                `${SITE.domain}/raion/${params.slug}`,
+              ),
             ],
           }),
         },
@@ -113,7 +118,7 @@ function DistrictPage() {
   const faq = [
     {
       q: `Вы работаете ${d.prepositional}?`,
-      a: `Да. Бригада Дез-Федерация выезжает ${d.prepositional} ежедневно с 07:00 до 23:00. Время в пути — до 60 минут.`,
+      a: `Да. Специалист Дез-Федерация выезжает ${d.prepositional} ежедневно с 07:00 до 23:00. Время в пути — до 60 минут.`,
     },
     {
       q: `Сколько стоит обработка ${d.prepositional}?`,
@@ -271,7 +276,7 @@ function DistrictPage() {
               {
                 icon: Truck,
                 t: "Выезд за 60 минут",
-                d: "Бригада с оборудованием — день в день. Бесплатная диагностика на месте.",
+                d: "Специалист с оборудованием — день в день. Бесплатная диагностика на месте.",
               },
               {
                 icon: ShieldCheck,

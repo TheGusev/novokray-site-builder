@@ -9,6 +9,8 @@ import { POSTS } from "@/data/blog";
 import { DOCS } from "@/data/docs";
 import { CITIES } from "@/data/cities";
 import { DISTRICTS } from "@/data/districts";
+import { SITE } from "@/data/site";
+import { primaryVideoForService } from "@/data/videos";
 
 const BASE = process.env["HEAD_TEST_BASE"] ?? "http://localhost:8080";
 const NBSP_RE = /[\u00A0\u202F]/;
@@ -112,6 +114,15 @@ describe("meta и JSON-LD на отрендеренных страницах", (
         if (canon.length !== 1) problems.push(`${u}: canonical ×${canon.length}`);
         else if (!canon[0]!.startsWith("http"))
           problems.push(`${u}: относительный canonical ${canon[0]}`);
+        else {
+          const expected = SITE.domain + u.split("?")[0];
+          if (canon[0] !== expected && !u.includes("?"))
+            problems.push(`${u}: canonical ведёт на ${canon[0]}, ожидался ${expected}`);
+        }
+
+        const ogUrl = /property="og:url"[^>]*content="([^"]*)"/.exec(html)?.[1];
+        if (ogUrl && canon[0] && ogUrl !== canon[0] && !u.includes("?"))
+          problems.push(`${u}: og:url ${ogUrl} ≠ canonical ${canon[0]}`);
 
         const blocks = [
           ...html.matchAll(/<script[^>]*application\/ld\+json[^>]*>(.*?)<\/script>/gs),
@@ -127,6 +138,14 @@ describe("meta и JSON-LD на отрендеренных страницах", (
           }
           if (NBSP_RE.test(json)) problems.push(`${u}: неразрывный пробел в JSON-LD`);
         }
+
+        const needsVideo =
+          u === "/video" ||
+          u.startsWith("/gorod/") ||
+          u.startsWith("/raion/") ||
+          (u.startsWith("/services/") && !!primaryVideoForService(u.split("/")[2]!));
+        if (needsVideo && !html.includes("VideoObject"))
+          problems.push(`${u}: нет разметки VideoObject`);
       }),
     );
 

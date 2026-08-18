@@ -12,7 +12,7 @@ import { renderBodyBlocks, extractToc } from "@/lib/mdx-lite";
 import { getBlogOffer } from "@/data/blogPestMap";
 import { InlineLeadCta } from "@/components/site/InlineLeadCta";
 import { VideoTeaser } from "@/components/site/VideoTeaser";
-import { primaryVideoForService } from "@/data/videos";
+import { primaryVideoForService, videoJsonLd } from "@/data/videos";
 import { BlogStickyCta } from "@/components/site/BlogStickyCta";
 import { GOALS } from "@/lib/analytics";
 import { typo } from "@/lib/typography";
@@ -80,6 +80,8 @@ export const Route = createFileRoute("/blog/$slug")({
         mainEntity: p.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
       });
     }
+    const bv = primaryVideoForService(getBlogOffer(p.category, p.relatedServices).service);
+    if (bv) graph.push(videoJsonLd(bv, SITE.domain, `${SITE.domain}/blog/${params.slug}`));
     if (p.howto) {
       graph.push({
         "@type": "HowTo",

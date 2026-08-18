@@ -60,6 +60,19 @@ server {
     gzip_comp_level 6;
     gzip_types text/plain text/css application/json application/javascript application/xml image/svg+xml;
 
+    # --- Канонизация URL: один адрес страницы = один ответ 200 ---
+    # /path/index.html -> /path, /path/ -> /path (кроме корня).
+    # Без этих правил три разных URL отдают одну страницу и Яндекс/Google видят дубли.
+    location ~ ^(?<clean>/.*)/index\.html$ {
+        return 301 $clean$is_args$args;
+    }
+    if ($request_uri ~ ^/index\.html(\?|$)) {
+        return 301 /$is_args$args;
+    }
+    if ($request_uri ~ ^(?<nosl>/.+)/(\?|$)) {
+        return 301 $nosl$is_args$args;
+    }
+
     location ^~ /assets/ {
         try_files $uri =404;
         access_log off;
@@ -114,7 +127,9 @@ server {
     location / {
         # HTML не кешируем вовсе: телефон с уже сохранённой старой страницей
         # обязан получить свежую версию после каждого деплоя.
-        try_files $uri $uri/ $uri.html /index.html;
+        # $uri/ намеренно убран: каталоги отдаются только через /path.html,
+        # иначе вернётся дубль со слешем.
+        try_files $uri $uri.html $uri/index.html /index.html;
         add_header Cache-Control "no-store" always;
     }
 }

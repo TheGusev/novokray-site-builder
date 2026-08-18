@@ -11,7 +11,7 @@ import { FAQ } from "@/components/site/FAQ";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import { TldrBlock } from "@/components/site/TldrBlock";
 import { VideoTeaser } from "@/components/site/VideoTeaser";
-import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG } from "@/data/videos";
+import { WORK_VIDEOS_BY_SLUG, GEO_VIDEO_SLUG, videoJsonLd } from "@/data/videos";
 import { geoAnchor, GEO_CROSSLINK_LIMIT } from "@/data/interlinking";
 
 export const Route = createFileRoute("/gorod/$slug")({
@@ -108,7 +108,7 @@ export const Route = createFileRoute("/gorod/$slug")({
                     name: `Вы работаете ${c.prepositional}?`,
                     acceptedAnswer: {
                       "@type": "Answer",
-                      text: `Да. Бригада Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
+                      text: `Да. Специалист Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
                     },
                   },
                   {
@@ -138,6 +138,11 @@ export const Route = createFileRoute("/gorod/$slug")({
                 ],
                 speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
               },
+              videoJsonLd(
+                WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG],
+                SITE.domain,
+                `${SITE.domain}/gorod/${params.slug}`,
+              ),
             ],
           }),
         },
@@ -154,7 +159,7 @@ function CityPage() {
   const faq = [
     {
       q: `Вы работаете ${c.prepositional}?`,
-      a: `Да. Бригада Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
+      a: `Да. Специалист Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
     },
     {
       q: `Сколько стоит выезд ${c.prepositional}?`,
@@ -302,7 +307,7 @@ function CityPage() {
               {
                 icon: Truck,
                 t: `Выезд ${c.prepositional} за ${c.travelMin} мин`,
-                d: `Бригада с оборудованием выезжает день в день. Бесплатная диагностика на месте.`,
+                d: `Специалист с оборудованием выезжает день в день. Бесплатная диагностика на месте.`,
               },
               {
                 icon: ShieldCheck,

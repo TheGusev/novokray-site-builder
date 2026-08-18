@@ -144,10 +144,11 @@ export const VIDEO_UPLOAD_DATE = "2026-08-11";
  * JSON-LD VideoObject для ролика. `origin` — абсолютный адрес сайта,
  * ссылки на файл и постер должны быть абсолютными.
  */
-export function videoJsonLd(v: WorkVideo, origin: string) {
+export function videoJsonLd(v: WorkVideo, origin: string, pageUrl?: string) {
   const { width, height } = videoDimensions(v);
   return {
     "@type": "VideoObject",
+    "@id": `${pageUrl ?? `${origin}/video`}#video-${v.slug}`,
     name: v.title,
     description: v.description,
     thumbnailUrl: [`${origin}${v.poster}`],
@@ -159,7 +160,7 @@ export function videoJsonLd(v: WorkVideo, origin: string) {
     inLanguage: "ru-RU",
     isFamilyFriendly: true,
     keywords: v.tags.join(", "),
-    url: `${origin}/video#${v.slug}`,
+    url: pageUrl ?? `${origin}/video#${v.slug}`,
     publisher: {
       "@type": "Organization",
       "@id": `${origin}#organization`,
