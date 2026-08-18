@@ -11,6 +11,7 @@ import { CITIES } from "@/data/cities";
 import { DISTRICTS } from "@/data/districts";
 import { SITE } from "@/data/site";
 import { primaryVideoForService } from "@/data/videos";
+import { SERVICES_INDEX } from "@/data/servicesIndex";
 
 const BASE = process.env["HEAD_TEST_BASE"] ?? "http://localhost:8080";
 const NBSP_RE = /[\u00A0\u202F]/;
@@ -216,6 +217,75 @@ describe("meta и JSON-LD на отрендеренных страницах", (
               if (typeof item === "string" && !item.startsWith("http"))
                 problems.push(`${u}: BreadcrumbList item не абсолютный (${item})`);
             });
+          }
+        }
+
+        // Service / Offer: обязателен на страницах услуг, гео-страницах и каталогах.
+        const needsService =
+          u.startsWith("/services/") ||
+          u.startsWith("/uslugi/") ||
+          u.startsWith("/gorod/") ||
+          u.startsWith("/raion/") ||
+          u === "/services" ||
+          u === "/category/dezinfekciya-novosibirsk";
+        const services: Record<string, unknown>[] = [];
+        const seenIds = new Set<string>();
+        for (const raw of blocks) {
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(decode(raw));
+          } catch {
+            continue;
+          }
+          const collect = (node: unknown) => {
+            if (Array.isArray(node)) return node.forEach(collect);
+            if (!node || typeof node !== "object") return;
+            const obj = node as Record<string, unknown>;
+            if (obj["@graph"]) collect(obj["@graph"]);
+            if (obj["itemListElement"]) collect(obj["itemListElement"]);
+            if (obj["item"]) collect(obj["item"]);
+            if (obj["@type"] === "Service") services.push(obj);
+            const id = obj["@id"];
+            if (typeof id === "string" && obj["@type"]) {
+              if (seenIds.has(id)) problems.push(`${u}: дубль @id ${id}`);
+              seenIds.add(id);
+            }
+          };
+          collect(parsed);
+        }
+        if (needsService && !services.length) problems.push(`${u}: нет разметки Service`);
+
+        const byTitle = new Map(SERVICES_INDEX.map((s) => [s.title, s.priceFrom]));
+        for (const svc of services) {
+          for (const field of ["name", "provider", "areaServed"]) {
+            if (!svc[field]) problems.push(`${u}: Service «${String(svc["name"])}» без ${field}`);
+          }
+          const svcUrl = svc["url"];
+          if (typeof svcUrl === "string" && !svcUrl.startsWith("http"))
+            problems.push(`${u}: Service url не абсолютный (${svcUrl})`);
+          const offers = svc["offers"] as Record<string, unknown> | undefined;
+          const catalog = svc["hasOfferCatalog"] as Record<string, unknown> | undefined;
+          if (!offers && !catalog) {
+            problems.push(`${u}: Service «${String(svc["name"])}» без Offer`);
+            continue;
+          }
+          if (offers) {
+            const spec = offers["priceSpecification"] as Record<string, unknown> | undefined;
+            if (!spec) problems.push(`${u}: Offer без priceSpecification`);
+            else {
+              if (spec["priceCurrency"] !== "RUB")
+                problems.push(`${u}: Offer валюта ${String(spec["priceCurrency"])} ≠ RUB`);
+              const price = spec["minPrice"] ?? spec["price"];
+              if (typeof price !== "number" || !(price > 0))
+                problems.push(`${u}: Offer цена не число (${String(price)})`);
+              // цена в разметке должна совпадать с прайсом сайта
+              const expected = byTitle.get(String(svc["serviceType"]));
+              if (expected !== undefined && price !== expected)
+                problems.push(
+                  `${u}: цена «${String(svc["serviceType"])}» ${String(price)} ≠ прайс ${expected}`,
+                );
+            }
+            if (!offers["availability"]) problems.push(`${u}: Offer без availability`);
           }
         }
       }),
