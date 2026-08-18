@@ -79,7 +79,8 @@ export function offerNode(
       minPrice: s.priceFrom,
       priceCurrency: "RUB",
       valueAddedTaxIncluded: true,
-      description: `от ${s.priceFrom.toLocaleString("ru-RU")} ₽`,
+      // обычные пробелы: неразрывные ломают JSON-LD-аудит и сниппеты
+      description: `от ${String(s.priceFrom).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽`,
     },
   };
 }
