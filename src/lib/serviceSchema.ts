@@ -97,10 +97,14 @@ export function makesOfferNode(s: ServiceIndexItem, areas: AreaServed[]) {
   };
 }
 
-/** ItemList, где каждый элемент — полноценный Service с ценой. */
+/**
+ * ItemList, где каждый элемент — Service с ценой.
+ * useRefs=true отдаёт ссылку по @id: используется, когда сами узлы Service
+ * уже лежат в @graph страницы (иначе получились бы дубли @id).
+ */
 export function serviceListNode(
   items: ServiceIndexItem[],
-  o: ServiceNodeOptions & { listName: string },
+  o: ServiceNodeOptions & { listName: string; useRefs?: boolean },
 ) {
   return {
     "@type": "ItemList",
@@ -111,7 +115,9 @@ export function serviceListNode(
       position: i + 1,
       url: `${SITE.domain}/services/${s.slug}`,
       name: o.nameSuffix ? `${s.title} ${o.nameSuffix}` : s.title,
-      item: serviceNode(s, o),
+      item: o.useRefs
+        ? { "@id": `${o.pageUrl}#service-${s.slug}` }
+        : serviceNode(s, o),
     })),
   };
 }
