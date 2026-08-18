@@ -325,7 +325,7 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
   if (data.clientSignaturePng) await drawSign(data.clientSignaturePng, rightX);
 
   // Печать организации — рядом с подписью Исполнителя, частично поверх неё
-  drawStamp(c.page, font, bold, { cx: leftX + colW + 4, cy: c.y + 28, radius: 44 });
+  drawStamp(c.page, font, bold, { cx: leftX + colW - 36, cy: c.y + 26, radius: 43 });
 
   c.page.drawText("/ " + (data.masterFio || "_______________________") + " /", { x: leftX, y: c.y - 12, size: 9, font });
   c.page.drawText("Исполнитель / подпись, ФИО", { x: leftX, y: c.y - 26, size: 8, font, color: rgb(0.4, 0.45, 0.55) });
