@@ -214,6 +214,9 @@ function DogovorBuilderPage() {
   const [signatureName, setSignatureName] = useState<string>("");
   const [masterSign, setMasterSign] = useState<ArrayBuffer | null>(null);
   const [clientSign, setClientSign] = useState<ArrayBuffer | null>(null);
+  // Сброс холста клиента: договор нельзя подписать «задним числом»,
+  // поэтому очистка подписи мастера аннулирует подпись заказчика.
+  const [clientResetKey, setClientResetKey] = useState(0);
 
   const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
   const [graveyard, setGraveyard] = useState<Record<string, UiBlock[]>>({});
