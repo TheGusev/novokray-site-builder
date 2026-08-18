@@ -20,8 +20,8 @@ import { TrustStrip } from "@/components/site/TrustStrip";
 import { Reveal } from "@/components/site/Reveal";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { TldrBlock } from "@/components/site/TldrBlock";
-import { VideoCard } from "@/components/site/VideoCard";
-import { videosForService } from "@/data/videos";
+import { VideoTeaser } from "@/components/site/VideoTeaser";
+import { primaryVideoForService } from "@/data/videos";
 
 const WARRANTY_BY_SLUG: Record<string, string> = {
   "unichtozhenie-klopov": "до 12 месяцев",
