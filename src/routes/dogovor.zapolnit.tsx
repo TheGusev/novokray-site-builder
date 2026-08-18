@@ -407,6 +407,8 @@ function DogovorBuilderPage() {
     if (!objectAddress.trim()) { setError("Укажите адрес объекта обработки."); return; }
     if (!phone.trim()) { setError("Укажите телефон заказчика."); return; }
     if (!masterFio.trim()) { setError("Укажите ФИО мастера."); return; }
+    if (!masterSigned) { setError("Шаг 1 из 3: нужна подпись мастера."); return; }
+    if (!clientSigned) { setError("Шаг 2 из 3: нужна подпись заказчика."); return; }
 
     const data: ContractData = {
       number: num.trim() || genNumber(),
