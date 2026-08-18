@@ -8,7 +8,35 @@ import { ServiceCard } from "@/components/site/ServiceCard";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { WaveText } from "@/components/site/WaveText";
-import { serviceListNode, aggregateOfferNode } from "@/lib/serviceSchema";
+import { FAQ } from "@/components/site/FAQ";
+import { serviceListNode, aggregateOfferNode, groupedOfferCatalogNode } from "@/lib/serviceSchema";
+import { faqPageNode, localBusinessNode, type QaItem } from "@/lib/orgSchema";
+
+const PAGE_URL = `${SITE.domain}/category/dezinfekciya-novosibirsk`;
+
+/** Один источник вопросов: видимый блок FAQ и разметка FAQPage. */
+const CATEGORY_FAQ: QaItem[] = [
+  {
+    q: "Чем дезинфекция отличается от дезинсекции и дератизации?",
+    a: "Дезинфекция уничтожает микробы, вирусы, грибок и плесень. Дезинсекция направлена на насекомых — клопов, тараканов, блох, муравьёв. Дератизация — на грызунов. При комплексном заражении работы совмещают в один выезд.",
+  },
+  {
+    q: "Что входит в услугу дезинфекции помещения?",
+    a: "Осмотр объекта, подбор дезинфицирующего средства, обработка поверхностей и воздуха генератором тумана, контроль экспозиции, рекомендации по уборке, договор и акт выполненных работ.",
+  },
+  {
+    q: "Выдаёте ли документы по СанПиН для проверок?",
+    a: "Да. Организациям выдаём договор, акт выполненных работ, копию лицензии Роспотребнадзора и сертификаты на применённые средства — этого комплекта достаточно для проверки и для журнала санитарных мероприятий.",
+  },
+  {
+    q: "Сколько занимает дезинфекция и когда можно вернуться в помещение?",
+    a: "Обработка квартиры или офиса до 60 м² занимает 40–90 минут. Возвращаться можно через 2–3 часа после проветривания и влажной уборки контактных поверхностей.",
+  },
+  {
+    q: "Безопасны ли средства для детей и животных?",
+    a: "Применяем сертифицированные средства 4 класса опасности — малоопасные для человека. После высыхания они не оставляют запаха и следов, помещение безопасно для детей, аллергиков и питомцев.",
+  },
+];
 
 export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
   head: () => ({
@@ -35,8 +63,16 @@ export const Route = createFileRoute("/category/dezinfekciya-novosibirsk")({
             speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
           },
           serviceListNode(SERVICES_INDEX, {
-            pageUrl: `${SITE.domain}/category/dezinfekciya-novosibirsk`,
+            pageUrl: PAGE_URL,
             listName: "Услуги дезинфекции в Новосибирске",
+          }),
+          groupedOfferCatalogNode(PAGE_URL, `${PAGE_URL}#catalog`),
+          faqPageNode(CATEGORY_FAQ, PAGE_URL),
+          localBusinessNode({
+            id: `${PAGE_URL}#localbusiness`,
+            url: PAGE_URL,
+            parent: true,
+            extra: { hasOfferCatalog: { "@id": `${PAGE_URL}#catalog` } },
           }),
           aggregateOfferNode(
             SERVICES_INDEX,
@@ -106,6 +142,8 @@ function CategoryPage() {
           <LeadForm title="Узнать цену по объекту" />
         </div>
       </section>
+
+      <FAQ items={CATEGORY_FAQ} title="Частые вопросы о дезинфекции" />
     </>
   );
 }

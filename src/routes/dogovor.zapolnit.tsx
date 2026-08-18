@@ -214,6 +214,9 @@ function DogovorBuilderPage() {
   const [signatureName, setSignatureName] = useState<string>("");
   const [masterSign, setMasterSign] = useState<ArrayBuffer | null>(null);
   const [clientSign, setClientSign] = useState<ArrayBuffer | null>(null);
+  // Сброс холста клиента: договор нельзя подписать «задним числом»,
+  // поэтому очистка подписи мастера аннулирует подпись заказчика.
+  const [clientResetKey, setClientResetKey] = useState(0);
 
   const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
   const [graveyard, setGraveyard] = useState<Record<string, UiBlock[]>>({});
@@ -372,6 +375,25 @@ function DogovorBuilderPage() {
     setError(null);
   };
 
+  // Порядок подписания: мастер → заказчик → PDF.
+  const masterSigned = Boolean(masterSign ?? signature);
+  const clientSigned = Boolean(clientSign);
+  const signStep = !masterSigned ? 1 : !clientSigned ? 2 : 3;
+  const signStepHint = !masterSigned
+    ? "Расписывается мастер"
+    : !clientSigned
+      ? "Передайте экран заказчику"
+      : "Обе подписи получены — можно формировать PDF";
+
+  /** Очистка подписи мастера аннулирует подпись заказчика. */
+  const onMasterSignChange = (png: ArrayBuffer | null) => {
+    setMasterSign(png);
+    if (!png) {
+      setClientSign(null);
+      setClientResetKey((k) => k + 1);
+    }
+  };
+
   const onGenerate = async () => {
     setError(null);
     if (totalErrors > 0) {
@@ -385,6 +407,8 @@ function DogovorBuilderPage() {
     if (!objectAddress.trim()) { setError("Укажите адрес объекта обработки."); return; }
     if (!phone.trim()) { setError("Укажите телефон заказчика."); return; }
     if (!masterFio.trim()) { setError("Укажите ФИО мастера."); return; }
+    if (!masterSigned) { setError("Шаг 1 из 3: нужна подпись мастера."); return; }
+    if (!clientSigned) { setError("Шаг 2 из 3: нужна подпись заказчика."); return; }
 
     const data: ContractData = {
       number: num.trim() || genNumber(),
@@ -802,16 +826,35 @@ function DogovorBuilderPage() {
             </Block>
 
             <Block title="5. Подписание">
+              <div className="col-span-full">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                    Шаг {signStep} из 3
+                  </span>
+                  <span className="text-xs text-muted-foreground">{signStepHint}</span>
+                </div>
+                <div className="mt-2 grid grid-cols-3 gap-1.5">
+                  {["Мастер", "Заказчик", "PDF"].map((s, i) => (
+                    <div key={s} className="text-center">
+                      <div className={`h-1.5 rounded-full ${signStep > i ? "bg-primary" : "bg-border"}`} />
+                      <div className={`mt-1 text-[11px] font-semibold ${signStep > i ? "text-primary" : "text-muted-foreground"}`}>{s}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="col-span-full grid gap-3 sm:grid-cols-2">
                 <SignaturePad
-                  label="Подпись мастера"
+                  label="1/3 · Подпись мастера"
                   hint="Сначала расписывается мастер"
-                  onChange={setMasterSign}
+                  onChange={onMasterSignChange}
                 />
                 <SignaturePad
-                  label="Подпись заказчика"
-                  hint="Затем передайте экран клиенту"
+                  label="2/3 · Подпись заказчика"
+                  hint="Передайте экран клиенту"
                   onChange={setClientSign}
+                  disabled={!masterSigned}
+                  lockedHint="Сначала подписывает мастер"
+                  resetKey={clientResetKey}
                 />
               </div>
               <p className="col-span-full text-xs text-muted-foreground">
@@ -861,19 +904,21 @@ function DogovorBuilderPage() {
               <button
                 type="button"
                 onClick={onGenerate}
-                disabled={busy || totalErrors > 0}
+                disabled={busy || totalErrors > 0 || signStep < 3}
                 className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100"
               >
-                {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Готовлю PDF…</> : <><Download className="h-4 w-4" /> Сформировать PDF</>}
+                {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Готовлю PDF…</> : <><Download className="h-4 w-4" /> Сформировать PDF · шаг 3/3</>}
               </button>
               {totalErrors > 0 && (
                 <p className="mt-2 text-center text-[11px] text-destructive">
                   Ошибок в блоках: {totalErrors}. Исправьте, чтобы сформировать PDF.
                 </p>
               )}
-              {totalErrors === 0 && !(masterSign ?? signature) && !clientSign && (
+              {totalErrors === 0 && signStep < 3 && (
                 <p className="mt-2 text-center text-[11px] text-amber-600">
-                  Договор будет без подписей — заполните блок «Подписание».
+                  Шаг {signStep} из 3: {signStep === 1
+                    ? "нужна подпись мастера в блоке «Подписание»."
+                    : "нужна подпись заказчика в блоке «Подписание»."}
                 </p>
               )}
 

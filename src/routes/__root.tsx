@@ -16,6 +16,8 @@ import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { SITE } from "@/data/site";
 import { initLeadQueue } from "@/lib/leadSender";
+import { localBusinessNode, SERVICE_AREA_JSON } from "@/lib/orgSchema";
+import { groupedOfferCatalogNode } from "@/lib/serviceSchema";
 
 // Короткий статичный список — чтобы 404-страница не тянула весь каталог услуг
 // (68 КБ) в бандл, который грузится на каждой странице.
@@ -50,6 +52,8 @@ const ORG_GRAPH = {
         "Фумигация зерна", "Уничтожение борщевика", "Дезодорация",
       ],
       sameAs: [SITE.social.telegram, SITE.social.max],
+      areaServed: SERVICE_AREA_JSON,
+      hasOfferCatalog: { "@id": `${SITE.domain}#catalog` },
       address: {
         "@type": "PostalAddress",
         addressCountry: "RU",
@@ -79,45 +83,14 @@ const ORG_GRAPH = {
         "query-input": "required name=search_term_string",
       },
     },
-    {
-      "@type": "LocalBusiness",
-      "@id": `${SITE.domain}#localbusiness`,
-      name: SITE.name,
-      image: `${SITE.domain}/og/default.jpg`,
-      url: SITE.domain,
-      telephone: SITE.phone,
-      email: SITE.email,
-      priceRange: "1500–25000 RUB",
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: "RU",
-        addressRegion: SITE.region,
-        addressLocality: SITE.city,
-        streetAddress: SITE.address,
-      },
-      geo: { "@type": "GeoCoordinates", latitude: SITE.geo.lat, longitude: SITE.geo.lng },
-      openingHoursSpecification: [{
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-        opens: "07:00", closes: "23:00",
-      }],
-      areaServed: [
-        { "@type": "City", name: "Новосибирск" },
-        { "@type": "AdministrativeArea", name: SITE.region },
-        { "@type": "City", name: "Бердск" },
-        { "@type": "City", name: "Искитим" },
-        { "@type": "City", name: "Кольцово" },
-        { "@type": "City", name: "Краснообск" },
-        { "@type": "City", name: "Обь" },
-      ],
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: SITE.rating.value,
-        reviewCount: SITE.rating.count,
-        bestRating: "5",
-        worstRating: "1",
-      },
-    },
+    localBusinessNode({
+      id: `${SITE.domain}#localbusiness`,
+      withGeo: true,
+      withRating: true,
+      parent: true,
+      extra: { hasOfferCatalog: { "@id": `${SITE.domain}#catalog` } },
+    }),
+    groupedOfferCatalogNode(`${SITE.domain}/price`, `${SITE.domain}#catalog`),
   ],
 };
 

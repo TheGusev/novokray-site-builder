@@ -124,6 +124,48 @@ export function serviceListNode(
 }
 
 /** AggregateOffer с реальным диапазоном цен по набору услуг. */
+export const CATALOG_GROUPS: Array<{ id: string; name: string }> = [
+  { id: "vrediteli", name: "Уничтожение вредителей" },
+  { id: "spec", name: "Спецобработка и устранение последствий" },
+  { id: "uchastok", name: "Обработка участков и территорий" },
+  { id: "sanitarnaya", name: "Санитарная обработка" },
+];
+
+/** OfferCatalog: витрина предложений с ценами «от». */
+export function offerCatalogNode(
+  items: ServiceIndexItem[],
+  o: { name: string; url: string; id?: string; areas?: AreaServed[] },
+) {
+  const areas = o.areas ?? DEFAULT_AREA;
+  return {
+    "@type": "OfferCatalog",
+    ...(o.id ? { "@id": o.id } : {}),
+    name: o.name,
+    url: o.url,
+    numberOfItems: items.length,
+    itemListElement: items.map((s, i) => ({
+      ...makesOfferNode(s, areas),
+      position: i + 1,
+    })),
+  };
+}
+
+/** Каталог верхнего уровня: группы услуг вложенными OfferCatalog. */
+export function groupedOfferCatalogNode(url: string, id?: string) {
+  const groups = CATALOG_GROUPS.map((g) => {
+    const items = SERVICES_INDEX.filter((s) => s.category === g.id);
+    return items.length > 0 ? offerCatalogNode(items, { name: g.name, url }) : null;
+  }).filter(Boolean);
+  return {
+    "@type": "OfferCatalog",
+    ...(id ? { "@id": id } : {}),
+    name: `Санитарная обработка — каталог услуг, ${SITE.city}`,
+    url,
+    numberOfItems: groups.length,
+    itemListElement: groups,
+  };
+}
+
 export function aggregateOfferNode(items: ServiceIndexItem[], pageUrl: string) {
   const prices = items.map((s) => s.priceFrom);
   return {
