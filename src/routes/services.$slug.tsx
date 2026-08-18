@@ -499,23 +499,14 @@ function ServicePage() {
         </div>
       </section>
 
-      {/* Видео работ по услуге */}
-      {videosForService(s.slug).length > 0 && (
+      {/* Видео работ по услуге: один главный ролик + переход в галерею */}
+      {primaryVideoForService(s.slug) && (
         <section className="container-x pb-4">
-          <h2 className="font-display text-3xl font-bold md:text-4xl">Видео с наших выездов</h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {videosForService(s.slug).map((v, i) => (
-              <Reveal key={v.slug} delay={i * 80}>
-                <VideoCard video={v} />
-              </Reveal>
-            ))}
-          </div>
-          <Link
-            to="/video"
-            className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2"
-          >
-            Все видео работ <ArrowRight className="h-4 w-4" />
-          </Link>
+          <VideoTeaser
+            video={primaryVideoForService(s.slug)!}
+            heading={`Как проходит ${s.title.toLowerCase()}: видео с выезда`}
+            text="Съёмка с реального объекта — видно, чем и как работает специалист."
+          />
         </section>
       )}
 
