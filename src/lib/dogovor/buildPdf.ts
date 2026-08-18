@@ -231,12 +231,12 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
 
   // 3. Гарантия
   drawText(c, doc, "3. Гарантийные обязательства", { font: bold, size: 11, gap: 4 });
-  const minWar = data.blocks.length ? Math.min(...data.blocks.map((b) => b.warrantyDays)) : 30;
+  const minWar = data.blocks.length ? Math.min(...data.blocks.map((b) => b.warrantyMonths)) : 1;
   drawText(c, doc, `3.1. Гарантия предоставляется по каждому виду обработки с даты подписания акта:`, { font, size: 10, gap: 2 });
   data.blocks.forEach((b) => {
     drawText(c, doc, `    — ${b.pestName} (степень ${b.level}): ${monthsRu(b.warrantyMonths)}.`, { font, size: 10, gap: 1 });
   });
-  drawText(c, doc, `Минимальный срок гарантии по договору: ${minWar} дн.`, { font, size: 10, gap: 4 });
+  drawText(c, doc, `Минимальный срок гарантии по договору: ${monthsRu(minWar)}.`, { font, size: 10, gap: 4 });
   drawText(c, doc, `3.2. В период гарантии при появлении вредителей того же вида Исполнитель производит повторную обработку бесплатно в течение 3 рабочих дней с момента обращения.`, { font, size: 10, gap: 2 });
   drawText(c, doc, `3.3. Гарантия не распространяется на случаи нарушения Заказчиком рекомендаций (Приложение к памятке клиента), а также на повторное заражение из соседних помещений.`, { font, size: 10, gap: 10 });
 
@@ -306,22 +306,26 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
 
   c.y = Math.min(leftEnd, rightEnd) - 30;
 
-  // Подпись + ФИО мастера
-  ensureSpace(c, 80, doc);
+  // Подписи сторон + печать
+  ensureSpace(c, 120, doc);
   // линии для подписи
   c.page.drawLine({ start: { x: leftX, y: c.y }, end: { x: leftX + colW, y: c.y }, thickness: 0.6, color: rgb(0.6, 0.65, 0.75) });
   c.page.drawLine({ start: { x: rightX, y: c.y }, end: { x: rightX + colW, y: c.y }, thickness: 0.6, color: rgb(0.6, 0.65, 0.75) });
 
-  // подпись мастера (если есть)
-  if (data.signaturePng) {
+  const drawSign = async (bytes: ArrayBuffer, x: number) => {
     try {
-      const png = await doc.embedPng(data.signaturePng);
-      const dims = png.scaleToFit(150, 50);
-      c.page.drawImage(png, { x: leftX + 10, y: c.y + 5, width: dims.width, height: dims.height });
+      const png = await doc.embedPng(bytes);
+      const dims = png.scaleToFit(130, 46);
+      c.page.drawImage(png, { x: x + 8, y: c.y + 4, width: dims.width, height: dims.height });
     } catch {
-      // ignore — не PNG или повреждено
+      // не PNG или повреждено — оставляем пустую линию
     }
-  }
+  };
+  if (data.masterSignaturePng) await drawSign(data.masterSignaturePng, leftX);
+  if (data.clientSignaturePng) await drawSign(data.clientSignaturePng, rightX);
+
+  // Печать организации — рядом с подписью Исполнителя, частично поверх неё
+  drawStamp(c.page, font, bold, { cx: leftX + colW - 46, cy: c.y + 18, radius: 48 });
 
   c.page.drawText("/ " + (data.masterFio || "_______________________") + " /", { x: leftX, y: c.y - 12, size: 9, font });
   c.page.drawText("Исполнитель / подпись, ФИО", { x: leftX, y: c.y - 26, size: 8, font, color: rgb(0.4, 0.45, 0.55) });
