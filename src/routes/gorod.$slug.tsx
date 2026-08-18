@@ -108,7 +108,7 @@ export const Route = createFileRoute("/gorod/$slug")({
                     name: `Вы работаете ${c.prepositional}?`,
                     acceptedAnswer: {
                       "@type": "Answer",
-                      text: `Да. Бригада Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
+                      text: `Да. Специалист Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
                     },
                   },
                   {
@@ -138,6 +138,11 @@ export const Route = createFileRoute("/gorod/$slug")({
                 ],
                 speakable: { "@type": "SpeakableSpecification", cssSelector: [".speakable"] },
               },
+              videoJsonLd(
+                WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG],
+                SITE.domain,
+                `${SITE.domain}/gorod/${params.slug}`,
+              ),
             ],
           }),
         },
@@ -154,7 +159,7 @@ function CityPage() {
   const faq = [
     {
       q: `Вы работаете ${c.prepositional}?`,
-      a: `Да. Бригада Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
+      a: `Да. Специалист Дез-Федерация выезжает ${c.prepositional} из Новосибирска ежедневно с 07:00 до 23:00. Время в пути — около ${c.travelMin} минут.`,
     },
     {
       q: `Сколько стоит выезд ${c.prepositional}?`,
