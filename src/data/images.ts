@@ -202,7 +202,7 @@ export interface ImgMeta { alt: string; title: string }
 // Общие фото (hero, оборудование, документы, офис)
 export const COMMON_IMAGE_META: Record<keyof typeof COMMON, ImgMeta> = {
   heroTeam: {
-    alt: "Бригада санитарной службы Дез-Федерация на выезде в Новосибирске",
+    alt: "Специалист санитарной службы Дез-Федерация на выезде в Новосибирске",
     title: "Дез-Федерация — выезд специалиста по Новосибирску с 2019 года",
   },
   heroSpray: {
