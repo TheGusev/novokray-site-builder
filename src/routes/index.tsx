@@ -106,6 +106,7 @@ export const Route = createFileRoute("/")({
             url: `${SITE.domain}/`,
             name: `${SITE.name} — санитарная служба в Новосибирске`,
             primaryEntityId: `${SITE.domain}#localbusiness`,
+            withBreadcrumb: false,
           }),
           {
             ...faqPageNode(HOME_FAQ, `${SITE.domain}/`, {

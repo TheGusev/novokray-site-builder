@@ -102,6 +102,8 @@ export interface WebPageOptions {
   type?: "WebPage" | "CollectionPage" | "ItemPage";
   /** @id главной сущности страницы (услуга, каталог, гео-филиал). */
   primaryEntityId?: string;
+  /** На главной хлебных крошек нет — ссылку на них тогда не ставим. */
+  withBreadcrumb?: boolean;
 }
 
 /**
@@ -119,7 +121,7 @@ export function webPageNode(o: WebPageOptions) {
     isPartOf: { "@id": `${SITE.domain}#website` },
     about: { "@id": `${SITE.domain}#organization` },
     ...(o.primaryEntityId ? { mainEntity: { "@id": o.primaryEntityId } } : {}),
-    breadcrumb: { "@id": `${o.url}#breadcrumb` },
+    ...(o.withBreadcrumb === false ? {} : { breadcrumb: { "@id": `${o.url}#breadcrumb` } }),
   };
 }
 
