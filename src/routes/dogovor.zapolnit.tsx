@@ -8,7 +8,7 @@ import {
   CATALOG,
   getPest,
   LEVEL_MULTIPLIER,
-  LEVEL_WARRANTY_DAYS,
+  LEVEL_WARRANTY_MONTHS,
   LEVEL_LABEL,
   getElementLimits,
   clampQty,
@@ -66,7 +66,7 @@ interface UiBlock {
   id: string;
   pestKey: string;
   level: InfestationLevel;
-  warrantyDays: number;
+  warrantyMonths: number;
   preparations: string[]; // выбранные
   customPrep: string; // ввод нового
   withBarrier: boolean;
@@ -81,7 +81,7 @@ function makeBlock(pestKey = CATALOG[0].key): UiBlock {
     id: uid(),
     pestKey,
     level,
-    warrantyDays: LEVEL_WARRANTY_DAYS[level],
+    warrantyMonths: LEVEL_WARRANTY_MONTHS[level],
     preparations: p.preparations.slice(0, 1),
     customPrep: "",
     withBarrier: false,
@@ -129,8 +129,8 @@ function validateBlock(b: UiBlock): { errors: string[]; warnings: string[] } {
   if (b.preparations.length > 5) {
     warnings.push("Слишком много препаратов (рекомендуем не более 5)");
   }
-  if (b.warrantyDays < 1 || b.warrantyDays > 365) {
-    errors.push("Срок гарантии должен быть от 1 до 365 дней");
+  if (b.warrantyMonths < 1 || b.warrantyMonths > 36) {
+    errors.push("Срок гарантии должен быть от 1 до 36 месяцев");
   }
 
   // Проверка работ
@@ -184,7 +184,7 @@ function toContractBlock(b: UiBlock): ContractBlock {
     pestName: p.name,
     level: b.level,
     multiplier: LEVEL_MULTIPLIER[b.level],
-    warrantyDays: b.warrantyDays,
+    warrantyMonths: b.warrantyMonths,
     preparations: b.preparations,
     methodNote: p.methodNote,
     lines: buildBlockLines(b),
@@ -274,7 +274,7 @@ function DogovorBuilderPage() {
   };
 
   const changeLevel = (id: string, level: InfestationLevel) => {
-    updateBlock(id, { level, warrantyDays: LEVEL_WARRANTY_DAYS[level] });
+    updateBlock(id, { level, warrantyMonths: LEVEL_WARRANTY_MONTHS[level] });
   };
 
   const toggleElement = (blockId: string, el: TreatmentElement, checked: boolean) => {
@@ -548,8 +548,8 @@ function DogovorBuilderPage() {
                           </select>
                         </label>
                         <label className="block">
-                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Гарантия (дней)</span>
-                          <input type="number" min={1} className={inputCls} value={b.warrantyDays} onChange={(e) => updateBlock(b.id, { warrantyDays: Number(e.target.value) || 0 })} />
+                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Гарантия (мес.)</span>
+                          <input type="number" min={1} max={36} className={inputCls} value={b.warrantyMonths} onChange={(e) => updateBlock(b.id, { warrantyMonths: Number(e.target.value) || 0 })} />
                         </label>
                       </div>
 
