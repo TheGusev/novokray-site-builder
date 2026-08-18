@@ -9,10 +9,11 @@ export const LEVEL_MULTIPLIER: Record<InfestationLevel, number> = {
   "4-5": 2.0,
 };
 
-export const LEVEL_WARRANTY_DAYS: Record<InfestationLevel, number> = {
-  "1": 90,
-  "2-3": 60,
-  "4-5": 30,
+// Срок гарантии по степени заражения — в месяцах.
+export const LEVEL_WARRANTY_MONTHS: Record<InfestationLevel, number> = {
+  "1": 3,
+  "2-3": 2,
+  "4-5": 1,
 };
 
 export const LEVEL_LABEL: Record<InfestationLevel, string> = {

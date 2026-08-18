@@ -3,12 +3,13 @@ import { useMemo, useState } from "react";
 import { Download, Plus, Trash2, ArrowLeft, FileText, Loader2, Send } from "lucide-react";
 import { SITE } from "@/data/site";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { SignaturePad } from "@/components/dogovor/SignaturePad";
 import { formatRub } from "@/data/leadPricing";
 import {
   CATALOG,
   getPest,
   LEVEL_MULTIPLIER,
-  LEVEL_WARRANTY_DAYS,
+  LEVEL_WARRANTY_MONTHS,
   LEVEL_LABEL,
   getElementLimits,
   clampQty,
@@ -66,7 +67,7 @@ interface UiBlock {
   id: string;
   pestKey: string;
   level: InfestationLevel;
-  warrantyDays: number;
+  warrantyMonths: number;
   preparations: string[]; // выбранные
   customPrep: string; // ввод нового
   withBarrier: boolean;
@@ -81,7 +82,7 @@ function makeBlock(pestKey = CATALOG[0].key): UiBlock {
     id: uid(),
     pestKey,
     level,
-    warrantyDays: LEVEL_WARRANTY_DAYS[level],
+    warrantyMonths: LEVEL_WARRANTY_MONTHS[level],
     preparations: p.preparations.slice(0, 1),
     customPrep: "",
     withBarrier: false,
@@ -129,8 +130,8 @@ function validateBlock(b: UiBlock): { errors: string[]; warnings: string[] } {
   if (b.preparations.length > 5) {
     warnings.push("Слишком много препаратов (рекомендуем не более 5)");
   }
-  if (b.warrantyDays < 1 || b.warrantyDays > 365) {
-    errors.push("Срок гарантии должен быть от 1 до 365 дней");
+  if (b.warrantyMonths < 1 || b.warrantyMonths > 36) {
+    errors.push("Срок гарантии должен быть от 1 до 36 месяцев");
   }
 
   // Проверка работ
@@ -184,7 +185,7 @@ function toContractBlock(b: UiBlock): ContractBlock {
     pestName: p.name,
     level: b.level,
     multiplier: LEVEL_MULTIPLIER[b.level],
-    warrantyDays: b.warrantyDays,
+    warrantyMonths: b.warrantyMonths,
     preparations: b.preparations,
     methodNote: p.methodNote,
     lines: buildBlockLines(b),
@@ -211,6 +212,8 @@ function DogovorBuilderPage() {
   const [paymentMethod, setPaymentMethod] = useState("Наличные");
   const [signature, setSignature] = useState<ArrayBuffer | null>(null);
   const [signatureName, setSignatureName] = useState<string>("");
+  const [masterSign, setMasterSign] = useState<ArrayBuffer | null>(null);
+  const [clientSign, setClientSign] = useState<ArrayBuffer | null>(null);
 
   const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
   const [graveyard, setGraveyard] = useState<Record<string, UiBlock[]>>({});
@@ -274,7 +277,7 @@ function DogovorBuilderPage() {
   };
 
   const changeLevel = (id: string, level: InfestationLevel) => {
-    updateBlock(id, { level, warrantyDays: LEVEL_WARRANTY_DAYS[level] });
+    updateBlock(id, { level, warrantyMonths: LEVEL_WARRANTY_MONTHS[level] });
   };
 
   const toggleElement = (blockId: string, el: TreatmentElement, checked: boolean) => {
@@ -398,7 +401,8 @@ function DogovorBuilderPage() {
       blocks: cBlocks,
       masterFio: masterFio.trim(),
       paymentMethod,
-      signaturePng: signature,
+      masterSignaturePng: masterSign ?? signature,
+      clientSignaturePng: clientSign,
     };
 
     try {
@@ -548,8 +552,8 @@ function DogovorBuilderPage() {
                           </select>
                         </label>
                         <label className="block">
-                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Гарантия (дней)</span>
-                          <input type="number" min={1} className={inputCls} value={b.warrantyDays} onChange={(e) => updateBlock(b.id, { warrantyDays: Number(e.target.value) || 0 })} />
+                          <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Гарантия (мес.)</span>
+                          <input type="number" min={1} max={36} className={inputCls} value={b.warrantyMonths} onChange={(e) => updateBlock(b.id, { warrantyMonths: Number(e.target.value) || 0 })} />
                         </label>
                       </div>
 
@@ -789,12 +793,31 @@ function DogovorBuilderPage() {
                   {["Наличные", "Перевод на карту", "Безналичный расчёт", "СБП"].map((p) => <option key={p}>{p}</option>)}
                 </select>
               </Field>
-              <Field label="Подпись мастера (PNG/JPG, до 1 МБ)" full>
+              <Field label="Загрузить готовую подпись мастера (PNG/JPG, до 1 МБ) — необязательно" full>
                 <label className="flex h-9 cursor-pointer items-center justify-between rounded-md border border-input bg-transparent px-3 text-sm text-muted-foreground hover:border-primary">
                   <span>{signatureName || "Выбрать файл…"}</span>
                   <input type="file" accept="image/png,image/jpeg" className="hidden" onChange={(e) => onSignature(e.target.files?.[0] ?? null)} />
                 </label>
               </Field>
+            </Block>
+
+            <Block title="5. Подписание">
+              <div className="col-span-full grid gap-3 sm:grid-cols-2">
+                <SignaturePad
+                  label="Подпись мастера"
+                  hint="Сначала расписывается мастер"
+                  onChange={setMasterSign}
+                />
+                <SignaturePad
+                  label="Подпись заказчика"
+                  hint="Затем передайте экран клиенту"
+                  onChange={setClientSign}
+                />
+              </div>
+              <p className="col-span-full text-xs text-muted-foreground">
+                Подписи попадут в PDF над строками «Исполнитель» и «Заказчик». Рядом с подписью мастера
+                автоматически ставится печать организации.
+              </p>
             </Block>
           </div>
 
@@ -846,6 +869,11 @@ function DogovorBuilderPage() {
               {totalErrors > 0 && (
                 <p className="mt-2 text-center text-[11px] text-destructive">
                   Ошибок в блоках: {totalErrors}. Исправьте, чтобы сформировать PDF.
+                </p>
+              )}
+              {totalErrors === 0 && !(masterSign ?? signature) && !clientSign && (
+                <p className="mt-2 text-center text-[11px] text-amber-600">
+                  Договор будет без подписей — заполните блок «Подписание».
                 </p>
               )}
 
