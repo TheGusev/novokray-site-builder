@@ -4,6 +4,8 @@ import fontkit from "@pdf-lib/fontkit";
 const FONT_REGULAR_URL = "/fonts/PTSans-Regular.ttf";
 const FONT_BOLD_URL = "/fonts/PTSans-Bold.ttf";
 import { rubInWords } from "./rubInWords";
+import { monthsRu } from "./plural";
+import { drawStamp } from "./stamp";
 import { SITE } from "@/data/site";
 
 export type ClientType = "person" | "company";
@@ -18,7 +20,7 @@ export interface ContractBlock {
   pestName: string;
   level: string; // "1" | "2-3" | "4-5"
   multiplier: number; // 1 / 1.5 / 2
-  warrantyDays: number;
+  warrantyMonths: number;
   preparations: string[];
   methodNote: string;
   lines: ServiceLine[]; // цены УЖЕ с учётом множителя
@@ -44,7 +46,8 @@ export interface ContractData {
   // exec
   masterFio: string;
   paymentMethod: string;
-  signaturePng?: ArrayBuffer | null;
+  masterSignaturePng?: ArrayBuffer | null;
+  clientSignaturePng?: ArrayBuffer | null;
 }
 
 const PAGE_W = 595.28; // A4
@@ -214,7 +217,7 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
     drawServicesTable(c, doc, b.lines, font, bold, runningIdx);
     runningIdx += b.lines.length;
     const bSum = blockSum(b);
-    drawText(c, doc, `Итого по блоку: ${bSum.toLocaleString("ru-RU")} ₽ · гарантия ${b.warrantyDays} дн.`, { font: bold, size: 10, gap: 10 });
+    drawText(c, doc, `Итого по блоку: ${bSum.toLocaleString("ru-RU")} ₽ · гарантия ${monthsRu(b.warrantyMonths)}`, { font: bold, size: 10, gap: 10 });
   });
 
   const sum = totalSum(data.blocks);
@@ -231,7 +234,7 @@ export async function buildContractPdf(data: ContractData): Promise<Uint8Array> 
   const minWar = data.blocks.length ? Math.min(...data.blocks.map((b) => b.warrantyDays)) : 30;
   drawText(c, doc, `3.1. Гарантия предоставляется по каждому виду обработки с даты подписания акта:`, { font, size: 10, gap: 2 });
   data.blocks.forEach((b) => {
-    drawText(c, doc, `    — ${b.pestName} (степень ${b.level}): ${b.warrantyDays} календарных дней.`, { font, size: 10, gap: 1 });
+    drawText(c, doc, `    — ${b.pestName} (степень ${b.level}): ${monthsRu(b.warrantyMonths)}.`, { font, size: 10, gap: 1 });
   });
   drawText(c, doc, `Минимальный срок гарантии по договору: ${minWar} дн.`, { font, size: 10, gap: 4 });
   drawText(c, doc, `3.2. В период гарантии при появлении вредителей того же вида Исполнитель производит повторную обработку бесплатно в течение 3 рабочих дней с момента обращения.`, { font, size: 10, gap: 2 });
