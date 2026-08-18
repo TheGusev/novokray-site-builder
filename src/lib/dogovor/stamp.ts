@@ -74,15 +74,14 @@ export function drawStamp(page: PDFPage, font: PDFFont, bold: PDFFont, o: StampO
     cx, cy, radius: r - 13, size: 5, font, angleCenter: 270, clockwise: false, opacity: op,
   });
 
-  const lic = SITE.legal.licenseNo.replace(/^№\s*/, "");
+  const lic = SITE.legal.licenseNo.replace(/^№\s*/, "").split(".").slice(0, 4).join(".");
   const center: Array<{ t: string; f: PDFFont; s: number }> = [
     { t: "РОССИЯ", f: font, s: 4.6 },
     { t: SITE.city.toUpperCase(), f: bold, s: 6.2 },
-    { t: "лицензия", f: font, s: 3.9 },
-    { t: lic.slice(0, 12), f: font, s: 3.9 },
-    { t: lic.slice(12), f: font, s: 3.9 },
+    { t: "лицензия", f: font, s: 3.8 },
+    { t: lic, f: font, s: 3.8 },
   ].filter((l) => l.t.length > 0);
-  let y = cy + 11;
+  let y = cy + 9.5;
   for (const line of center) {
     const w = line.f.widthOfTextAtSize(line.t, line.s);
     page.drawText(line.t, { x: cx - w / 2, y, size: line.s, font: line.f, color: INK, opacity: op });
