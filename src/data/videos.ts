@@ -146,19 +146,28 @@ export const VIDEO_UPLOAD_DATE = "2026-08-11";
  */
 export function videoJsonLd(v: WorkVideo, origin: string, pageUrl?: string) {
   const { width, height } = videoDimensions(v);
+  const page = pageUrl ?? `${origin}/video`;
   return {
     "@type": "VideoObject",
-    "@id": `${pageUrl ?? `${origin}/video`}#video-${v.slug}`,
+    "@id": `${page}#video-${v.slug}`,
     name: v.title,
     description: v.description,
     thumbnailUrl: [`${origin}${v.poster}`],
+    thumbnail: {
+      "@type": "ImageObject",
+      url: `${origin}${v.poster}`,
+      width,
+      height,
+    },
     contentUrl: `${origin}${v.src}`,
+    embedUrl: `${origin}/video#${v.slug}`,
     uploadDate: VIDEO_UPLOAD_DATE,
     duration: `PT${v.durationSec}S`,
     width,
     height,
     inLanguage: "ru-RU",
     isFamilyFriendly: true,
+    regionsAllowed: "RU",
     keywords: v.tags.join(", "),
     url: pageUrl ?? `${origin}/video#${v.slug}`,
     publisher: {

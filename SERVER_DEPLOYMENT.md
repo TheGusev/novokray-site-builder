@@ -63,6 +63,9 @@ server {
     # --- Канонизация URL: один адрес страницы = один ответ 200 ---
     # /path/index.html -> /path, /path/ -> /path (кроме корня).
     # Без этих правил три разных URL отдают одну страницу и Яндекс/Google видят дубли.
+    # Эти правила деплой умеет вставлять сам (маркер `canonical-url-normalization`),
+    # но в location / обязателен try_files БЕЗ `$uri/` — иначе nginx сам добавит слэш
+    # и получится цикл редиректов.
     location ~ ^(?<clean>/.*)/index\.html$ {
         return 301 $clean$is_args$args;
     }

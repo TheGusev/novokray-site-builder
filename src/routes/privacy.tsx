@@ -12,6 +12,17 @@ export const Route = createFileRoute("/privacy")({
       { property: "og:url", content: `${SITE.domain}/privacy` },
     ],
     links: [{ rel: "canonical", href: `${SITE.domain}/privacy` }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
+          { "@type": "ListItem", position: 2, name: "Политика конфиденциальности", item: `${SITE.domain}/privacy` },
+        ],
+      }),
+    }],
   }),
   component: PrivacyPage,
 });

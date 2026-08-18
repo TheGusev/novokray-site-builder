@@ -26,8 +26,21 @@ export const Route = createFileRoute("/kp")({
       { name: "robots", content: "index,follow" },
       { property: "og:title", content: `КП для организаций · ${SITE.shortName}` },
       { property: "og:description", content: "Пакет документов для юрлиц: КП, счёт, договор. Автозаполнение по ИНН. Дезинфекция, дезинсекция, дератизация в Новосибирске и НСО." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: `${SITE.domain}/kp` },
     ],
     links: [{ rel: "canonical", href: `${SITE.domain}/kp` }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
+          { "@type": "ListItem", position: 2, name: "Коммерческое предложение для организаций", item: `${SITE.domain}/kp` },
+        ],
+      }),
+    }],
   }),
   component: KpPage,
 });
