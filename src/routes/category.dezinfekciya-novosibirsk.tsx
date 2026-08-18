@@ -89,7 +89,7 @@ function CategoryPage() {
       <section className="bg-surface py-14 md:py-20">
         <div className="container-x">
           <h2 className="font-display text-2xl font-bold md:text-3xl">Дезинфекция по районам Новосибирска</h2>
-          <p className="mt-3 max-w-3xl text-muted-foreground">Бригады выезжают во все 10 районов города. Время прибытия — до 60 минут, оплата после обработки.</p>
+          <p className="mt-3 max-w-3xl text-muted-foreground">Специалисты выезжают во все 10 районов города. Время прибытия — до 60 минут, оплата после обработки.</p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {["Центральный","Заельцовский","Калининский","Кировский","Ленинский","Октябрьский","Первомайский","Советский (Академгородок)","Дзержинский","Железнодорожный"].map((d) => (
               <div key={d} className="rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold shadow-card">{d}</div>
