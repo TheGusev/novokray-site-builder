@@ -229,7 +229,6 @@ describe("meta и JSON-LD на отрендеренных страницах", (
           u === "/services" ||
           u === "/category/dezinfekciya-novosibirsk";
         const services: Record<string, unknown>[] = [];
-        const seenIds = new Set<string>();
         for (const raw of blocks) {
           let parsed: unknown;
           try {
@@ -237,6 +236,9 @@ describe("meta и JSON-LD на отрендеренных страницах", (
           } catch {
             continue;
           }
+          // @id дублируется только внутри одного блока: расширение узла
+          // из другого блока (например LocalBusiness + отзывы) — валидно.
+          const seenIds = new Set<string>();
           const collect = (node: unknown) => {
             if (Array.isArray(node)) return node.forEach(collect);
             if (!node || typeof node !== "object") return;
