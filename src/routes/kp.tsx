@@ -211,7 +211,7 @@ function KpPage() {
         pestName: pestsLabels.join(" + ") || "Санитарная обработка",
         level: "1",
         multiplier: 1,
-        warrantyDays: periodicity === "monthly" ? 30 : periodicity === "quarterly" ? 90 : 60,
+        warrantyMonths: periodicity === "monthly" ? 1 : periodicity === "quarterly" ? 3 : 2,
         preparations: [],
         methodNote: `Тип объекта: ${objectKindDef.label}. Площадь: ${areaM2} м². Периодичность: ${PERIODICITY_LABEL[periodicity]}.`,
         lines: contractLines,

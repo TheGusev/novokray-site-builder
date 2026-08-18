@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   CATALOG,
   LEVEL_MULTIPLIER,
-  LEVEL_WARRANTY_DAYS,
+  LEVEL_WARRANTY_MONTHS,
   UNIT_LIMITS,
   clampQty,
   getElementLimits,
@@ -61,10 +61,10 @@ describe("Степень заражения — множитель цены и �
     expect(LEVEL_MULTIPLIER["4-5"]).toBe(2.0);
   });
 
-  it("гарантия: 1→90, 2-3→60, 4-5→30 дней", () => {
-    expect(LEVEL_WARRANTY_DAYS["1"]).toBe(90);
-    expect(LEVEL_WARRANTY_DAYS["2-3"]).toBe(60);
-    expect(LEVEL_WARRANTY_DAYS["4-5"]).toBe(30);
+  it("гарантия: 1→3, 2-3→2, 4-5→1 месяца", () => {
+    expect(LEVEL_WARRANTY_MONTHS["1"]).toBe(3);
+    expect(LEVEL_WARRANTY_MONTHS["2-3"]).toBe(2);
+    expect(LEVEL_WARRANTY_MONTHS["4-5"]).toBe(1);
   });
 
   it("множитель монотонно растёт со степенью заражения", () => {
@@ -73,8 +73,8 @@ describe("Степень заражения — множитель цены и �
   });
 
   it("гарантия монотонно убывает со степенью заражения", () => {
-    expect(LEVEL_WARRANTY_DAYS["1"]).toBeGreaterThan(LEVEL_WARRANTY_DAYS["2-3"]);
-    expect(LEVEL_WARRANTY_DAYS["2-3"]).toBeGreaterThan(LEVEL_WARRANTY_DAYS["4-5"]);
+    expect(LEVEL_WARRANTY_MONTHS["1"]).toBeGreaterThan(LEVEL_WARRANTY_MONTHS["2-3"]);
+    expect(LEVEL_WARRANTY_MONTHS["2-3"]).toBeGreaterThan(LEVEL_WARRANTY_MONTHS["4-5"]);
   });
 });
 
@@ -331,7 +331,7 @@ describe("Мульти-вредители: blockSum / totalSum и правила
       pestName: p.name,
       level: opts.level,
       multiplier: mult,
-      warrantyDays: LEVEL_WARRANTY_DAYS[opts.level],
+      warrantyMonths: LEVEL_WARRANTY_MONTHS[opts.level],
       preparations: p.preparations.slice(0, 1),
       methodNote: p.methodNote,
       lines,
