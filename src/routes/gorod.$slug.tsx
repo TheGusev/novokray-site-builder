@@ -113,6 +113,12 @@ export const Route = createFileRoute("/gorod/$slug")({
                   },
                 ],
               },
+              ...geoItems.map((s) => serviceNode(s, schemaOpts)),
+              serviceListNode(geoItems, {
+                ...schemaOpts,
+                listName: `Санитарная обработка ${c.prepositional}`,
+              }),
+              aggregateOfferNode(geoItems, pageUrl),
               {
                 "@type": "FAQPage",
                 mainEntity: [
