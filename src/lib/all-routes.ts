@@ -3,6 +3,7 @@ import { CITIES } from "../data/cities";
 import { DISTRICTS } from "../data/districts";
 import { POSTS } from "../data/blog";
 import { DOCS } from "../data/docs";
+import { LANDINGS } from "../data/landings";
 
 export const HUB_SLUGS = [
   "unichtozhenie-vrediteley",
@@ -37,6 +38,7 @@ export function getAllPaths(): string[] {
     ...CITIES.map((c) => `/gorod/${c.slug}`),
     ...DISTRICTS.map((d) => `/raion/${d.slug}`),
     ...POSTS.map((p) => `/blog/${p.slug}`),
+    ...LANDINGS.map((l) => `/obrabotka/${l.slug}`),
     ...DOCS.map((d) => `/docs/${d.slug}`),
   ];
 }

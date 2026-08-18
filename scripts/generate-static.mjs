@@ -18,8 +18,9 @@ async function loadData() {
   const { POSTS } = await load("src/data/blog.ts");
   const { DOCS } = await load("src/data/docs.ts");
   const { STATIC_PATHS, HUB_SLUGS } = await load("src/lib/all-routes.ts");
+  const { LANDINGS } = await load("src/data/landings.ts");
   const { WORK_VIDEOS, VIDEO_UPLOAD_DATE } = await load("src/data/videos.ts");
-  return { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE };
+  return { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE, LANDINGS };
 }
 
 function pickOutDir() {
@@ -37,7 +38,7 @@ function pickOutDir() {
 }
 
 async function main() {
-  const { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE } = await loadData();
+  const { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE, LANDINGS } = await loadData();
   const BASE = SITE.domain.replace(/\/$/, "");
   const today = new Date().toISOString().slice(0, 10);
   const OUT = pickOutDir();
@@ -67,6 +68,7 @@ async function main() {
     ...CITIES.map((c) => ({ path: `/gorod/${c.slug}`, changefreq: "weekly", priority: "0.85" })),
     ...DISTRICTS.map((d) => ({ path: `/raion/${d.slug}`, changefreq: "weekly", priority: "0.8" })),
     ...SERVICES.map((s) => ({ path: `/services/${s.slug}`, changefreq: "weekly", priority: "0.9" })),
+    ...LANDINGS.map((l) => ({ path: `/obrabotka/${l.slug}`, changefreq: "weekly", priority: "0.85" })),
     ...DOCS.map((d) => ({ path: `/docs/${d.slug}`, changefreq: "yearly", priority: "0.4" })),
   ];
   const blogEntries = POSTS.map((p) => ({ path: `/blog/${p.slug}`, changefreq: "monthly", priority: "0.6", lastmod: p.date }));
