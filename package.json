@@ -6,14 +6,15 @@
   "scripts": {
     "dev": "vite dev",
     "prebuild": "bun scripts/build-routes-json.ts",
-    "build": "vite build && bun scripts/generate-static.mjs && bun scripts/check-static-schema.mjs",
+    "build": "vite build && bun scripts/generate-static.mjs && bun scripts/check-static-schema.mjs && bun scripts/check-link-graph.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "check:schema": "bun scripts/check-static-schema.mjs"
+    "check:schema": "bun scripts/check-static-schema.mjs",
+    "check:links": "bun scripts/check-link-graph.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

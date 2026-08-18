@@ -28,7 +28,58 @@ const REQUIRED = [
   { match: (rel) => rel.startsWith("services/"), types: ["Service", "FAQPage", "BreadcrumbList"] },
   { match: (rel) => rel.startsWith("uslugi/"), types: ["OfferCatalog", "FAQPage", "BreadcrumbList"] },
   { match: (rel) => rel.startsWith("gorod/") || rel.startsWith("raion/"), types: ["LocalBusiness", "OfferCatalog", "FAQPage"] },
+  { match: (rel) => rel.startsWith("obrabotka/"), types: ["Service", "Offer", "PriceSpecification", "FAQPage", "BreadcrumbList"] },
 ];
+
+/** Все @id, объявленные узлами (с @type), и все ссылки { "@id": ... } без @type. */
+function collectIds(value, ids, refs) {
+  if (Array.isArray(value)) {
+    for (const v of value) collectIds(v, ids, refs);
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  if (typeof value["@id"] === "string") {
+    if (value["@type"]) ids.add(value["@id"]);
+    else refs.add(value["@id"]);
+  }
+  for (const [k, v] of Object.entries(value)) {
+    if (k === "@id" || k === "@type") continue;
+    collectIds(v, ids, refs);
+  }
+}
+
+function decodeEntities(s) {
+  return s
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
+/** Разбирает весь JSON-LD страницы и возвращает проблемы связности графа. */
+function schemaGraphProblems(rel, html) {
+  const problems = [];
+  const ids = new Set();
+  const refs = new Set();
+  const blocks = [...html.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)];
+  if (!blocks.length) return problems;
+  for (const b of blocks) {
+    let parsed;
+    try {
+      parsed = JSON.parse(decodeEntities(b[1].trim()));
+    } catch {
+      problems.push(`${rel}: JSON-LD не парсится`);
+      continue;
+    }
+    collectIds(parsed, ids, refs);
+  }
+  for (const ref of refs) {
+    if (/#(organization|website|localbusiness)$/i.test(ref)) continue;
+    if (!ids.has(ref)) problems.push(`${rel}: висячая ссылка @id ${ref}`);
+  }
+  return problems;
+}
 
 async function main() {
   const OUT = outDir();
@@ -45,6 +96,7 @@ async function main() {
     const rel = file.slice(OUT.length + 1).replace(/(^|\/)index\.html$/, "").replace(/\.html$/, "");
     const html = readFileSync(file, "utf8");
     const head = html.split("</head>")[0] ?? "";
+    problems.push(...schemaGraphProblems(rel, html));
     const rule = REQUIRED.find((r) => r.match(rel));
     if (!rule) continue;
     checked++;
