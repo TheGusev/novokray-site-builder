@@ -27,6 +27,7 @@ export const Route = createFileRoute("/price")({
         "@graph": [
           {
             "@type": "OfferCatalog",
+            "@id": `${SITE.domain}/price#catalog`,
             name: `Прайс-лист санитарной службы ${SITE.name}`,
             url: `${SITE.domain}/price`,
             provider: { "@id": `${SITE.domain}#organization` },
@@ -40,6 +41,17 @@ export const Route = createFileRoute("/price")({
               availability: "https://schema.org/InStock",
               url: `${SITE.domain}/services/${s.slug}`,
               itemOffered: { "@type": "Service", name: s.h1 },
+            })),
+          },
+          {
+            "@type": "ItemList",
+            name: `Услуги и цены — ${SITE.name}`,
+            numberOfItems: SERVICES_INDEX.length,
+            itemListElement: SERVICES_INDEX.map((s, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: s.title,
+              url: `${SITE.domain}/services/${s.slug}`,
             })),
           },
           {
