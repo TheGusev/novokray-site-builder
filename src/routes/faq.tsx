@@ -69,6 +69,7 @@ export const Route = createFileRoute("/faq")({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
+        "@id": `${SITE.domain}/faq#breadcrumb`,
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE.domain}/` },
           { "@type": "ListItem", position: 2, name: "Вопросы и ответы", item: `${SITE.domain}/faq` },
