@@ -97,6 +97,11 @@ export const Route = createFileRoute("/raion/$slug")({
                   },
                 ],
               },
+              videoJsonLd(
+                WORK_VIDEOS_BY_SLUG[GEO_VIDEO_SLUG],
+                SITE.domain,
+                `${SITE.domain}/raion/${params.slug}`,
+              ),
             ],
           }),
         },
