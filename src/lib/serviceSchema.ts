@@ -88,7 +88,7 @@ export function orderActionNode(url: string, name: string) {
 
 /** Ценовое предложение «от N ₽» для конкретной услуги. */
 export function offerNode(
-  s: ServiceIndexItem,
+  s: Pick<ServiceIndexItem, "slug" | "title" | "priceFrom">,
   o: { areas?: AreaServed[]; url?: string } = {},
 ) {
   const areas = o.areas ?? DEFAULT_AREA;

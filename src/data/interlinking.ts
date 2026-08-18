@@ -1,3 +1,5 @@
+import { LANDINGS, PESTS, OBJECTS } from "./landings";
+
 // Карта поисковых намерений и правил перелинковки.
 // Задача: один запрос — одна целевая страница. Коммерческие анкоры ведут
 // только на страницу услуги, гео-анкоры — только на гео-страницу,
@@ -60,6 +62,16 @@ export const INTENT_MAP: IntentEntry[] = [
     path: `/services/${slug}`,
     intent: "commercial",
     keyword: `${kw} новосибирск`,
+  })),
+  // Объектные посадочные: НЧ/СНЧ-интент «вредитель × объект».
+  // Их запрос всегда уточнён типом объекта, поэтому со страницей услуги
+  // (общий коммерческий интент) они не конкурируют.
+  ...LANDINGS.map((l): IntentEntry => ({
+    path: `/obrabotka/${l.slug}`,
+    intent: "commercial",
+    keyword: `обработка ${OBJECTS[l.object]?.genitive ?? ""} от ${
+      PESTS[l.pest]?.genitive ?? ""
+    } новосибирск`.replace(/\s+/g, " "),
   })),
 ];
 

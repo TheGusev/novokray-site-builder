@@ -25,6 +25,7 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as UslugiSlugRouteImport } from './routes/uslugi.$slug'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as RaionSlugRouteImport } from './routes/raion.$slug'
+import { Route as ObrabotkaSlugRouteImport } from './routes/obrabotka.$slug'
 import { Route as GorodSlugRouteImport } from './routes/gorod.$slug'
 import { Route as DogovorZapolnitRouteImport } from './routes/dogovor.zapolnit'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
@@ -113,6 +114,11 @@ const RaionSlugRoute = RaionSlugRouteImport.update({
   path: '/raion/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ObrabotkaSlugRoute = ObrabotkaSlugRouteImport.update({
+  id: '/obrabotka/$slug',
+  path: '/obrabotka/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GorodSlugRoute = GorodSlugRouteImport.update({
   id: '/gorod/$slug',
   path: '/gorod/$slug',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/docs/$slug': typeof DocsSlugRoute
   '/dogovor/zapolnit': typeof DogovorZapolnitRoute
   '/gorod/$slug': typeof GorodSlugRoute
+  '/obrabotka/$slug': typeof ObrabotkaSlugRoute
   '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/uslugi/$slug': typeof UslugiSlugRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/docs/$slug': typeof DocsSlugRoute
   '/dogovor/zapolnit': typeof DogovorZapolnitRoute
   '/gorod/$slug': typeof GorodSlugRoute
+  '/obrabotka/$slug': typeof ObrabotkaSlugRoute
   '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/uslugi/$slug': typeof UslugiSlugRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/docs/$slug': typeof DocsSlugRoute
   '/dogovor/zapolnit': typeof DogovorZapolnitRoute
   '/gorod/$slug': typeof GorodSlugRoute
+  '/obrabotka/$slug': typeof ObrabotkaSlugRoute
   '/raion/$slug': typeof RaionSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/uslugi/$slug': typeof UslugiSlugRoute
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/docs/$slug'
     | '/dogovor/zapolnit'
     | '/gorod/$slug'
+    | '/obrabotka/$slug'
     | '/raion/$slug'
     | '/services/$slug'
     | '/uslugi/$slug'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/docs/$slug'
     | '/dogovor/zapolnit'
     | '/gorod/$slug'
+    | '/obrabotka/$slug'
     | '/raion/$slug'
     | '/services/$slug'
     | '/uslugi/$slug'
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/docs/$slug'
     | '/dogovor/zapolnit'
     | '/gorod/$slug'
+    | '/obrabotka/$slug'
     | '/raion/$slug'
     | '/services/$slug'
     | '/uslugi/$slug'
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   DocsSlugRoute: typeof DocsSlugRoute
   DogovorZapolnitRoute: typeof DogovorZapolnitRoute
   GorodSlugRoute: typeof GorodSlugRoute
+  ObrabotkaSlugRoute: typeof ObrabotkaSlugRoute
   RaionSlugRoute: typeof RaionSlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   UslugiSlugRoute: typeof UslugiSlugRoute
@@ -444,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RaionSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/obrabotka/$slug': {
+      id: '/obrabotka/$slug'
+      path: '/obrabotka/$slug'
+      fullPath: '/obrabotka/$slug'
+      preLoaderRoute: typeof ObrabotkaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gorod/$slug': {
       id: '/gorod/$slug'
       path: '/gorod/$slug'
@@ -513,6 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsSlugRoute: DocsSlugRoute,
   DogovorZapolnitRoute: DogovorZapolnitRoute,
   GorodSlugRoute: GorodSlugRoute,
+  ObrabotkaSlugRoute: ObrabotkaSlugRoute,
   RaionSlugRoute: RaionSlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   UslugiSlugRoute: UslugiSlugRoute,
