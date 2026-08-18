@@ -107,6 +107,14 @@ jobs:
             echo "media range code: $range_code"
             [ "$range_code" = "206" ] || fail "Range-запрос к /media/*.mp4 вернул $range_code вместо 206."
 
+            # Канонизация: /price/ и /price/index.html обязаны 301-редиректить на /price.
+            for probe in /price/ /price/index.html; do
+              redir=$(curl --silent --show-error -o /dev/null -w '%{http_code} %{redirect_url}' \
+                --resolve dez-federation.ru:443:127.0.0.1 "https://dez-federation.ru$probe" || true)
+              echo "canonical $probe -> $redir"
+              case "$redir" in 301*) ;; *) fail "$probe не редиректит 301 на /price — добавьте блок канонизации URL из SERVER_DEPLOYMENT.md.";; esac
+            done
+
             # Отсутствующий файл обязан быть 404, а не HTML главной страницы.
             missing_code=$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
               --resolve dez-federation.ru:443:127.0.0.1 https://dez-federation.ru/media/nope.mp4 || true)
