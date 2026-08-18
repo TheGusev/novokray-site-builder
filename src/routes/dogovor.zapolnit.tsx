@@ -792,12 +792,31 @@ function DogovorBuilderPage() {
                   {["Наличные", "Перевод на карту", "Безналичный расчёт", "СБП"].map((p) => <option key={p}>{p}</option>)}
                 </select>
               </Field>
-              <Field label="Подпись мастера (PNG/JPG, до 1 МБ)" full>
+              <Field label="Загрузить готовую подпись мастера (PNG/JPG, до 1 МБ) — необязательно" full>
                 <label className="flex h-9 cursor-pointer items-center justify-between rounded-md border border-input bg-transparent px-3 text-sm text-muted-foreground hover:border-primary">
                   <span>{signatureName || "Выбрать файл…"}</span>
                   <input type="file" accept="image/png,image/jpeg" className="hidden" onChange={(e) => onSignature(e.target.files?.[0] ?? null)} />
                 </label>
               </Field>
+            </Block>
+
+            <Block title="5. Подписание">
+              <div className="col-span-full grid gap-3 sm:grid-cols-2">
+                <SignaturePad
+                  label="Подпись мастера"
+                  hint="Сначала расписывается мастер"
+                  onChange={setMasterSign}
+                />
+                <SignaturePad
+                  label="Подпись заказчика"
+                  hint="Затем передайте экран клиенту"
+                  onChange={setClientSign}
+                />
+              </div>
+              <p className="col-span-full text-xs text-muted-foreground">
+                Подписи попадут в PDF над строками «Исполнитель» и «Заказчик». Рядом с подписью мастера
+                автоматически ставится печать организации.
+              </p>
             </Block>
           </div>
 
