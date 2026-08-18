@@ -290,6 +290,81 @@ describe("meta и JSON-LD на отрендеренных страницах", (
             if (!offers["availability"]) problems.push(`${u}: Offer без availability`);
           }
         }
+
+        // LocalBusiness: NAP + график. Обязателен на гео-страницах и в общем графе.
+        const lbs: Record<string, unknown>[] = [];
+        const faqs: Record<string, unknown>[] = [];
+        const catalogs: Record<string, unknown>[] = [];
+        for (const raw of blocks) {
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(decode(raw));
+          } catch {
+            continue;
+          }
+          const collect = (node: unknown) => {
+            if (Array.isArray(node)) return node.forEach(collect);
+            if (!node || typeof node !== "object") return;
+            const obj = node as Record<string, unknown>;
+            if (obj["@graph"]) collect(obj["@graph"]);
+            if (obj["@type"] === "LocalBusiness") lbs.push(obj);
+            if (obj["@type"] === "FAQPage") faqs.push(obj);
+            if (obj["@type"] === "OfferCatalog") catalogs.push(obj);
+          };
+          collect(parsed);
+        }
+
+        const needsLocalBusiness = u.startsWith("/gorod/") || u.startsWith("/raion/");
+        if (needsLocalBusiness && !lbs.length) problems.push(`${u}: нет разметки LocalBusiness`);
+        for (const lb of lbs) {
+          for (const field of ["name", "telephone", "address", "areaServed", "openingHoursSpecification"]) {
+            if (!lb[field]) problems.push(`${u}: LocalBusiness без ${field}`);
+          }
+          if (lb["telephone"] !== SITE.phone)
+            problems.push(`${u}: LocalBusiness телефон ${String(lb["telephone"])} ≠ ${SITE.phone}`);
+        }
+
+        // FAQPage: вопросы должны присутствовать в видимом тексте страницы.
+        const needsFaq =
+          u.startsWith("/gorod/") ||
+          u.startsWith("/raion/") ||
+          u.startsWith("/uslugi/") ||
+          u === "/category/dezinfekciya-novosibirsk";
+        if (needsFaq && !faqs.length) problems.push(`${u}: нет разметки FAQPage`);
+        const text = decode(html.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ");
+        for (const faq of faqs) {
+          const entities = faq["mainEntity"];
+          if (!Array.isArray(entities) || entities.length < 3) {
+            problems.push(`${u}: FAQPage содержит меньше трёх вопросов`);
+            continue;
+          }
+          for (const q of entities) {
+            const obj = q as Record<string, unknown>;
+            const name = obj["name"];
+            const answer = (obj["acceptedAnswer"] as Record<string, unknown> | undefined)?.["text"];
+            if (typeof name !== "string" || !name) {
+              problems.push(`${u}: Question без name`);
+              continue;
+            }
+            if (typeof answer !== "string" || !answer) problems.push(`${u}: «${name}» без ответа`);
+            if (!text.includes(name.replace(/\s+/g, " ")))
+              problems.push(`${u}: вопрос «${name}» отсутствует в видимом тексте`);
+          }
+        }
+
+        // OfferCatalog: у каталогов должны быть позиции.
+        const needsCatalog =
+          u === "/price" ||
+          u === "/category/dezinfekciya-novosibirsk" ||
+          u.startsWith("/uslugi/") ||
+          u.startsWith("/gorod/") ||
+          u.startsWith("/raion/");
+        if (needsCatalog && !catalogs.length) problems.push(`${u}: нет разметки OfferCatalog`);
+        for (const cat of catalogs) {
+          const items = cat["itemListElement"];
+          if (!Array.isArray(items) || items.length === 0)
+            problems.push(`${u}: OfferCatalog «${String(cat["name"])}» без позиций`);
+        }
       }),
     );
 
