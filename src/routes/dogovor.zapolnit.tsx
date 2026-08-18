@@ -902,19 +902,21 @@ function DogovorBuilderPage() {
               <button
                 type="button"
                 onClick={onGenerate}
-                disabled={busy || totalErrors > 0}
+                disabled={busy || totalErrors > 0 || signStep < 3}
                 className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-cta-gradient font-bold text-accent-foreground shadow-cta hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100"
               >
-                {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Готовлю PDF…</> : <><Download className="h-4 w-4" /> Сформировать PDF</>}
+                {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Готовлю PDF…</> : <><Download className="h-4 w-4" /> Сформировать PDF · шаг 3/3</>}
               </button>
               {totalErrors > 0 && (
                 <p className="mt-2 text-center text-[11px] text-destructive">
                   Ошибок в блоках: {totalErrors}. Исправьте, чтобы сформировать PDF.
                 </p>
               )}
-              {totalErrors === 0 && !(masterSign ?? signature) && !clientSign && (
+              {totalErrors === 0 && signStep < 3 && (
                 <p className="mt-2 text-center text-[11px] text-amber-600">
-                  Договор будет без подписей — заполните блок «Подписание».
+                  Шаг {signStep} из 3: {signStep === 1
+                    ? "нужна подпись мастера в блоке «Подписание»."
+                    : "нужна подпись заказчика в блоке «Подписание»."}
                 </p>
               )}
 
