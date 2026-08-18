@@ -211,6 +211,8 @@ function DogovorBuilderPage() {
   const [paymentMethod, setPaymentMethod] = useState("Наличные");
   const [signature, setSignature] = useState<ArrayBuffer | null>(null);
   const [signatureName, setSignatureName] = useState<string>("");
+  const [masterSign, setMasterSign] = useState<ArrayBuffer | null>(null);
+  const [clientSign, setClientSign] = useState<ArrayBuffer | null>(null);
 
   const [blocks, setBlocks] = useState<UiBlock[]>(() => [makeBlock()]);
   const [graveyard, setGraveyard] = useState<Record<string, UiBlock[]>>({});
@@ -398,7 +400,8 @@ function DogovorBuilderPage() {
       blocks: cBlocks,
       masterFio: masterFio.trim(),
       paymentMethod,
-      signaturePng: signature,
+      masterSignaturePng: masterSign ?? signature,
+      clientSignaturePng: clientSign,
     };
 
     try {
