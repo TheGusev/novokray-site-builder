@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Download, Plus, Trash2, ArrowLeft, FileText, Loader2, Send } from "lucide-react";
 import { SITE } from "@/data/site";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { SignaturePad } from "@/components/dogovor/SignaturePad";
 import { formatRub } from "@/data/leadPricing";
 import {
   CATALOG,
