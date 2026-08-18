@@ -61,3 +61,15 @@ describe("объектные посадочные", () => {
     expect(new Set(all).size).toBe(all.length);
   });
 });
+
+describe("кластер срочности", () => {
+  it("запросы «срочно/сегодня» ведут на существующие страницы и не дублируют друг друга", async () => {
+    const urgent = SEMANTIC_CORE.filter((c) =>
+      /срочн|сегодня|круглосуточ|выходн/.test(c.q),
+    );
+    expect(urgent.length).toBeGreaterThan(20);
+    const paths = new Set(getAllPaths());
+    for (const c of urgent) expect(paths.has(c.target), c.q).toBe(true);
+    expect(cannibalized()).toEqual([]);
+  });
+});
