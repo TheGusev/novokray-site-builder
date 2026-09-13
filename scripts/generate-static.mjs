@@ -20,7 +20,8 @@ async function loadData() {
   const { STATIC_PATHS, HUB_SLUGS } = await load("src/lib/all-routes.ts");
   const { LANDINGS } = await load("src/data/landings.ts");
   const { WORK_VIDEOS, VIDEO_UPLOAD_DATE } = await load("src/data/videos.ts");
-  return { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE, LANDINGS };
+  const { LEGACY_REDIRECTS } = await load("src/data/redirects.ts");
+  return { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE, LANDINGS, LEGACY_REDIRECTS };
 }
 
 function pickOutDir() {
@@ -38,7 +39,7 @@ function pickOutDir() {
 }
 
 async function main() {
-  const { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE, LANDINGS } = await loadData();
+  const { SITE, SERVICES, CITIES, DISTRICTS, POSTS, DOCS, STATIC_PATHS, HUB_SLUGS, WORK_VIDEOS, VIDEO_UPLOAD_DATE, LANDINGS, LEGACY_REDIRECTS } = await loadData();
   const BASE = SITE.domain.replace(/\/$/, "");
   const today = new Date().toISOString().slice(0, 10);
   const OUT = pickOutDir();
