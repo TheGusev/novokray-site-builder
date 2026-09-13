@@ -299,7 +299,8 @@ AddDefaultCharset UTF-8
   console.log(`  всего страниц в картах: ${entries.length}`);
   console.log(`  yandex-recrawl.txt (${total} URL, абсолютные)`);
   console.log(`  yandex-recrawl-rel.txt (${total} URL, относительные)`);
-  console.log(`  .htaccess (SPA fallback + HTTPS + кэш)`);
+  console.log(`  404.html (noindex) + .htaccess (301 ${LEGACY_REDIRECTS.length} адресов, HTTPS, кэш)`);
+  console.log(`  deploy/nginx-redirects.conf (${LEGACY_REDIRECTS.length} правил 301)`);
 }
 
 main().catch((err) => {
