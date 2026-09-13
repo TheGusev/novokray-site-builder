@@ -45,9 +45,8 @@ interface LocalBusinessOptions {
   name?: string;
   url?: string;
   areaServed?: unknown;
-  /** Координаты и рейтинг ставим только у головного узла. */
+  /** Координаты ставим только у головного узла. */
   withGeo?: boolean;
-  withRating?: boolean;
   /** Ссылка на головную организацию для дочерних гео-узлов. */
   parent?: boolean;
   extra?: Record<string, unknown>;
