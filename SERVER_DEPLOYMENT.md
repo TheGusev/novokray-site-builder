@@ -128,12 +128,20 @@ server {
         add_header Cache-Control "no-cache" always;
     }
 
+    # 301 на актуальные адреса для старых ссылок (файл кладёт деплой из
+    # deploy/nginx-redirects.conf, источник — src/data/redirects.ts).
+    include /etc/nginx/snippets/dez-federation-redirects.conf;
+
+    # Неизвестный адрес — честный 404, а не главная страница с кодом 200.
+    error_page 404 /404.html;
+
     location / {
         # HTML не кешируем вовсе: телефон с уже сохранённой старой страницей
         # обязан получить свежую версию после каждого деплоя.
         # $uri/ намеренно убран: каталоги отдаются только через /path.html,
         # иначе вернётся дубль со слешем.
-        try_files $uri $uri.html $uri/index.html /index.html;
+        # =404 вместо /index.html: SPA-fallback делал «рабочими» мусорные адреса.
+        try_files $uri $uri.html $uri/index.html =404;
         add_header Cache-Control "no-store" always;
     }
 }
