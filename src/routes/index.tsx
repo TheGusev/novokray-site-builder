@@ -124,17 +124,8 @@ export const Route = createFileRoute("/")({
               name: s.title,
             })),
           },
-          {
-            "@type": "LocalBusiness",
-            "@id": `${SITE.domain}#localbusiness`,
-            review: REVIEWS.slice(0, 5).map((r) => ({
-              "@type": "Review",
-              author: { "@type": "Person", name: r.n },
-              reviewBody: r.t,
-              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-              itemReviewed: { "@id": `${SITE.domain}#organization` },
-            })),
-          },
+          // Review/AggregateRating не размечаем: отзывы на странице пока не
+          // подтверждены внешним профилем (Яндекс.Карты/2ГИС).
         ],
       }),
     }],
