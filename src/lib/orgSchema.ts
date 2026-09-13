@@ -73,17 +73,8 @@ export function localBusinessNode(o: LocalBusinessOptions) {
     areaServed: o.areaServed ?? SERVICE_AREA_JSON,
     sameAs: [SITE.social.telegram, SITE.social.max],
     ...(o.parent ? { parentOrganization: { "@id": `${SITE.domain}#organization` } } : {}),
-    ...(o.withRating
-      ? {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: SITE.rating.value,
-            reviewCount: SITE.rating.count,
-            bestRating: "5",
-            worstRating: "1",
-          },
-        }
-      : {}),
+    // AggregateRating/Review намеренно не добавляем: пока нет верифицируемых
+    // отзывов (Яндекс.Карты/2ГИС), разметка рейтинга — риск ручных санкций.
     ...(o.extra ?? {}),
   };
 }
