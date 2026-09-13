@@ -146,6 +146,71 @@ jobs:
             fi
             echo "nginx канонизация URL: $canon_note"
 
+            # 2.2 НЕСУЩЕСТВУЮЩИЕ АДРЕСА. Неизвестный URL обязан отдавать 404,
+            # а не HTML главной страницы: иначе в индекс и в рекламу попадают
+            # «рабочие» мусорные адреса с canonical главной.
+            nf_note="уже настроено"
+            if [ -z "$canon_conf" ]; then
+              nf_note="конфиг сайта не найден"
+            else
+              install -D -m 644 deploy/nginx-redirects.conf /etc/nginx/snippets/dez-federation-redirects.conf
+              if ! grep -q 'not-found-handling' "$canon_conf"; then
+                cp "$canon_conf" "$canon_conf.bak-404-$(date +%Y%m%d%H%M%S)"
+                sed -i 's|try_files \$uri \$uri.html \$uri/index.html /index.html|try_files $uri $uri.html $uri/index.html =404|g' "$canon_conf"
+                sed -i 's|try_files \$uri \$uri/ /index.html|try_files $uri $uri.html $uri/index.html =404|g' "$canon_conf"
+                sed -i 's|try_files \$uri \$uri/ =404|try_files $uri $uri.html $uri/index.html =404|g' "$canon_conf"
+                awk '
+                  !done && $0 ~ /^[ \t]*location[ \t]+\/[ \t]*\{/ {
+                    print "    # not-found-handling (managed by deploy)";
+                    print "    error_page 404 /404.html;";
+                    print "    include /etc/nginx/snippets/dez-federation-redirects.conf;";
+                    print "";
+                    done = 1;
+                  }
+                  { print }
+                  END { if (!done) exit 3 }
+                ' "$canon_conf" > /tmp/ngx.nf && mv /tmp/ngx.nf "$canon_conf" \
+                  || { rm -f /tmp/ngx.nf; nf_note="нужна ручная настройка"; fail "в конфиге nginx нет location / — обработку 404 добавьте вручную."; }
+                if [ "$nf_note" = "нужна ручная настройка" ]; then
+                  :
+                elif nginx -t 2>&1; then
+                  systemctl reload nginx || fail "nginx не перезагрузился после настройки 404."
+                  nf_note="настроено автоматически"
+                else
+                  cp "$(ls -t "$canon_conf".bak-404-* | head -n1)" "$canon_conf"
+                  nf_note="автонастройка не удалась, конфиг возвращён"
+                  fail "не удалось настроить обработку 404 автоматически — см. SERVER_DEPLOYMENT.md."
+                fi
+              else
+                nginx -t 2>&1 && systemctl reload nginx || fail "nginx не перезагрузился после обновления списка редиректов."
+              fi
+            fi
+            echo "nginx обработка 404: $nf_note"
+
+            test -f dist/client/404.html || fail "в сборке нет 404.html."
+
+            # Несуществующий адрес обязан вернуть 404, а не главную с кодом 200.
+            for probe in /404-random-test /klopy-nope /uslugi/net-takoy-uslugi; do
+              nf_code=$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
+                --resolve dez-federation.ru:443:127.0.0.1 "https://dez-federation.ru$probe" || true)
+              echo "404-check $probe -> $nf_code"
+              [ "$nf_code" = "404" ] || fail "$probe вернул $nf_code вместо 404 — проверьте try_files и error_page в nginx."
+            done
+
+            # Старые адреса из рекламы и внешних ссылок обязаны 301-редиректить.
+            check_redirect() {
+              got=$(curl --silent --show-error -o /dev/null -w '%{http_code} %{redirect_url}' \
+                --resolve dez-federation.ru:443:127.0.0.1 "https://dez-federation.ru$1" || true)
+              echo "301-check $1 -> $got"
+              [ "$got" = "301 https://dez-federation.ru$2" ] \
+                || fail "$1 отдал «$got», ожидался 301 на https://dez-federation.ru$2."
+            }
+            check_redirect /tarakany /services/unichtozhenie-tarakanov
+            check_redirect /klopy /services/unichtozhenie-klopov
+            check_redirect /uslugi/unichtozhenie-tarakanov /services/unichtozhenie-tarakanov
+            check_redirect /uslugi/unichtozhenie-klopov /services/unichtozhenie-klopov
+
+
             # Проверка: /price/ и /price/index.html обязаны 301-редиректить на /price без цепочек.
             for probe in /price/ /price/index.html; do
               redir=$(curl --silent --show-error -o /dev/null -w '%{http_code} %{redirect_url}' \

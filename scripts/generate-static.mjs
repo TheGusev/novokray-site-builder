@@ -167,7 +167,59 @@ async function main() {
   writeFileSync(resolve(OUT, "yandex-recrawl.txt"), buildBody(abs), "utf8");
   writeFileSync(resolve(OUT, "yandex-recrawl-rel.txt"), buildBody(rel), "utf8");
 
-  // --- .htaccess (SPA fallback + HTTPS + кэш) ---
+  // --- 404.html (отдельная страница, без canonical главной) ---
+  const notFoundHtml = `<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, follow">
+<title>Страница не найдена — ${SITE.shortName}</title>
+<style>
+  :root { color-scheme: light }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:#f6f8f7; color:#15211c }
+  .box { max-width:640px; padding:32px 24px; text-align:center }
+  .code { font-size:64px; font-weight:800; color:#14795a; margin:0 }
+  h1 { font-size:24px; margin:8px 0 12px }
+  p { color:#4a5a53; line-height:1.6; margin:0 0 24px }
+  .links { display:flex; flex-wrap:wrap; gap:12px; justify-content:center }
+  a { display:inline-block; padding:12px 18px; border-radius:10px; text-decoration:none;
+      background:#14795a; color:#fff; font-weight:600 }
+  a.ghost { background:#fff; color:#14795a; border:1px solid #cfe0d9 }
+</style>
+</head>
+<body>
+  <div class="box">
+    <p class="code">404</p>
+    <h1>Такой страницы нет</h1>
+    <p>Возможно, адрес устарел или в нём опечатка. Выберите нужный раздел или позвоните — подскажем: ${SITE.phone}.</p>
+    <div class="links">
+      <a href="/">На главную</a>
+      <a class="ghost" href="/services">Услуги</a>
+      <a class="ghost" href="/price">Цены</a>
+      <a class="ghost" href="/contacts">Контакты</a>
+    </div>
+  </div>
+</body>
+</html>
+`;
+  writeFileSync(resolve(OUT, "404.html"), notFoundHtml, "utf8");
+
+  // --- 301-редиректы для устаревших адресов (единый источник) ---
+  const htaccessRedirects = LEGACY_REDIRECTS
+    .map((r) => `RewriteRule ^${r.from.replace(/^\//, "")}/?$ ${r.to} [R=301,L]`)
+    .join("\n");
+
+  const nginxRedirects = [
+    "# dez-federation: 301 для устаревших адресов (генерируется generate-static.mjs)",
+    ...LEGACY_REDIRECTS.map((r) => `location = ${r.from} { return 301 ${r.to}; }`),
+    ...LEGACY_REDIRECTS.map((r) => `location = ${r.from}/ { return 301 ${r.to}; }`),
+    "",
+  ].join("\n");
+  writeFileSync(resolve(ROOT, "deploy/nginx-redirects.conf"), nginxRedirects, "utf8");
+
+  // --- .htaccess (prerender + 301 + 404 + HTTPS + кэш) ---
   const htaccess = `# Дез-Федерация — статический хостинг (Beget / Apache)
 Options -MultiViews
 RewriteEngine On
@@ -179,6 +231,9 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # Убираем завершающий слэш (кроме корня)
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# 0) Устаревшие адреса — постоянный редирект на актуальные
+${htaccessRedirects}
 
 # 1) Если запрошенный путь — это готовый файл или каталог, отдаём как есть
 RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -193,11 +248,9 @@ RewriteRule ^(.+)$ /$1.html [L]
 RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
 RewriteRule ^(.+)$ /$1/index.html [L]
 
-# 4) SPA-fallback — всё остальное на index.html
-RewriteRule ^ /index.html [L]
-
-# 404
-ErrorDocument 404 /index.html
+# 4) Всё остальное — честный 404, а не главная страница
+ErrorDocument 404 /404.html
+RewriteRule ^ - [R=404,L]
 
 # Сжатие
 <IfModule mod_deflate.c>
@@ -246,7 +299,8 @@ AddDefaultCharset UTF-8
   console.log(`  всего страниц в картах: ${entries.length}`);
   console.log(`  yandex-recrawl.txt (${total} URL, абсолютные)`);
   console.log(`  yandex-recrawl-rel.txt (${total} URL, относительные)`);
-  console.log(`  .htaccess (SPA fallback + HTTPS + кэш)`);
+  console.log(`  404.html (noindex) + .htaccess (301 ${LEGACY_REDIRECTS.length} адресов, HTTPS, кэш)`);
+  console.log(`  deploy/nginx-redirects.conf (${LEGACY_REDIRECTS.length} правил 301)`);
 }
 
 main().catch((err) => {
