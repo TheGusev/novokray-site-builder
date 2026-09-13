@@ -47,6 +47,9 @@ const edges = [];
 for (const file of htmlFiles(OUT)) {
   let rel = "/" + file.slice(OUT.length + 1).replace(/(^|\/)index\.html$/, "").replace(/\.html$/, "");
   rel = rel.length > 1 ? rel.replace(/\/+$/, "") : "/";
+  // Служебная страница 404: закрыта от индексации и по определению не имеет
+  // входящих ссылок — в графе перелинковки не участвует.
+  if (rel === "/404") continue;
   nodes.set(rel, parsePage(rel, 200, readFileSync(file, "utf8")));
 }
 for (const node of nodes.values()) {

@@ -437,6 +437,15 @@ describe("meta и JSON-LD на отрендеренных страницах", (
             problems.push(`${u}: OfferCatalog «${String(cat["name"])}» без provider`);
         }
 
+        // Рейтинг и отзывы в JSON-LD запрещены, пока нет подтверждённых
+        // отзывов с внешнего профиля (Яндекс.Карты/2ГИС): иначе риск санкций.
+        for (const raw of blocks) {
+          for (const key of ["aggregateRating", "reviewRating", "ratingValue", '"Review"']) {
+            if (raw.includes(key))
+              problems.push(`${u}: в JSON-LD есть ${key} — разметка рейтинга запрещена`);
+          }
+        }
+
         // SSR: JSON-LD должен быть в исходном HTML внутри <head>, без участия JS.
         const head = html.split("</head>")[0] ?? "";
         if (!/application\/ld\+json/.test(head))

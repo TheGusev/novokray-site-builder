@@ -92,12 +92,6 @@ export const Route = createFileRoute("/contacts")({
               { "@type": "City", name: "Обь" },
             ],
             sameAs: [SITE.social.telegram, SITE.social.max],
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: SITE.rating.value,
-              reviewCount: SITE.rating.count,
-              bestRating: "5",
-            },
           },
           {
             "@type": "BreadcrumbList",

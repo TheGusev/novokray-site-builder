@@ -88,7 +88,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: `Санитарная служба №1 в Новосибирске — ${SITE.name}` },
-      { name: "description", content: `Уничтожение клопов и тараканов, обработка от плесени, озонирование, сушка после потопов в Новосибирске. Выезд за 60 минут. Гарантия до 24 мес. Рейтинг ${SITE.rating.value} из 5 (${SITE.rating.count} отзывов).` },
+      { name: "description", content: `Уничтожение клопов и тараканов, обработка от плесени, озонирование, сушка после потопов в Новосибирске. Выезд за 60 минут. Лицензия Роспотребнадзора НСО, гарантия по договору до 24 месяцев.` },
       { property: "og:title", content: `${SITE.name} — санитарная служба №1 в Новосибирске` },
       { property: "og:description", content: "13 направлений санитарной обработки. Выезд за 60 минут, гарантия по договору, лицензия Роспотребнадзора." },
       { property: "og:url", content: `${SITE.domain}/` },
@@ -124,17 +124,8 @@ export const Route = createFileRoute("/")({
               name: s.title,
             })),
           },
-          {
-            "@type": "LocalBusiness",
-            "@id": `${SITE.domain}#localbusiness`,
-            review: REVIEWS.slice(0, 5).map((r) => ({
-              "@type": "Review",
-              author: { "@type": "Person", name: r.n },
-              reviewBody: r.t,
-              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-              itemReviewed: { "@id": `${SITE.domain}#organization` },
-            })),
-          },
+          // Review/AggregateRating не размечаем: отзывы на странице пока не
+          // подтверждены внешним профилем (Яндекс.Карты/2ГИС).
         ],
       }),
     }],
