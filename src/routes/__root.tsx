@@ -86,7 +86,6 @@ const ORG_GRAPH = {
     localBusinessNode({
       id: `${SITE.domain}#localbusiness`,
       withGeo: true,
-      withRating: true,
       parent: true,
       extra: { hasOfferCatalog: { "@id": `${SITE.domain}#catalog` } },
     }),
